@@ -1,0 +1,34 @@
+export type ProjectStatus = 'active' | 'completed' | 'paused' | 'on-hold';
+
+export interface TicketCounts {
+    total: number;
+    in_progress: number;
+    completed: number;
+    blocked: number;
+}
+
+export interface Project {
+    id: string;
+    name: string;
+    status: ProjectStatus;
+    pm_id: string;
+    client_name: string;
+    clickup_list_id?: string;
+    github_repository_url?: string;
+    default_branch?: string;
+    created_at: string;
+    updated_at: string;
+    tickets: TicketCounts; // Renamed from ticket_counts to match backend tickets object
+    last_activity?: string | null;
+}
+
+export interface DashboardSummary {
+    total_projects: number;
+    active_projects: number;
+    total_tickets: number;
+    in_progress_tickets?: number;
+    completed_tickets?: number;
+    blocked_tickets: number;
+    avg_completion_rate?: number;
+    utilization_percent: number;
+}
