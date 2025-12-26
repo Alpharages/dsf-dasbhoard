@@ -8,6 +8,7 @@ import type { Project, DashboardSummary } from './types';
 import axios from 'axios';
 import { useSocket } from './hooks/useSocket';
 import { useProjectUpdates } from './hooks/useProjectUpdates';
+import { ReviewModal } from './components/quality-gate/ReviewModal';
 
 const API_BASE_URL = 'http://localhost:3000/api/v1';
 
@@ -37,10 +38,55 @@ function App() {
       setSummary(summaryRes.data);
     } catch (err: any) {
       console.error('Error fetching dashboard data:', err);
-      setError('Failed to load dashboard data. Please ensure the backend is running.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const [reviewState, setReviewState] = useState<{
+    isOpen: boolean;
+    projectName: string;
+    ticketTitle: string;
+    executionId: string;
+    qaSummary: any;
+    diffs: any[];
+    ticketRequirements: string;
+    confidenceScore: number;
+  }>({
+    isOpen: false,
+    projectName: '',
+    ticketTitle: '',
+    executionId: '',
+    qaSummary: null,
+    diffs: [],
+    ticketRequirements: '',
+    confidenceScore: 0
+  });
+
+  const handleReview = async (project: Project) => {
+    // In a real app, we would fetch the current awaiting execution for this project
+    // For now, let's use a mock execution ID since we don't have the full API for "get latest awaiting execution"
+    setReviewState({
+      isOpen: true,
+      projectName: project.name,
+      ticketTitle: 'Update Dashboard Components',
+      executionId: 'exec-12345',
+      ticketRequirements: '1. Update the layout to use a darker theme.\n2. Ensure responsiveness for mobile devices.\n3. Add a new ProjectCard component for displaying project details.',
+      confidenceScore: 0.89,
+      qaSummary: {
+        linting_passed: true,
+        tests_passed: true,
+        test_coverage: 85,
+        quality_score: 92
+      },
+      diffs: [
+        {
+          fileName: 'src/components/Dashboard.tsx',
+          oldCode: 'const Dashboard = () => { return <div>Old Dashboard</div> }',
+          newCode: 'const Dashboard = () => { return <div className="bg-slate-900">New Premium Dashboard</div> }'
+        }
+      ]
+    });
   };
 
   useEffect(() => {
@@ -131,7 +177,11 @@ function App() {
           ) : projects.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 pb-12">
               {projects.map((project) => (
-                <ProjectCard key={project.id} project={project} />
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  onReview={handleReview}
+                />
               ))}
             </div>
           ) : !error && (
@@ -141,6 +191,19 @@ function App() {
           )}
         </div>
       </main>
+
+      <ReviewModal
+        isOpen={reviewState.isOpen}
+        onClose={() => setReviewState(prev => ({ ...prev, isOpen: false }))}
+        executionId={reviewState.executionId}
+        projectName={reviewState.projectName}
+        ticketTitle={reviewState.ticketTitle}
+        ticketRequirements={reviewState.ticketRequirements}
+        confidenceScore={reviewState.confidenceScore}
+        qaSummary={reviewState.qaSummary}
+        diffs={reviewState.diffs}
+        onActionComplete={fetchData}
+      />
     </div>
   );
 }

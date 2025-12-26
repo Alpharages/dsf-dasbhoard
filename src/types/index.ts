@@ -5,6 +5,7 @@ export interface TicketCounts {
     in_progress: number;
     completed: number;
     blocked: number;
+    awaiting_approval: number;
 }
 
 export interface Project {
@@ -33,7 +34,7 @@ export interface DashboardSummary {
     utilization_percent: number;
 }
 
-export type ExecutionStatus = 'QUEUED' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'TIMEOUT' | 'CANCELLED';
+export type ExecutionStatus = 'QUEUED' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'TIMEOUT' | 'CANCELLED' | 'AWAITING_APPROVAL';
 
 export type AIProvider = 'CURSOR_HEADLESS' | 'CLAUDE_CODE';
 
