@@ -40,7 +40,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
         setError(null);
         try {
             const token = localStorage.getItem('token');
-            const apiUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3000';
+            const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
             await axios.post(
                 `${apiUrl}/api/v1/executions/${executionId}/approve`,
                 { decision, reasoning },

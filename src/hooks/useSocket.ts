@@ -8,7 +8,8 @@ export const useSocket = (token: string | null) => {
     useEffect(() => {
         if (!token) return;
 
-        const socket = io('http://localhost:3000/dashboard', {
+        const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:3000';
+        const socket = io(`${WS_URL}/dashboard`, {
             auth: { token },
             reconnection: true,
             reconnectionAttempts: 5,

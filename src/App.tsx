@@ -10,7 +10,7 @@ import { useSocket } from './hooks/useSocket';
 import { useProjectUpdates } from './hooks/useProjectUpdates';
 import { ReviewModal } from './components/quality-gate/ReviewModal';
 
-const API_BASE_URL = 'http://localhost:3000/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
 function App() {
   const [projects, setProjects] = useState<Project[]>([]);

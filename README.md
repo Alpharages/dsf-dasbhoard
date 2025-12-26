@@ -1,73 +1,101 @@
-# React + TypeScript + Vite
+# DSF Dashboard - Project Manager Interface
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Dark Software Factory (DSF) Dashboard is a React-based frontend for monitoring AI-powered software development workflows.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Real-time Project Monitoring**: WebSocket-powered live updates for ticket execution status
+- **Code Review Interface**: Review AI-generated code with quality metrics and confidence scores
+- **Quality Gate Visualization**: View linting, testing, and security scan results
+- **Approval Workflows**: Approve, reject, or request rework for AI-generated code
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **React 19** + **TypeScript**
+- **Vite** - Fast development and build tool
+- **Tailwind CSS** - Utility-first styling
+- **Socket.IO Client** - Real-time communication
+- **Axios** - HTTP requests
 
-## Expanding the ESLint configuration
+## Quick Start
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```bash
+# Install dependencies
+npm install
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+# Start development server
+npm run dev
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+# Build for production
+npm run build
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Preview production build
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Environment Configuration
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+The application uses environment variables for configuration. Create a `.env` file in the root directory based on `.env.example`:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cp .env.example .env
 ```
+
+### Available Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `VITE_API_BASE_URL` | Backend API base URL | `http://localhost:3000` |
+| `VITE_WS_URL` | WebSocket server URL | `http://localhost:3000` |
+
+**Example `.env` file:**
+```env
+VITE_API_BASE_URL=http://localhost:3000
+VITE_WS_URL=http://localhost:3000
+```
+
+> **Note**: After changing environment variables, you must restart the dev server for changes to take effect.
+
+## Project Structure
+
+```
+src/
+├── components/        # Reusable UI components
+│   ├── dashboard/     # Dashboard-specific components
+│   ├── layout/        # Layout components (Sidebar, Header)
+│   └── quality-gate/  # Code review & approval components
+├── hooks/             # Custom React hooks (WebSocket, data fetching)
+├── types/             # TypeScript type definitions
+├── utils/             # Utility functions
+└── App.tsx            # Main application component
+```
+
+## Development
+
+### Linting
+
+```bash
+npm run lint
+```
+
+### Building
+
+The production build outputs to the `dist/` directory:
+
+```bash
+npm run build
+```
+
+## Integration with Backend
+
+This dashboard integrates with the Dark Software Factory backend API:
+
+- **REST API**: `/api/v1/pm-dashboard/*` for project and summary data
+- **WebSocket**: `/dashboard` namespace for real-time ticket updates
+- **Approval API**: `/api/v1/executions/{id}/approve` for code approval actions
+
+Ensure the backend server is running on the configured `VITE_API_BASE_URL` before starting the dashboard.
+
+## License
+
+Proprietary - Dark Software Factory
