@@ -4,7 +4,8 @@ import {
     Briefcase,
     MessageSquare,
     Clock,
-    ExternalLink
+    ExternalLink,
+    Settings
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -14,6 +15,7 @@ const navItems = [
     { icon: MessageSquare, label: 'Conversations', path: '/conversations' },
     { icon: Clock, label: 'Activity', path: '/activity' },
     { icon: BarChart3, label: 'Cost Analysis', path: '/cost' },
+    { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
 export const Sidebar: React.FC = () => {

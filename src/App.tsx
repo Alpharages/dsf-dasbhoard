@@ -17,6 +17,16 @@ import { ConversationListWidget } from './components/conversations/ConversationL
 import { CommandPalette } from './components/ux/CommandPalette';
 import { HelpModal } from './components/ux/HelpModal';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { SettingsLayout } from './pages/settings/SettingsLayout';
+import {
+  CleanupPanel,
+  SelfHealingPanel,
+  DependencyPanel,
+  AutoMergePanel,
+  CostPanel,
+  AuditPanel,
+  HealthPanel
+} from './pages/settings/panels/AllPanels';
 import { Toaster, toast } from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
@@ -327,23 +337,41 @@ function Dashboard() {
   );
 }
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
+
 function App() {
   const navigate = useNavigate();
 
   return (
-    <Routes>
-      <Route element={<DashboardLayout />}>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/conversations" element={
-          <ConversationSearchInterface onConversationClick={(id) => navigate(`/conversations/${id}`)} />
-        } />
-        <Route path="/conversations/upload" element={
-          <ConversationUploadForm onSuccess={(id) => navigate(`/conversations/${id}`)} />
-        } />
-        <Route path="/conversations/:id" element={<ConversationDetailViewWrapper />} />
-        <Route path="*" element={<Dashboard />} />
-      </Route>
-    </Routes>
+    <QueryClientProvider client={queryClient}>
+      <Routes>
+        <Route element={<DashboardLayout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/conversations" element={
+            <ConversationSearchInterface onConversationClick={(id) => navigate(`/conversations/${id}`)} />
+          } />
+          <Route path="/conversations/upload" element={
+            <ConversationUploadForm onSuccess={(id) => navigate(`/conversations/${id}`)} />
+          } />
+          <Route path="/conversations/:id" element={<ConversationDetailViewWrapper />} />
+
+          <Route path="/settings" element={<SettingsLayout />}>
+            <Route path="cleanup" element={<CleanupPanel />} />
+            <Route path="self-healing" element={<SelfHealingPanel />} />
+            <Route path="dependency" element={<DependencyPanel />} />
+            <Route path="auto-merge" element={<AutoMergePanel />} />
+            <Route path="cost" element={<CostPanel />} />
+            <Route path="audit" element={<AuditPanel />} />
+            <Route path="health" element={<HealthPanel />} />
+            <Route index element={<CleanupPanel />} /> {/* Default to cleanup */}
+          </Route>
+
+          <Route path="*" element={<Dashboard />} />
+        </Route>
+      </Routes>
+    </QueryClientProvider>
   );
 }
 
