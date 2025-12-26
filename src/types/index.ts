@@ -32,3 +32,32 @@ export interface DashboardSummary {
     avg_completion_rate?: number;
     utilization_percent: number;
 }
+
+export type ExecutionStatus = 'QUEUED' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'TIMEOUT' | 'CANCELLED';
+
+export type AIProvider = 'CURSOR_HEADLESS' | 'CLAUDE_CODE';
+
+export interface Execution {
+    id: string;
+    ticketId: string;
+    status: ExecutionStatus;
+    provider: AIProvider;
+    startedAt?: string;
+    completedAt?: string;
+    failedAt?: string;
+    errorMessage?: string;
+    retryCount: number;
+    filesChanged?: string[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface ExecutionProgressPayload {
+    executionId: string;
+    ticketId: string;
+    status: ExecutionStatus;
+    timestamp: string;
+    aiProvider: AIProvider;
+    percentage?: number;
+    message?: string;
+}
