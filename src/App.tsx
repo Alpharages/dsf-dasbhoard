@@ -14,6 +14,10 @@ import { ConversationUploadForm } from './components/conversations/ConversationU
 import { ConversationDetailView } from './components/conversations/ConversationDetailView';
 import { ConversationSearchInterface } from './components/conversations/ConversationSearchInterface';
 import { ConversationListWidget } from './components/conversations/ConversationListWidget';
+import { CommandPalette } from './components/ux/CommandPalette';
+import { HelpModal } from './components/ux/HelpModal';
+import { useHotkeys } from 'react-hotkeys-hook';
+import { Toaster, toast } from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
@@ -43,6 +47,88 @@ function Dashboard() {
 
   const { socket, connected } = useSocket(token);
   useProjectUpdates(socket, setProjects);
+
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+
+  const handleShortcutAction = async (decision: 'APPROVE' | 'REJECT' | 'REWORK', label: string) => {
+    if (!reviewState.isOpen) return;
+
+    try {
+      const authHeader = { Authorization: `Bearer ${token}` };
+      await axios.post(`${API_BASE_URL}/executions/${reviewState.executionId}/approve`, {
+        decision,
+        reasoning: `Action triggered via keyboard shortcut (${label})`
+      }, { headers: authHeader });
+
+      toast.success(`${label} successful!`);
+      setReviewState(prev => ({ ...prev, isOpen: false }));
+      fetchData();
+    } catch (err: any) {
+      console.error(`Failed to ${label}:`, err);
+      toast.error(`Failed to ${label}`);
+    }
+  };
+
+  useHotkeys('mod+k, /', (e) => {
+    e.preventDefault();
+    setIsPaletteOpen((prev) => !prev);
+    recordShortcutUsage(e.key === '/' ? 'search' : 'cmdk');
+  }, { enableOnFormTags: true });
+
+  useHotkeys('shift+?', (e) => {
+    e.preventDefault();
+    setIsHelpOpen(true);
+    recordShortcutUsage('help');
+  });
+
+  useHotkeys('n', (e) => {
+    e.preventDefault();
+    if (isPaletteOpen || isHelpOpen || reviewState.isOpen) return;
+    toast.success('New Project creation opened (Shortcut: N)');
+    recordShortcutUsage('new_project');
+  });
+
+  useHotkeys('a', (e) => {
+    e.preventDefault();
+    if (reviewState.isOpen) {
+      handleShortcutAction('APPROVE', 'Approval');
+      recordShortcutUsage('approve');
+    }
+  });
+
+  useHotkeys('r', (e) => {
+    e.preventDefault();
+    if (reviewState.isOpen) {
+      handleShortcutAction('REJECT', 'Rejection');
+      recordShortcutUsage('reject');
+    }
+  });
+
+  useHotkeys('e', (e) => {
+    e.preventDefault();
+    if (reviewState.isOpen) {
+      handleShortcutAction('REWORK', 'Rework');
+      recordShortcutUsage('rework');
+    }
+  });
+
+  useHotkeys('esc', (e) => {
+    e.preventDefault();
+    if (isPaletteOpen) setIsPaletteOpen(false);
+    if (isHelpOpen) setIsHelpOpen(false);
+    if (reviewState.isOpen) setReviewState(prev => ({ ...prev, isOpen: false }));
+  });
+
+  const recordShortcutUsage = async (shortcut: string) => {
+    try {
+      await axios.post(`${API_BASE_URL}/telemetry/shortcut`, { shortcut }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (err) {
+      console.error('Failed to log shortcut usage:', err);
+    }
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -222,6 +308,20 @@ function Dashboard() {
         qaSummary={reviewState.qaSummary}
         diffs={reviewState.diffs}
         onActionComplete={fetchData}
+      />
+
+      <CommandPalette isOpen={isPaletteOpen} onClose={() => setIsPaletteOpen(false)} onOpenHelp={() => setIsHelpOpen(true)} />
+      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            background: '#0f172a',
+            color: '#cbd5e1',
+            border: '1px solid #1e293b',
+            borderRadius: '12px',
+          }
+        }}
       />
     </>
   );

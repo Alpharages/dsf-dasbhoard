@@ -96,6 +96,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onReview }) =
                             target="_blank"
                             rel="noreferrer"
                             className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg transition-all"
+                            title="Open GitHub Repository (Shortcut: G)"
+                            aria-keyshortcuts="G"
                         >
                             <Github className="w-4 h-4" />
                         </a>
@@ -103,19 +105,29 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onReview }) =
                             <button
                                 onClick={() => onReview?.(project)}
                                 className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 transition-all shadow-lg shadow-blue-500/20"
+                                title="Review Execution (Shortcut: R)"
+                                aria-keyshortcuts="R"
                             >
                                 <CheckCircle className="w-3.5 h-3.5" />
                                 Review
                             </button>
                         ) : (
-                            <button className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all">
+                            <button
+                                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all"
+                                title="View Details (Shortcut: D)"
+                                aria-keyshortcuts="D"
+                            >
                                 <ExternalLink className="w-3.5 h-3.5" />
                                 Details
                             </button>
                         )}
                     </div>
 
-                    <button className="text-xs font-bold text-blue-500 hover:text-blue-400 flex items-center gap-1 py-1 px-2 hover:bg-blue-500/5 rounded-lg transition-all">
+                    <button
+                        className="text-xs font-bold text-blue-500 hover:text-blue-400 flex items-center gap-1 py-1 px-2 hover:bg-blue-500/5 rounded-lg transition-all"
+                        title="Open Dashboard (Shortcut: Enter)"
+                        aria-keyshortcuts="Enter"
+                    >
                         Open Dashboard
                         <ChevronRight className="w-3.5 h-3.5" />
                     </button>
