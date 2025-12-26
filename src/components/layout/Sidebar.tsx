@@ -6,16 +6,19 @@ import {
     Clock,
     ExternalLink
 } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 
 const navItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', active: true },
-    { icon: Briefcase, label: 'Projects', active: false },
-    { icon: MessageSquare, label: 'Messages', active: false },
-    { icon: Clock, label: 'Activity', active: false },
-    { icon: BarChart3, label: 'Cost Analysis', active: false },
+    { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
+    { icon: Briefcase, label: 'Projects', path: '/projects' },
+    { icon: MessageSquare, label: 'Conversations', path: '/conversations' },
+    { icon: Clock, label: 'Activity', path: '/activity' },
+    { icon: BarChart3, label: 'Cost Analysis', path: '/cost' },
 ];
 
 export const Sidebar: React.FC = () => {
+    const location = useLocation();
+
     return (
         <aside className="w-64 bg-slate-950 border-r border-slate-800 flex flex-col fixed inset-y-0 z-40">
             <div className="h-16 flex items-center px-6 border-b border-slate-800">
@@ -28,19 +31,24 @@ export const Sidebar: React.FC = () => {
             </div>
 
             <nav className="flex-1 px-4 py-8 space-y-2">
-                {navItems.map((item) => (
-                    <a
-                        key={item.label}
-                        href="#"
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group ${item.active
-                            ? 'bg-blue-600/10 text-blue-400'
-                            : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-                            }`}
-                    >
-                        <item.icon className={`w-5 h-5 ${item.active ? 'text-blue-500' : 'group-hover:text-slate-300'}`} />
-                        {item.label}
-                    </a>
-                ))}
+                {navItems.map((item) => {
+                    const isActive = location.pathname === item.path ||
+                        (item.path !== '/' && location.pathname.startsWith(item.path));
+
+                    return (
+                        <Link
+                            key={item.label}
+                            to={item.path}
+                            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group ${isActive
+                                ? 'bg-blue-600/10 text-blue-400'
+                                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                                }`}
+                        >
+                            <item.icon className={`w-5 h-5 ${isActive ? 'text-blue-500' : 'group-hover:text-slate-300'}`} />
+                            {item.label}
+                        </Link>
+                    );
+                })}
             </nav>
 
             <div className="p-4 border-t border-slate-800">
