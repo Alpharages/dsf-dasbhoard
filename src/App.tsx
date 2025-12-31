@@ -34,6 +34,8 @@ import { Toaster, toast } from 'react-hot-toast';
 import { FinancialMetricsSection } from './components/financial/FinancialMetricsSection';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
+import { ArchitectureReviewQueuePage } from './pages/ArchitectureReviewQueuePage';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
 // Shared Layout component
@@ -378,6 +380,14 @@ function App() {
             element={
               <ProtectedRoute requiredRole="USER">
                 <WorkloadCapacityPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/architecture-review/queue"
+            element={
+              <ProtectedRoute requiredRole="TL">
+                <ArchitectureReviewQueuePage />
               </ProtectedRoute>
             }
           />

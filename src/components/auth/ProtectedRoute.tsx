@@ -5,9 +5,11 @@
 
 import { Navigate } from 'react-router-dom';
 
+type AllowedRole = 'USER' | 'MANAGER' | 'ADMIN' | 'TL';
+
 interface ProtectedRouteProps {
     children: React.ReactNode;
-    requiredRole?: 'MANAGER' | 'ADMIN' | 'USER';
+    requiredRole?: AllowedRole;
 }
 
 export function ProtectedRoute({ children, requiredRole = 'USER' }: ProtectedRouteProps) {

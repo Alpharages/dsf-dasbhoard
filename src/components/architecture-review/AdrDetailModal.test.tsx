@@ -1,0 +1,147 @@
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { AdrDetailModal } from './AdrDetailModal';
+import { vi, describe, it, expect } from 'vitest';
+import type { AdrQueueItem } from '../../types/architectureReview';
+
+// Mock React Markdown to avoid parsing issues in tests
+vi.mock('react-markdown', () => ({
+    default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+}));
+
+// Mock Lucide icons
+vi.mock('lucide-react', () => ({
+    X: () => <span data-testid="close-icon" />,
+    Calendar: () => <span data-testid="calendar-icon" />,
+    Ticket: () => <span data-testid="ticket-icon" />,
+    AlertTriangle: () => <span data-testid="alert-icon" />,
+    ShieldAlert: () => <span data-testid="shield-alert-icon" />,
+    CheckCircle: () => <span data-testid="check-icon" />,
+    Info: () => <span data-testid="info-icon" />,
+}));
+
+const mockAdr: AdrQueueItem = {
+    id: '1',
+    title: 'Use Postgres',
+    status: 'PROPOSED',
+    risk_level: 'LOW',
+    confidence: 0.95,
+    context: '# Context',
+    decision: '**Decision**',
+    consequences: '*Consequences*',
+    alternatives: '- Alternatives',
+    created_at: new Date().toISOString(),
+    estimated_review_time_minutes: 5,
+    ticket: { id: 't1', title: 'Ticket 1', clickup_task_id: 'C1' },
+    execution_id: 'e1'
+};
+
+describe('AdrDetailModal', () => {
+    it('renders nothing if adr is null', () => {
+        const { container } = render(
+            <AdrDetailModal
+                adr={null}
+                onClose={vi.fn()}
+                onSubmitReview={vi.fn()}
+            />
+        );
+        expect(container.firstChild).toBeNull();
+    });
+
+    it('renders adr details correctly', () => {
+        render(
+            <AdrDetailModal
+                adr={mockAdr}
+                onClose={vi.fn()}
+                onSubmitReview={vi.fn()}
+            />
+        );
+
+        expect(screen.getByText('Use Postgres')).toBeTruthy();
+        expect(screen.getByText('Context & Requirements')).toBeTruthy();
+        // Since we mocked markdown, we expect raw text or simple rendered text
+        expect(screen.getByText('# Context')).toBeTruthy();
+        expect(screen.getByText('**Decision**')).toBeTruthy();
+    });
+
+    it('calls onClose when close button clicked', () => {
+        const handleClose = vi.fn();
+        render(
+            <AdrDetailModal
+                adr={mockAdr}
+                onClose={handleClose}
+                onSubmitReview={vi.fn()}
+            />
+        );
+
+        fireEvent.click(screen.getByTestId('close-icon').closest('button')!);
+        expect(handleClose).toHaveBeenCalled();
+    });
+
+    it('handles approval submission', async () => {
+        const handleSubmit = vi.fn().mockResolvedValue(undefined);
+        const handleClose = vi.fn();
+
+        render(
+            <AdrDetailModal
+                adr={mockAdr}
+                onClose={handleClose}
+                onSubmitReview={handleSubmit}
+            />
+        );
+
+        // Click Approve
+        fireEvent.click(screen.getByText('Approve Decision'));
+
+        await waitFor(() => {
+            expect(handleSubmit).toHaveBeenCalledWith('APPROVE', undefined);
+            expect(handleClose).toHaveBeenCalled();
+        });
+    });
+
+    it('opens rejection modal and submits with reason', async () => {
+        const handleSubmit = vi.fn().mockResolvedValue(undefined);
+        const handleClose = vi.fn();
+
+        render(
+            <AdrDetailModal
+                adr={mockAdr}
+                onClose={handleClose}
+                onSubmitReview={handleSubmit}
+            />
+        );
+
+        // Click Reject
+        fireEvent.click(screen.getByText('Reject Decision'));
+
+        // Modal should open
+        expect(screen.getByText('Reject Architecture Decision')).toBeTruthy();
+
+        // Enter reason
+        const input = screen.getByPlaceholderText(/Reason for rejection/);
+        fireEvent.change(input, { target: { value: 'Too risky and not justified.' } });
+
+        // Confirm
+        // Note: The ReviewReasonModal creates a portal or new layer, 
+        // but since we are rendering in JSDOM it should be accessible.
+        // We need to target the *modal's* reject button, usually labeled 'Reject Decision' or similar.
+        // Based on AdrDetailModal source, confirmLabel is 'Reject Decision'.
+        // But the main view ALSO has a 'Reject Decision' button. 
+        // The modal is rendered *after* the action. Wait, ReviewReasonModal component was not mocked.
+        // It should render in the DOM.
+
+        // Let's find the confirm button specifically in the modal.
+        // The mock config says confirmLabel: 'Reject Decision'.
+        // There might be two buttons with "Reject Decision" text now (one in footer, one in modal).
+        // The footer one is "Reject Decision" (from ReviewActionButtons probably).
+
+        // Let's use getByRole for specificity if possible, or getAllByText.
+        const confirmButtons = screen.getAllByText('Reject Decision');
+        // The last one should be the modal one (rendered later).
+        fireEvent.click(confirmButtons[confirmButtons.length - 1]);
+
+        await waitFor(() => {
+            expect(handleSubmit).toHaveBeenCalledWith('REJECT', 'Too risky and not justified.');
+            expect(handleClose).toHaveBeenCalled();
+        });
+    });
+});
