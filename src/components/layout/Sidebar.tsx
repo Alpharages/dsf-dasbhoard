@@ -6,7 +6,8 @@ import {
     Clock,
     ExternalLink,
     Settings,
-    CheckCircle
+    CheckCircle,
+    DollarSign
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -17,6 +18,7 @@ const navItems = [
     { icon: MessageSquare, label: 'Conversations', path: '/conversations' },
     { icon: Clock, label: 'Activity', path: '/activity' },
     { icon: BarChart3, label: 'Cost Analysis', path: '/cost' },
+    { icon: DollarSign, label: 'Financial Metrics', path: '/financial-metrics' },
     { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
@@ -36,6 +38,14 @@ export const Sidebar: React.FC = () => {
 
             <nav className="flex-1 px-4 py-8 space-y-2">
                 {navItems.map((item) => {
+                    // RBAC: Only show Financial Metrics to MANAGER or ADMIN
+                    if (item.path === '/financial-metrics') {
+                        const userRole = localStorage.getItem('userRole') || 'USER';
+                        if (userRole !== 'MANAGER' && userRole !== 'ADMIN') {
+                            return null;
+                        }
+                    }
+
                     const isActive = location.pathname === item.path ||
                         (item.path !== '/' && location.pathname.startsWith(item.path));
 

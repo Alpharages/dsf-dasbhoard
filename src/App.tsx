@@ -28,8 +28,10 @@ import {
   HealthPanel
 } from './pages/settings/panels/AllPanels';
 import { DecisionDashboard } from './pages/DecisionDashboard';
+import { FinancialMetricsPage } from './pages/FinancialMetricsPage';
 import { Toaster, toast } from 'react-hot-toast';
 import { FinancialMetricsSection } from './components/financial/FinancialMetricsSection';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
@@ -362,6 +364,14 @@ function App() {
           } />
           <Route path="/conversations/:id" element={<ConversationDetailViewWrapper />} />
           <Route path="/decisions" element={<DecisionDashboard />} />
+          <Route
+            path="/financial-metrics"
+            element={
+              <ProtectedRoute requiredRole="MANAGER">
+                <FinancialMetricsPage />
+              </ProtectedRoute>
+            }
+          />
 
           <Route path="/settings" element={<SettingsLayout />}>
             <Route path="cleanup" element={<CleanupPanel />} />

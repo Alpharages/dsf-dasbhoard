@@ -100,3 +100,25 @@ export interface ModelEfficiencyDto {
         potentialSavings: string;
     };
 }
+
+export interface ShareLinkResponseDto {
+    shareUrl: string;
+    expiresAt: string;
+}
+
+export interface ScheduleReportResponseDto {
+    success: boolean;
+    message: string;
+}
+
+export interface RoiDataPointDto {
+    date: string;
+    roi: number;
+    cost: string;
+    value: string;
+}
+
+export interface HistoricalRoiResponseDto {
+    projectId: string;
+    timeSeries: RoiDataPointDto[];
+}

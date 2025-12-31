@@ -9,6 +9,9 @@ import type {
     RoiMetricsDto,
     BudgetTrendsDto,
     ModelEfficiencyDto,
+    ShareLinkResponseDto,
+    ScheduleReportResponseDto,
+    HistoricalRoiResponseDto,
 } from '../types/financial';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
@@ -108,6 +111,48 @@ export const financialApi = {
     }): Promise<ModelEfficiencyDto> => {
         const { data } = await axios.get(`${API_BASE_URL}/financial-metrics/model-efficiency`, {
             params,
+            headers: getAuthHeaders(),
+        });
+        return data;
+    },
+
+    /**
+     * AC#2 Extension: Get historical ROI trend
+     */
+    getHistoricalRoi: async (params: {
+        projectId: string;
+        startDate?: string;
+        endDate?: string;
+    }): Promise<HistoricalRoiResponseDto> => {
+        const { data } = await axios.get(`${API_BASE_URL}/financial-metrics/historical-roi`, {
+            params,
+            headers: getAuthHeaders(),
+        });
+        return data;
+    },
+
+    /**
+     * AC#5: Generate shareable read-only dashboard link
+     */
+    generateShareLink: async (payload: {
+        projectId: string;
+        expireDays?: number;
+    }): Promise<ShareLinkResponseDto> => {
+        const { data } = await axios.post(`${API_BASE_URL}/financial-metrics/share-link`, payload, {
+            headers: getAuthHeaders(),
+        });
+        return data;
+    },
+
+    /**
+     * AC#6: Schedule automated financial report
+     */
+    scheduleReport: async (payload: {
+        projectId: string;
+        email: string;
+        frequency: 'weekly' | 'monthly';
+    }): Promise<ScheduleReportResponseDto> => {
+        const { data } = await axios.post(`${API_BASE_URL}/financial-metrics/schedule-report`, payload, {
             headers: getAuthHeaders(),
         });
         return data;
