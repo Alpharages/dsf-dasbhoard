@@ -5,13 +5,15 @@ import {
     MessageSquare,
     Clock,
     ExternalLink,
-    Settings
+    Settings,
+    CheckCircle
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
     { icon: Briefcase, label: 'Projects', path: '/projects' },
+    { icon: CheckCircle, label: 'Decisions', path: '/decisions' },
     { icon: MessageSquare, label: 'Conversations', path: '/conversations' },
     { icon: Clock, label: 'Activity', path: '/activity' },
     { icon: BarChart3, label: 'Cost Analysis', path: '/cost' },

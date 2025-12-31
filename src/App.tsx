@@ -27,6 +27,7 @@ import {
   AuditPanel,
   HealthPanel
 } from './pages/settings/panels/AllPanels';
+import { DecisionDashboard } from './pages/DecisionDashboard';
 import { Toaster, toast } from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
@@ -356,6 +357,7 @@ function App() {
             <ConversationUploadForm onSuccess={(id) => navigate(`/conversations/${id}`)} />
           } />
           <Route path="/conversations/:id" element={<ConversationDetailViewWrapper />} />
+          <Route path="/decisions" element={<DecisionDashboard />} />
 
           <Route path="/settings" element={<SettingsLayout />}>
             <Route path="cleanup" element={<CleanupPanel />} />
