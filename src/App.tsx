@@ -29,6 +29,7 @@ import {
 } from './pages/settings/panels/AllPanels';
 import { DecisionDashboard } from './pages/DecisionDashboard';
 import { Toaster, toast } from 'react-hot-toast';
+import { FinancialMetricsSection } from './components/financial/FinancialMetricsSection';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
@@ -217,7 +218,7 @@ function Dashboard() {
             <h1 className="text-4xl font-extrabold text-white tracking-tight leading-none">
               PM Dashboard
             </h1>
-            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${connected ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
+            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${connected ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-rose-500/10 text-rose-500 border-rose-500/20 '
               }`}>
               <div className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`}></div>
               {connected ? 'Real-time Live' : 'Offline'}
@@ -259,6 +260,9 @@ function Dashboard() {
           onViewAll={() => navigate('/conversations')}
         />
       </div>
+
+      {/* Financial Metrics Section (Manager/Admin only) - Story 6-R-3 */}
+      <FinancialMetricsSection projectId={projects[0]?.id} />
 
       <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 mb-8 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2">

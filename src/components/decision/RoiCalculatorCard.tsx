@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Ticket } from '../../api/decisionApi';
-import { TrendingUp, DollarSign, Target } from 'lucide-react';
+import { TrendingUp, Target } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, Cell } from 'recharts';
 
 interface Props {
