@@ -7,11 +7,19 @@ export interface AdrQueueFilters {
     sort_order?: 'asc' | 'desc';
 }
 
+export interface RiskFactors {
+    scope: 'single-file' | 'module' | 'cross-module';
+    reversibility: 'easy' | 'migration-required' | 'irreversible';
+    confidence: number;
+    domain_complexity: 'low' | 'medium' | 'high';
+}
+
 export interface AdrQueueItem {
     id: string;
     title: string;
     status: 'PROPOSED' | 'APPROVED' | 'REJECTED' | 'MODIFIED' | 'DEFERRED';
     risk_level: 'HIGH' | 'MEDIUM' | 'LOW';
+    risk_factors: RiskFactors;
     confidence: number;
     context: string;
     decision: string;

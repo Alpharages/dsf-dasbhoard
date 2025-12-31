@@ -4,6 +4,7 @@ import { X, Calendar, Ticket } from 'lucide-react';
 import { RiskBadge } from './RiskBadge';
 import { ReviewActionButtons } from './ReviewActionButtons';
 import { ReviewReasonModal } from './ReviewReasonModal';
+import { RiskAnalysisCard } from './RiskAnalysisCard';
 import { format } from 'date-fns';
 import ReactMarkdown from 'react-markdown';
 
@@ -74,7 +75,7 @@ export const AdrDetailModal: React.FC<AdrDetailModalProps> = ({ adr, onClose, on
                     <div className="flex items-start justify-between p-6 border-b border-slate-800 bg-slate-900/50 rounded-t-2xl">
                         <div>
                             <div className="flex items-center gap-3 mb-2">
-                                <RiskBadge level={adr.risk_level} />
+                                <RiskBadge level={adr.risk_level} riskFactors={adr.risk_factors} />
                                 <span className="text-slate-400 text-sm font-medium">
                                     Confidence: {Math.round(adr.confidence * 100)}%
                                 </span>
@@ -104,6 +105,8 @@ export const AdrDetailModal: React.FC<AdrDetailModalProps> = ({ adr, onClose, on
 
                     {/* Content - Scrollable */}
                     <div className="flex-1 overflow-y-auto p-8 space-y-8">
+                        <RiskAnalysisCard riskFactors={adr.risk_factors} />
+
                         <section>
                             <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
                                 <span className="w-1 h-6 bg-blue-500 rounded-full"></span>

@@ -11,6 +11,7 @@ vi.mock('lucide-react', () => ({
     Shield: () => <span data-testid="shield-icon" />,
     CheckCircle: () => <span data-testid="check-icon" />,
     ShieldAlert: () => <span data-testid="shield-alert-icon" />,
+    ShieldCheck: () => <span data-testid="shield-check-icon" />,
     Info: () => <span data-testid="info-icon" />,
     Filter: () => <span data-testid="filter-icon" />,
     X: () => <span data-testid="x-icon" />,
@@ -22,6 +23,12 @@ const mockItems: AdrQueueItem[] = [
         title: 'Use Postgres',
         status: 'PROPOSED',
         risk_level: 'LOW',
+        risk_factors: {
+            scope: 'single-file',
+            reversibility: 'easy',
+            confidence: 0.95,
+            domain_complexity: 'low'
+        },
         confidence: 0.95,
         context: 'Context',
         decision: 'Decision',
@@ -37,6 +44,12 @@ const mockItems: AdrQueueItem[] = [
         title: 'Use Mongo',
         status: 'PROPOSED',
         risk_level: 'HIGH',
+        risk_factors: {
+            scope: 'module',
+            reversibility: 'irreversible',
+            confidence: 0.4,
+            domain_complexity: 'high'
+        },
         confidence: 0.4,
         context: 'Context',
         decision: 'Decision',

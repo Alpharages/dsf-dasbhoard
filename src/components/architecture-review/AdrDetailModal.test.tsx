@@ -17,6 +17,17 @@ vi.mock('lucide-react', () => ({
     ShieldAlert: () => <span data-testid="shield-alert-icon" />,
     CheckCircle: () => <span data-testid="check-icon" />,
     Info: () => <span data-testid="info-icon" />,
+    Shield: () => <span data-testid="shield-icon" />,
+    ShieldCheck: () => <span data-testid="shield-check-icon" />,
+    Box: () => <span data-testid="box-icon" />,
+    Boxes: () => <span data-testid="boxes-icon" />,
+    Undo2: () => <span data-testid="undo2-icon" />,
+    Brain: () => <span data-testid="brain-icon" />,
+    Activity: () => <span data-testid="activity-icon" />,
+    Clock: () => <span data-testid="clock-icon" />,
+    FileEdit: () => <span data-testid="file-edit-icon" />,
+    XCircle: () => <span data-testid="x-circle-icon" />,
+    Loader2: () => <span data-testid="loader-icon" />,
 }));
 
 const mockAdr: AdrQueueItem = {
@@ -24,6 +35,12 @@ const mockAdr: AdrQueueItem = {
     title: 'Use Postgres',
     status: 'PROPOSED',
     risk_level: 'LOW',
+    risk_factors: {
+        scope: 'single-file',
+        reversibility: 'easy',
+        confidence: 0.95,
+        domain_complexity: 'low'
+    },
     confidence: 0.95,
     context: '# Context',
     decision: '**Decision**',
@@ -61,6 +78,22 @@ describe('AdrDetailModal', () => {
         // Since we mocked markdown, we expect raw text or simple rendered text
         expect(screen.getByText('# Context')).toBeTruthy();
         expect(screen.getByText('**Decision**')).toBeTruthy();
+    });
+
+    it('renders risk analysis card', () => {
+        render(
+            <AdrDetailModal
+                adr={mockAdr}
+                onClose={vi.fn()}
+                onSubmitReview={vi.fn()}
+            />
+        );
+
+        expect(screen.getByText('Risk Analysis')).toBeTruthy();
+        expect(screen.getByText('Scope')).toBeTruthy();
+        expect(screen.getByText('single file')).toBeTruthy(); // formatted scope
+        expect(screen.getByText('Reversibility')).toBeTruthy();
+        expect(screen.getByText('easy')).toBeTruthy();
     });
 
     it('calls onClose when close button clicked', () => {
@@ -111,7 +144,7 @@ describe('AdrDetailModal', () => {
         );
 
         // Click Reject
-        fireEvent.click(screen.getByText('Reject Decision'));
+        fireEvent.click(screen.getByText('Reject'));
 
         // Modal should open
         expect(screen.getByText('Reject Architecture Decision')).toBeTruthy();

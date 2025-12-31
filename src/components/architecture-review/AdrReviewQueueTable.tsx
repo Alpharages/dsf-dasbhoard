@@ -97,7 +97,7 @@ export const AdrReviewQueueTable: React.FC<AdrReviewQueueTableProps> = ({
                                     </div>
                                 </td>
                                 <td className="py-4 px-6">
-                                    <RiskBadge level={item.risk_level} />
+                                    <RiskBadge level={item.risk_level} riskFactors={item.risk_factors} />
                                 </td>
                                 <td className="py-4 px-6">
                                     <div className="flex items-center gap-2">
