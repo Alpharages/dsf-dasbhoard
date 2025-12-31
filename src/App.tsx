@@ -29,6 +29,7 @@ import {
 } from './pages/settings/panels/AllPanels';
 import { DecisionDashboard } from './pages/DecisionDashboard';
 import { FinancialMetricsPage } from './pages/FinancialMetricsPage';
+import { WorkloadCapacityPage } from './pages/WorkloadCapacityPage';
 import { Toaster, toast } from 'react-hot-toast';
 import { FinancialMetricsSection } from './components/financial/FinancialMetricsSection';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
@@ -369,6 +370,14 @@ function App() {
             element={
               <ProtectedRoute requiredRole="MANAGER">
                 <FinancialMetricsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/capacity-monitor"
+            element={
+              <ProtectedRoute requiredRole="USER">
+                <WorkloadCapacityPage />
               </ProtectedRoute>
             }
           />

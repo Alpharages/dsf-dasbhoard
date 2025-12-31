@@ -7,7 +7,8 @@ import {
     ExternalLink,
     Settings,
     CheckCircle,
-    DollarSign
+    DollarSign,
+    Gauge
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -18,6 +19,7 @@ const navItems = [
     { icon: MessageSquare, label: 'Conversations', path: '/conversations' },
     { icon: Clock, label: 'Activity', path: '/activity' },
     { icon: BarChart3, label: 'Cost Analysis', path: '/cost' },
+    { icon: Gauge, label: 'Capacity Monitor', path: '/capacity-monitor' },
     { icon: DollarSign, label: 'Financial Metrics', path: '/financial-metrics' },
     { icon: Settings, label: 'Settings', path: '/settings' },
 ];
