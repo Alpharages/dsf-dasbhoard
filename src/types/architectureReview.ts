@@ -53,3 +53,61 @@ export interface EscalationMetrics {
     avgResolutionTimeMinutes: number;
     delegationRate: number;
 }
+
+export interface AdrMetricsFilters {
+    projectId?: string;
+    startDate?: string; // ISO Date
+    endDate?: string;   // ISO Date
+    riskLevel?: 'HIGH' | 'MEDIUM' | 'LOW';
+}
+
+export interface AdrMetricsSummary {
+    reviewVolume: { current: number; previous: number; trend: number };
+    averageReviewTimeMinutes: { current: number; previous: number; trend: number };
+    queueDepth: { current: number; previous: number; trend: number };
+    estimatedThroughputMinutes: number;
+}
+
+export interface AdrApprovalRateTrend {
+    date: string;
+    approvalRate: number; // 0-100
+    rejectionRate: number; // 0-100
+}
+
+export interface AdrRiskDistribution {
+    level: 'HIGH' | 'MEDIUM' | 'LOW';
+    count: number;
+    percentage: number;
+    [key: string]: any; // For Recharts compatibility
+}
+
+export interface AdrRejectionReason {
+    reason: string;
+    count: number;
+}
+
+export interface AdrWorkloadByProject {
+    projectId: string;
+    projectName: string;
+    reviewCount: number;
+}
+
+export interface AiInsight {
+    id: string;
+    type: 'PATTERN' | 'IMPROVEMENT' | 'REGRESSION';
+    message: string;
+    metric: string;
+    change: number; // percentage
+    trend: 'UP' | 'DOWN';
+}
+
+export interface AdrDashboardMetrics {
+    summary: AdrMetricsSummary;
+    trends: {
+        approvalRate: AdrApprovalRateTrend[];
+        riskDistribution: AdrRiskDistribution[];
+        rejectionReasons: AdrRejectionReason[];
+        workloadByProject: AdrWorkloadByProject[];
+    };
+    insights: AiInsight[];
+}

@@ -24,6 +24,7 @@ const navItems = [
     { icon: BarChart3, label: 'Cost Analysis', path: '/cost' },
     { icon: Gauge, label: 'Capacity Monitor', path: '/capacity-monitor' },
     { icon: Building, label: 'Architecture Review', path: '/architecture-review/queue' },
+    { icon: BarChart3, label: 'Metrics & Insights', path: '/architecture-review/metrics' },
     { icon: SettingsIcon, label: 'Architecture Constraints', path: '/architecture-review/constraints' },
     { icon: Brain, label: 'AI Capabilities', path: '/architecture/capabilities' },
     { icon: DollarSign, label: 'Financial Metrics', path: '/financial-metrics' },
@@ -64,6 +65,14 @@ export const Sidebar: React.FC = () => {
 
                     // RBAC: Only show Architecture Constraints to TL or ADMIN
                     if (item.path === '/architecture-review/constraints') {
+                        const userRole = localStorage.getItem('userRole') || 'USER';
+                        if (userRole !== 'TL' && userRole !== 'ADMIN') {
+                            return null;
+                        }
+                    }
+
+                    // RBAC: Only show Metrics & Insights to TL or ADMIN
+                    if (item.path === '/architecture-review/metrics') {
                         const userRole = localStorage.getItem('userRole') || 'USER';
                         if (userRole !== 'TL' && userRole !== 'ADMIN') {
                             return null;

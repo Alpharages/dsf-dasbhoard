@@ -103,5 +103,27 @@ export const architectureReviewApi = {
             headers: { Authorization: `Bearer ${token}` }
         });
         return response.data;
+    },
+
+    getMetrics: async (
+        filters: import('../types/architectureReview').AdrMetricsFilters,
+        token: string
+    ): Promise<import('../types/architectureReview').AdrDashboardMetrics> => {
+        const response = await axios.get(`${API_BASE_URL}/architecture-review/metrics`, {
+            params: filters,
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    getTrends: async (
+        filters: import('../types/architectureReview').AdrMetricsFilters,
+        token: string
+    ): Promise<import('../types/architectureReview').AdrDashboardMetrics['trends']> => {
+        const response = await axios.get(`${API_BASE_URL}/architecture-review/trends`, {
+            params: filters,
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
     }
 };

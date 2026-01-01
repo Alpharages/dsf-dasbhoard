@@ -37,6 +37,7 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { ArchitectureReviewQueuePage } from './pages/ArchitectureReviewQueuePage';
 import { ConstraintsPage } from './pages/architecture-review/constraints/ConstraintsPage';
 import { EscalationAnalyticsPage } from './components/architecture-review/EscalationAnalyticsPage';
+import ArchitectureMetricsPage from './pages/architecture-review/ArchitectureMetricsPage';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
@@ -409,6 +410,14 @@ function App() {
               element={
                 <ProtectedRoute requiredRole="TL">
                   <EscalationAnalyticsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/architecture-review/metrics"
+              element={
+                <ProtectedRoute requiredRole="TL">
+                  <ArchitectureMetricsPage />
                 </ProtectedRoute>
               }
             />
