@@ -10,24 +10,37 @@ vi.mock('react-markdown', () => ({
 
 // Mock Lucide icons
 vi.mock('lucide-react', () => ({
-    X: () => <span data-testid="close-icon" />,
+    X: () => <span data-testid="x-icon" />,
     Calendar: () => <span data-testid="calendar-icon" />,
     Ticket: () => <span data-testid="ticket-icon" />,
-    AlertTriangle: () => <span data-testid="alert-icon" />,
-    ShieldAlert: () => <span data-testid="shield-alert-icon" />,
+    Clock: () => <span data-testid="clock-icon" />,
     CheckCircle: () => <span data-testid="check-icon" />,
-    Info: () => <span data-testid="info-icon" />,
+    XCircle: () => <span data-testid="x-circle-icon" />,
+    FileEdit: () => <span data-testid="file-edit-icon" />,
+    Loader2: () => <span data-testid="loader-icon" />,
     Shield: () => <span data-testid="shield-icon" />,
+    ShieldAlert: () => <span data-testid="shield-alert-icon" />,
     ShieldCheck: () => <span data-testid="shield-check-icon" />,
-    Box: () => <span data-testid="box-icon" />,
-    Boxes: () => <span data-testid="boxes-icon" />,
+    HelpCircle: () => <span data-testid="help-circle-icon" />,
+    Zap: () => <span data-testid="zap-icon" />,
+    AlertOctagon: () => <span data-testid="alert-octagon-icon" />,
+    FileWarning: () => <span data-testid="file-warning-icon" />,
+    UserPlus: () => <span data-testid="user-plus-icon" />,
+    Globe: () => <span data-testid="globe-icon" />,
+    Settings: () => <span data-testid="settings-icon" />,
+    Send: () => <span data-testid="send-icon" />,
+    Users: () => <span data-testid="users-icon" />,
+    Search: () => <span data-testid="search-icon" />,
+    UserCheck: () => <span data-testid="user-check-icon" />,
+    Scale: () => <span data-testid="scale-icon" />,
+    FileQuestion: () => <span data-testid="file-question-icon" />,
+    AlertTriangle: () => <span data-testid="alert-triangle-icon" />,
     Undo2: () => <span data-testid="undo2-icon" />,
     Brain: () => <span data-testid="brain-icon" />,
     Activity: () => <span data-testid="activity-icon" />,
-    Clock: () => <span data-testid="clock-icon" />,
-    FileEdit: () => <span data-testid="file-edit-icon" />,
-    XCircle: () => <span data-testid="x-circle-icon" />,
-    Loader2: () => <span data-testid="loader-icon" />,
+    Info: () => <span data-testid="info-icon" />,
+    Box: () => <span data-testid="box-icon" />,
+    Boxes: () => <span data-testid="boxes-icon" />,
 }));
 
 const mockAdr: AdrQueueItem = {
@@ -106,7 +119,7 @@ describe('AdrDetailModal', () => {
             />
         );
 
-        fireEvent.click(screen.getByTestId('close-icon').closest('button')!);
+        fireEvent.click(screen.getByTestId('x-icon').closest('button')!);
         expect(handleClose).toHaveBeenCalled();
     });
 

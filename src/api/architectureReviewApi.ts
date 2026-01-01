@@ -68,5 +68,40 @@ export const architectureReviewApi = {
             `${API_BASE_URL}/architecture-constraints/${id}`,
             { headers: { Authorization: `Bearer ${token}` } }
         );
+    },
+
+    // Escalation & Guidance
+    provideGuidance: async (
+        adrId: string,
+        guidance: string,
+        applyGlobally: boolean,
+        updateThresholds: boolean,
+        token: string
+    ): Promise<void> => {
+        await axios.post(
+            `${API_BASE_URL}/architecture-review/${adrId}/guidance`,
+            { guidance, applyGlobally, updateThresholds },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+    },
+
+    delegateReview: async (
+        adrId: string,
+        architectId: string,
+        notes: string | undefined,
+        token: string
+    ): Promise<void> => {
+        await axios.post(
+            `${API_BASE_URL}/architecture-review/${adrId}/delegate`,
+            { architectId, notes },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+    },
+
+    getEscalationMetrics: async (token: string): Promise<import('../types/architectureReview').EscalationMetrics> => {
+        const response = await axios.get(`${API_BASE_URL}/architecture-review/escalations/metrics`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
     }
 };

@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import type { AdrQueueItem } from '../../types/architectureReview';
-import { X, Calendar, Ticket } from 'lucide-react';
+import { X, Calendar, Ticket, UserPlus } from 'lucide-react';
 import { RiskBadge } from './RiskBadge';
 import { ReviewActionButtons } from './ReviewActionButtons';
 import { ReviewReasonModal } from './ReviewReasonModal';
 import { RiskAnalysisCard } from './RiskAnalysisCard';
+import { EscalationContextCard } from './EscalationContextCard';
+import { TLGuidanceForm } from './TLGuidanceForm';
+import { DelegateToArchitectModal } from './DelegateToArchitectModal';
 import { format } from 'date-fns';
 import ReactMarkdown from 'react-markdown';
+import { TooltipProvider } from '../ui/tooltip';
 
 interface AdrDetailModalProps {
     adr: AdrQueueItem | null;
@@ -16,9 +20,12 @@ interface AdrDetailModalProps {
 
 export const AdrDetailModal: React.FC<AdrDetailModalProps> = ({ adr, onClose, onSubmitReview }) => {
     const [activeAction, setActiveAction] = useState<'REJECT' | 'MODIFY' | 'DEFER' | null>(null);
+    const [isDelegateOpen, setIsDelegateOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     if (!adr) return null;
+
+    const isEscalated = !!adr.escalation_reason;
 
     const handleAction = async (action: 'APPROVE' | 'REJECT' | 'MODIFY' | 'DEFER', notes?: string) => {
         try {
@@ -30,6 +37,34 @@ export const AdrDetailModal: React.FC<AdrDetailModalProps> = ({ adr, onClose, on
         } finally {
             setIsSubmitting(false);
             setActiveAction(null);
+        }
+    };
+
+    const handleGuidanceSubmit = async (guidance: string, applyGlobally: boolean, updateThresholds: boolean) => {
+        try {
+            setIsSubmitting(true);
+            console.log('Guidance submitted:', { guidance, applyGlobally, updateThresholds });
+            // Temporary: Close after 1s
+            await new Promise(r => setTimeout(r, 1000));
+            onClose();
+        } catch (error) {
+            console.error('Guidance submission failed:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleDelegate = async (architectId: string, notes?: string) => {
+        try {
+            setIsSubmitting(true);
+            console.log('Delegating:', { architectId, notes });
+            await new Promise(r => setTimeout(r, 1000));
+            onClose();
+        } catch (error) {
+            console.error('Delegation failed:', error);
+        } finally {
+            setIsSubmitting(false);
+            setIsDelegateOpen(false);
         }
     };
 
@@ -67,7 +102,7 @@ export const AdrDetailModal: React.FC<AdrDetailModalProps> = ({ adr, onClose, on
     const modalConfig = getReasonModalConfig();
 
     return (
-        <>
+        <TooltipProvider>
             <div className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] shadow-2xl flex flex-col scale-100 animate-in zoom-in-95 duration-200">
 
@@ -76,7 +111,7 @@ export const AdrDetailModal: React.FC<AdrDetailModalProps> = ({ adr, onClose, on
                         <div>
                             <div className="flex items-center gap-3 mb-2">
                                 <RiskBadge level={adr.risk_level} riskFactors={adr.risk_factors} />
-                                <span className="text-slate-400 text-sm font-medium">
+                                <span className={`text-sm font-medium ${isEscalated ? 'text-red-400 font-bold' : 'text-slate-400'}`}>
                                     Confidence: {Math.round(adr.confidence * 100)}%
                                 </span>
                                 <span className="bg-yellow-500/10 text-yellow-500 text-xs px-2 py-0.5 rounded border border-yellow-500/20 font-bold uppercase">
@@ -95,16 +130,32 @@ export const AdrDetailModal: React.FC<AdrDetailModalProps> = ({ adr, onClose, on
                                 </div>
                             </div>
                         </div>
-                        <button
-                            onClick={onClose}
-                            className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg transition-colors"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setIsDelegateOpen(true)}
+                                className="flex items-center gap-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-colors text-sm font-medium"
+                            >
+                                <UserPlus className="w-4 h-4" />
+                                Delegate
+                            </button>
+                            <button
+                                onClick={onClose}
+                                className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
                     </div>
 
                     {/* Content - Scrollable */}
                     <div className="flex-1 overflow-y-auto p-8 space-y-8">
+                        {isEscalated && adr.escalation_reason && (
+                            <EscalationContextCard
+                                reasonCode={adr.escalation_reason}
+                                context={adr.escalation_context}
+                            />
+                        )}
+
                         <RiskAnalysisCard riskFactors={adr.risk_factors} />
 
                         <section>
@@ -139,6 +190,14 @@ export const AdrDetailModal: React.FC<AdrDetailModalProps> = ({ adr, onClose, on
                                 <ReactMarkdown>{adr.alternatives}</ReactMarkdown>
                             </div>
                         </section>
+
+                        {/* Guidance Form for Escalated Items */}
+                        {isEscalated && (
+                            <TLGuidanceForm
+                                onSubmit={handleGuidanceSubmit}
+                                isSubmitting={isSubmitting}
+                            />
+                        )}
                     </div>
 
                     {/* Footer Actions */}
@@ -166,6 +225,12 @@ export const AdrDetailModal: React.FC<AdrDetailModalProps> = ({ adr, onClose, on
                     placeholder={modalConfig.placeholder}
                 />
             )}
-        </>
+
+            <DelegateToArchitectModal
+                isOpen={isDelegateOpen}
+                onClose={() => setIsDelegateOpen(false)}
+                onDelegate={handleDelegate}
+            />
+        </TooltipProvider>
     );
 };

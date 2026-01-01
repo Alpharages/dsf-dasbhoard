@@ -33,9 +33,23 @@ export interface AdrQueueItem {
         clickup_task_id: string;
     };
     execution_id: string;
+    escalation_reason?: 'LOW_CONFIDENCE' | 'MISSING_CONTEXT' | 'CONFLICTING_REQUIREMENTS' | 'NO_BEST_PRACTICE' | 'SECURITY_CONCERN' | 'PERFORMANCE_TRADEOFF' | 'MULTIPLE_VALID_APPROACHES' | 'UNKNOWN';
+    escalation_context?: {
+        questions?: string[];
+        trade_offs?: string[];
+        uncertain_constraints?: string[];
+    };
 }
 
 export interface AdrQueueResponse {
     items: AdrQueueItem[];
     total: number;
+}
+
+export interface EscalationMetrics {
+    totalEscalations: number;
+    escalationRate: number;
+    topReasons: { reason: string; count: number }[];
+    avgResolutionTimeMinutes: number;
+    delegationRate: number;
 }

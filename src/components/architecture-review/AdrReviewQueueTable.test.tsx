@@ -15,6 +15,10 @@ vi.mock('lucide-react', () => ({
     Info: () => <span data-testid="info-icon" />,
     Filter: () => <span data-testid="filter-icon" />,
     X: () => <span data-testid="x-icon" />,
+    HelpCircle: () => <span data-testid="help-circle-icon" />,
+    Zap: () => <span data-testid="zap-icon" />,
+    AlertOctagon: () => <span data-testid="alert-octagon-icon" />,
+    FileWarning: () => <span data-testid="file-warning-icon" />,
 }));
 
 const mockItems: AdrQueueItem[] = [
