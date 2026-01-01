@@ -3,7 +3,7 @@ import { X, AlertCircle } from 'lucide-react';
 import { QualityGateSummary } from './QualityGateSummary';
 import { DiffViewer } from './DiffViewer';
 import { ApprovalActionForm } from './ApprovalActionForm';
-import axios from 'axios';
+import apiClient from '../../api/client';
 
 interface ReviewModalProps {
     isOpen: boolean;
@@ -39,12 +39,9 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
         setIsSubmitting(true);
         setError(null);
         try {
-            const token = localStorage.getItem('token');
-            const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-            await axios.post(
-                `${apiUrl}/api/v1/executions/${executionId}/approve`,
-                { decision, reasoning },
-                { headers: { Authorization: `Bearer ${token}` } }
+            await apiClient.post(
+                `/executions/${executionId}/approve`,
+                { decision, reasoning }
             );
             onActionComplete();
             onClose();

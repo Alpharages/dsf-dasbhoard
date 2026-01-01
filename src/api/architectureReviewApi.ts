@@ -1,14 +1,11 @@
-import axios from 'axios';
+import apiClient from './client';
 import type { AdrQueueFilters, AdrQueueResponse } from '../types/architectureReview';
 import type { ArchitectureConstraint, CreateConstraintDto, UpdateConstraintDto } from '../types/architectureConstraint';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
-
 export const architectureReviewApi = {
-    getAdrQueue: async (filters: AdrQueueFilters, token: string): Promise<AdrQueueResponse> => {
-        const response = await axios.get(`${API_BASE_URL}/architecture-review/queue`, {
+    getAdrQueue: async (filters: AdrQueueFilters, _token: string): Promise<AdrQueueResponse> => {
+        const response = await apiClient.get('/architecture-review/queue', {
             params: filters,
-            headers: { Authorization: `Bearer ${token}` }
         });
         return response.data;
     },
@@ -17,35 +14,32 @@ export const architectureReviewApi = {
         adrId: string,
         action: 'APPROVE' | 'REJECT' | 'MODIFY' | 'DEFER',
         notes: string | undefined,
-        token: string
+        _token: string
     ): Promise<void> => {
-        await axios.post(
-            `${API_BASE_URL}/architecture-review/${adrId}/review`,
-            { action, notes },
-            { headers: { Authorization: `Bearer ${token}` } }
+        await apiClient.post(
+            `/architecture-review/${adrId}/review`,
+            { action, notes }
         );
     },
 
     // Architecture Constraints CRUD
     getArchitectureConstraints: async (
         projectId?: string,
-        token?: string
+        _token?: string
     ): Promise<ArchitectureConstraint[]> => {
-        const response = await axios.get(`${API_BASE_URL}/architecture-constraints`, {
+        const response = await apiClient.get('/architecture-constraints', {
             params: projectId ? { projectId } : {},
-            headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
         return response.data;
     },
 
     createConstraint: async (
         data: CreateConstraintDto,
-        token: string
+        _token: string
     ): Promise<ArchitectureConstraint> => {
-        const response = await axios.post(
-            `${API_BASE_URL}/architecture-constraints`,
-            data,
-            { headers: { Authorization: `Bearer ${token}` } }
+        const response = await apiClient.post(
+            '/architecture-constraints',
+            data
         );
         return response.data;
     },
@@ -53,21 +47,17 @@ export const architectureReviewApi = {
     updateConstraint: async (
         id: string,
         data: UpdateConstraintDto,
-        token: string
+        _token: string
     ): Promise<ArchitectureConstraint> => {
-        const response = await axios.patch(
-            `${API_BASE_URL}/architecture-constraints/${id}`,
-            data,
-            { headers: { Authorization: `Bearer ${token}` } }
+        const response = await apiClient.patch(
+            `/architecture-constraints/${id}`,
+            data
         );
         return response.data;
     },
 
-    deleteConstraint: async (id: string, token: string): Promise<void> => {
-        await axios.delete(
-            `${API_BASE_URL}/architecture-constraints/${id}`,
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
+    deleteConstraint: async (id: string, _token: string): Promise<void> => {
+        await apiClient.delete(`/architecture-constraints/${id}`);
     },
 
     // Escalation & Guidance
@@ -76,12 +66,11 @@ export const architectureReviewApi = {
         guidance: string,
         applyGlobally: boolean,
         updateThresholds: boolean,
-        token: string
+        _token: string
     ): Promise<void> => {
-        await axios.post(
-            `${API_BASE_URL}/architecture-review/${adrId}/guidance`,
-            { guidance, applyGlobally, updateThresholds },
-            { headers: { Authorization: `Bearer ${token}` } }
+        await apiClient.post(
+            `/architecture-review/${adrId}/guidance`,
+            { guidance, applyGlobally, updateThresholds }
         );
     },
 
@@ -89,40 +78,35 @@ export const architectureReviewApi = {
         adrId: string,
         architectId: string,
         notes: string | undefined,
-        token: string
+        _token: string
     ): Promise<void> => {
-        await axios.post(
-            `${API_BASE_URL}/architecture-review/${adrId}/delegate`,
-            { architectId, notes },
-            { headers: { Authorization: `Bearer ${token}` } }
+        await apiClient.post(
+            `/architecture-review/${adrId}/delegate`,
+            { architectId, notes }
         );
     },
 
-    getEscalationMetrics: async (token: string): Promise<import('../types/architectureReview').EscalationMetrics> => {
-        const response = await axios.get(`${API_BASE_URL}/architecture-review/escalations/metrics`, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+    getEscalationMetrics: async (_token: string): Promise<import('../types/architectureReview').EscalationMetrics> => {
+        const response = await apiClient.get('/architecture-review/escalations/metrics');
         return response.data;
     },
 
     getMetrics: async (
         filters: import('../types/architectureReview').AdrMetricsFilters,
-        token: string
+        _token: string
     ): Promise<import('../types/architectureReview').AdrDashboardMetrics> => {
-        const response = await axios.get(`${API_BASE_URL}/architecture-review/metrics`, {
+        const response = await apiClient.get('/architecture-review/metrics', {
             params: filters,
-            headers: { Authorization: `Bearer ${token}` }
         });
         return response.data;
     },
 
     getTrends: async (
         filters: import('../types/architectureReview').AdrMetricsFilters,
-        token: string
+        _token: string
     ): Promise<import('../types/architectureReview').AdrDashboardMetrics['trends']> => {
-        const response = await axios.get(`${API_BASE_URL}/architecture-review/trends`, {
+        const response = await apiClient.get('/architecture-review/trends', {
             params: filters,
-            headers: { Authorization: `Bearer ${token}` }
         });
         return response.data;
     }

@@ -3,10 +3,10 @@ import { Search, X, Calendar, Loader2 } from 'lucide-react';
 import { searchConversations } from '../../api/conversations';
 import type { ConversationResponseDto, Sentiment } from '../../types/conversation';
 import type { Project } from '../../types';
-import axios from 'axios';
+import apiClient from '../../api/client';
 import { Smile, Meh, Frown } from 'lucide-react';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
+
 
 interface ConversationSearchInterfaceProps {
     onConversationClick: (conversationId: string) => void;
@@ -35,10 +35,7 @@ export const ConversationSearchInterface: React.FC<ConversationSearchInterfacePr
     useEffect(() => {
         const fetchProjects = async () => {
             try {
-                const token = localStorage.getItem('token') || 'dummy-token';
-                const response = await axios.get(`${API_BASE_URL}/pm-dashboard/projects`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const response = await apiClient.get('/pm-dashboard/projects');
                 setProjects(response.data.data);
             } catch (err) {
                 console.error('Error fetching projects:', err);

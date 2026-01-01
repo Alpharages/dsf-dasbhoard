@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import apiClient from '../../api/client';
 import { TechListInput } from './TechListInput';
 import { PatternInput } from './PatternInput';
 import { StandardInput } from './StandardInput';
@@ -13,8 +13,6 @@ import type {
   StandardConstraintRules
 } from '../../types/architectureConstraint';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
-
 interface ConstraintFormProps {
   isOpen: boolean;
   onClose: () => void;
@@ -23,14 +21,10 @@ interface ConstraintFormProps {
 }
 
 function useProjects() {
-  const token = localStorage.getItem('token');
   return useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
-      if (!token) return [];
-      const response = await axios.get(`${API_BASE_URL}/pm-dashboard/projects`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await apiClient.get('/pm-dashboard/projects');
       return response.data.data || [];
     },
     staleTime: 300000, // 5 min cache

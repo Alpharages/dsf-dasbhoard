@@ -5,7 +5,7 @@ import { StatsGrid } from './components/dashboard/StatsGrid';
 import { ProjectCard } from './components/dashboard/ProjectCard';
 import { Filter, Grid, List, SortAsc, Plus, RefreshCw } from 'lucide-react';
 import type { Project, DashboardSummary } from './types';
-import axios from 'axios';
+import apiClient from './api/client';
 import { useState, useEffect } from 'react';
 import { useSocket } from './hooks/useSocket';
 import { useProjectUpdates } from './hooks/useProjectUpdates';
@@ -39,7 +39,7 @@ import { ConstraintsPage } from './pages/architecture-review/constraints/Constra
 import { EscalationAnalyticsPage } from './components/architecture-review/EscalationAnalyticsPage';
 import ArchitectureMetricsPage from './pages/architecture-review/ArchitectureMetricsPage';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
+
 
 // Shared Layout component
 function DashboardLayout() {
@@ -75,11 +75,10 @@ function Dashboard() {
     if (!reviewState.isOpen) return;
 
     try {
-      const authHeader = { Authorization: `Bearer ${token}` };
-      await axios.post(`${API_BASE_URL}/executions/${reviewState.executionId}/approve`, {
+      await apiClient.post(`/executions/${reviewState.executionId}/approve`, {
         decision,
         reasoning: `Action triggered via keyboard shortcut (${label})`
-      }, { headers: authHeader });
+      });
 
       toast.success(`${label} successful!`);
       setReviewState(prev => ({ ...prev, isOpen: false }));
@@ -142,9 +141,7 @@ function Dashboard() {
 
   const recordShortcutUsage = async (shortcut: string) => {
     try {
-      await axios.post(`${API_BASE_URL}/telemetry/shortcut`, { shortcut }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await apiClient.post('/telemetry/shortcut', { shortcut });
     } catch (err) {
       console.error('Failed to log shortcut usage:', err);
     }
@@ -154,10 +151,9 @@ function Dashboard() {
     setLoading(true);
     setError(null);
     try {
-      const authHeader = { Authorization: `Bearer ${token}` };
       const [projectsRes, summaryRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/pm-dashboard/projects`, { headers: authHeader }),
-        axios.get(`${API_BASE_URL}/pm-dashboard/summary`, { headers: authHeader })
+        apiClient.get('/pm-dashboard/projects'),
+        apiClient.get('/pm-dashboard/summary')
       ]);
 
       setProjects(projectsRes.data.data);

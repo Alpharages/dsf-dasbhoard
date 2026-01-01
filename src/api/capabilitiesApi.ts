@@ -1,11 +1,9 @@
-import axios from 'axios';
+import apiClient from './client';
 import type {
     CapabilityDashboardResponse,
     CreateLimitationDto,
     UpdateLimitationDto
 } from '../types/capabilities';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
 export const capabilitiesApi = {
     /**
@@ -13,10 +11,8 @@ export const capabilitiesApi = {
      * Endpoint: GET /api/v1/capabilities/dashboard
      * Access: TL, ADMIN, PM
      */
-    getDashboard: async (token: string): Promise<CapabilityDashboardResponse> => {
-        const response = await axios.get(`${API_BASE_URL}/capabilities/dashboard`, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+    getDashboard: async (_token: string): Promise<CapabilityDashboardResponse> => {
+        const response = await apiClient.get('/capabilities/dashboard');
         return response.data;
     },
 
@@ -27,12 +23,11 @@ export const capabilitiesApi = {
      */
     createLimitation: async (
         data: CreateLimitationDto,
-        token: string
+        _token: string
     ): Promise<{ success: boolean; message: string }> => {
-        const response = await axios.post(
-            `${API_BASE_URL}/capabilities/limitations`,
-            data,
-            { headers: { Authorization: `Bearer ${token}` } }
+        const response = await apiClient.post(
+            '/capabilities/limitations',
+            data
         );
         return response.data;
     },
@@ -45,12 +40,11 @@ export const capabilitiesApi = {
     updateLimitation: async (
         taskType: string,
         data: UpdateLimitationDto,
-        token: string
+        _token: string
     ): Promise<{ success: boolean; message: string }> => {
-        const response = await axios.put(
-            `${API_BASE_URL}/capabilities/limitations/${taskType}`,
-            data,
-            { headers: { Authorization: `Bearer ${token}` } }
+        const response = await apiClient.put(
+            `/capabilities/limitations/${taskType}`,
+            data
         );
         return response.data;
     },
@@ -60,10 +54,8 @@ export const capabilitiesApi = {
      * Endpoint: GET /api/v1/capabilities/knowledge-base.md
      * Access: All authenticated users
      */
-    getKnowledgeBase: async (token: string): Promise<string> => {
-        const response = await axios.get(`${API_BASE_URL}/capabilities/knowledge-base.md`, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+    getKnowledgeBase: async (_token: string): Promise<string> => {
+        const response = await apiClient.get('/capabilities/knowledge-base.md');
         return response.data;
     }
 };

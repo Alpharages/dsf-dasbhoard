@@ -3,7 +3,7 @@
  * Story 6-R-3 Backend Integration
  */
 
-import axios from 'axios';
+import apiClient from './client';
 import type {
     CostPerFeatureDto,
     RoiMetricsDto,
@@ -13,13 +13,6 @@ import type {
     ScheduleReportResponseDto,
     HistoricalRoiResponseDto,
 } from '../types/financial';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
-
-const getAuthHeaders = () => {
-    const token = localStorage.getItem('token') || 'dummy-token';
-    return { Authorization: `Bearer ${token}` };
-};
 
 export const financialApi = {
     /**
@@ -32,9 +25,8 @@ export const financialApi = {
         endDate?: string;
         format?: 'json' | 'csv';
     }): Promise<CostPerFeatureDto[]> => {
-        const { data } = await axios.get(`${API_BASE_URL}/financial-metrics/cost-per-feature`, {
+        const { data } = await apiClient.get('/financial-metrics/cost-per-feature', {
             params,
-            headers: getAuthHeaders(),
         });
         return data;
     },
@@ -48,9 +40,8 @@ export const financialApi = {
         startDate?: string;
         endDate?: string;
     }): Promise<Blob> => {
-        const { data } = await axios.get(`${API_BASE_URL}/financial-metrics/cost-per-feature`, {
+        const { data } = await apiClient.get('/financial-metrics/cost-per-feature', {
             params: { ...params, format: 'csv' },
-            headers: getAuthHeaders(),
             responseType: 'blob',
         });
         return data;
@@ -64,9 +55,8 @@ export const financialApi = {
         period: 'day' | 'week' | 'month';
         valuePerPoint?: number;
     }): Promise<RoiMetricsDto> => {
-        const { data } = await axios.get(`${API_BASE_URL}/financial-metrics/roi`, {
+        const { data } = await apiClient.get('/financial-metrics/roi', {
             params,
-            headers: getAuthHeaders(),
         });
         return data;
     },
@@ -79,9 +69,8 @@ export const financialApi = {
         period: 'week' | 'month' | 'quarter';
         format?: 'json' | 'csv';
     }): Promise<BudgetTrendsDto> => {
-        const { data } = await axios.get(`${API_BASE_URL}/financial-metrics/budget-trends`, {
+        const { data } = await apiClient.get('/financial-metrics/budget-trends', {
             params,
-            headers: getAuthHeaders(),
         });
         return data;
     },
@@ -93,9 +82,8 @@ export const financialApi = {
         projectId: string;
         period: 'week' | 'month' | 'quarter';
     }): Promise<Blob> => {
-        const { data } = await axios.get(`${API_BASE_URL}/financial-metrics/budget-trends`, {
+        const { data } = await apiClient.get('/financial-metrics/budget-trends', {
             params: { ...params, format: 'csv' },
-            headers: getAuthHeaders(),
             responseType: 'blob',
         });
         return data;
@@ -109,9 +97,8 @@ export const financialApi = {
         startDate?: string;
         endDate?: string;
     }): Promise<ModelEfficiencyDto> => {
-        const { data } = await axios.get(`${API_BASE_URL}/financial-metrics/model-efficiency`, {
+        const { data } = await apiClient.get('/financial-metrics/model-efficiency', {
             params,
-            headers: getAuthHeaders(),
         });
         return data;
     },
@@ -124,9 +111,8 @@ export const financialApi = {
         startDate?: string;
         endDate?: string;
     }): Promise<HistoricalRoiResponseDto> => {
-        const { data } = await axios.get(`${API_BASE_URL}/financial-metrics/historical-roi`, {
+        const { data } = await apiClient.get('/financial-metrics/historical-roi', {
             params,
-            headers: getAuthHeaders(),
         });
         return data;
     },
@@ -138,9 +124,7 @@ export const financialApi = {
         projectId: string;
         expireDays?: number;
     }): Promise<ShareLinkResponseDto> => {
-        const { data } = await axios.post(`${API_BASE_URL}/financial-metrics/share-link`, payload, {
-            headers: getAuthHeaders(),
-        });
+        const { data } = await apiClient.post('/financial-metrics/share-link', payload);
         return data;
     },
 
@@ -152,9 +136,7 @@ export const financialApi = {
         email: string;
         frequency: 'weekly' | 'monthly';
     }): Promise<ScheduleReportResponseDto> => {
-        const { data } = await axios.post(`${API_BASE_URL}/financial-metrics/schedule-report`, payload, {
-            headers: getAuthHeaders(),
-        });
+        const { data } = await apiClient.post('/financial-metrics/schedule-report', payload);
         return data;
     },
 };

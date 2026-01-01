@@ -5,9 +5,9 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronDown, Briefcase } from 'lucide-react';
-import axios from 'axios';
+import apiClient from '../../../api/client';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
+
 
 interface Project {
     id: string;
@@ -41,10 +41,7 @@ export function ProjectSelector({ selectedProjectId, onProjectChange }: ProjectS
 
     const fetchProjects = async () => {
         try {
-            const token = localStorage.getItem('token') || 'dummy-token';
-            const { data } = await axios.get(`${API_BASE_URL}/pm-dashboard/projects`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const { data } = await apiClient.get('/pm-dashboard/projects');
             setProjects(data.data || []);
         } catch (err) {
             console.error('Failed to fetch projects:', err);
@@ -85,8 +82,8 @@ export function ProjectSelector({ selectedProjectId, onProjectChange }: ProjectS
                                     key={project.id}
                                     onClick={() => handleProjectSelect(project.id)}
                                     className={`w-full text-left px-4 py-3 hover:bg-slate-800 transition-colors ${project.id === selectedProjectId
-                                            ? 'bg-blue-600/10 text-blue-400 font-semibold'
-                                            : 'text-slate-300'
+                                        ? 'bg-blue-600/10 text-blue-400 font-semibold'
+                                        : 'text-slate-300'
                                         }`}
                                 >
                                     {project.name}

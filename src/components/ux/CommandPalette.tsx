@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Command } from 'cmdk';
 import { Search, FileText, ArrowRight, X, Keyboard, Layers, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../../api/client';
 
 interface CommandPaletteProps {
     isOpen: boolean;
@@ -10,14 +10,13 @@ interface CommandPaletteProps {
     onOpenHelp: () => void;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
+
 
 export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, onOpenHelp }) => {
     const [search, setSearch] = useState('');
     const [results, setResults] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const token = localStorage.getItem('token') || 'dummy-token';
 
     if (!isOpen) return null;
 
@@ -35,10 +34,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
     const handleSearch = async (query: string) => {
         setLoading(true);
         try {
-            const authHeader = { Authorization: `Bearer ${token}` };
-            const res = await axios.get(`${API_BASE_URL}/pm-dashboard/tickets/search?query=${query}`, {
-                headers: authHeader,
-            });
+            const res = await apiClient.get(`/pm-dashboard/tickets/search?query=${query}`);
             setResults(res.data.data);
         } catch (err) {
             console.error('Search failed:', err);

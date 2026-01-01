@@ -1,35 +1,28 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Socket } from 'socket.io-client';
 import type { Execution, ExecutionProgressPayload } from '../types';
+import apiClient from '../api/client';
 
 export const useTicketProgress = (
     socket: Socket | null,
     ticketId: string | null,
     executionId: string | null,
-    token: string | null,
     isSocketConnected: boolean
 ) => {
     const [execution, setExecution] = useState<Partial<Execution> | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const fetchStatus = useCallback(async () => {
-        if (!executionId || !token) return;
+        if (!executionId) return;
 
         try {
-            const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-            const response = await fetch(`${API_URL}/api/v1/executions/${executionId}/status`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            if (!response.ok) throw new Error('Failed to fetch status');
-            const data = await response.json();
+            const { data } = await apiClient.get(`/executions/${executionId}/status`);
             setExecution(data);
         } catch (err: any) {
             console.error('Polling error:', err);
             setError(err.message);
         }
-    }, [executionId, token]);
+    }, [executionId]);
 
     useEffect(() => {
         if (!socket || !ticketId) return;
@@ -39,7 +32,7 @@ export const useTicketProgress = (
 
         const handleProgress = (data: ExecutionProgressPayload) => {
             if (data.ticketId === ticketId) {
-                setExecution((prev) => ({
+                setExecution((prev: Partial<Execution> | null) => ({
                     ...prev,
                     status: data.status,
                     updatedAt: data.timestamp,
@@ -51,7 +44,7 @@ export const useTicketProgress = (
 
         const handleComplete = (data: { executionId: string; ticketId: string }) => {
             if (data.ticketId === ticketId) {
-                setExecution((prev) => ({
+                setExecution((prev: Partial<Execution> | null) => ({
                     ...prev,
                     status: 'COMPLETED',
                     updatedAt: new Date().toISOString(),

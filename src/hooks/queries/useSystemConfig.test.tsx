@@ -2,12 +2,12 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { useSystemConfig } from './useSystemConfig';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import axios from 'axios';
+import apiClient from '../../api/client';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
-// Mock axios
-vi.mock('axios');
-const mockedAxios = axios as any; // Bypass type check for mock to avoid jest namespace issues
+// Mock apiClient
+vi.mock('../../api/client');
+const mockedApiClient = apiClient as any;
 
 // Mock socket
 const mockSocketOn = vi.fn();
@@ -44,7 +44,7 @@ describe('useSystemConfig', () => {
             { key: 'cleanup.retention_period', value: '30', is_secret: false, updated_at: '2023-01-01' },
             { key: 'cost.budget_cap', value: '1000', is_secret: false, updated_at: '2023-01-01' },
         ];
-        mockedAxios.get.mockResolvedValueOnce({ data: mockData });
+        mockedApiClient.get.mockResolvedValueOnce({ data: mockData });
 
         const { result } = renderHook(() => useSystemConfig(), { wrapper });
 
@@ -56,17 +56,16 @@ describe('useSystemConfig', () => {
     });
 
     it('should update system config', async () => {
-        mockedAxios.patch.mockResolvedValueOnce({ data: { success: true } });
-        mockedAxios.get.mockResolvedValueOnce({ data: [] }); // Initial fetch
+        mockedApiClient.patch.mockResolvedValueOnce({ data: { success: true } });
+        mockedApiClient.get.mockResolvedValueOnce({ data: [] }); // Initial fetch
 
         const { result } = renderHook(() => useSystemConfig(), { wrapper });
 
         await result.current.updateConfig({ key: 'test.key', value: 'new-value' });
 
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedApiClient.patch).toHaveBeenCalledWith(
             expect.stringContaining('/config/test.key'),
-            expect.objectContaining({ key: 'test.key', value: 'new-value' }),
-            expect.any(Object)
+            expect.objectContaining({ key: 'test.key', value: 'new-value' })
         );
     });
 

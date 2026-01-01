@@ -1,14 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
-import type { SystemConfig } from '../../types/config';
+import apiClient from '../../api/client';
 import { useEffect } from 'react';
 import { useSocket } from '../useSocket';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
+import type { SystemConfig } from '../../types/config';
 
 export const useSystemConfig = () => {
-    const token = localStorage.getItem('token');
     const queryClient = useQueryClient();
+    const token = localStorage.getItem('token');
     const { socket } = useSocket(token);
 
     // Real-time sync
@@ -29,18 +27,14 @@ export const useSystemConfig = () => {
     const query = useQuery({
         queryKey: ['systemConfig'],
         queryFn: async () => {
-            const { data } = await axios.get<SystemConfig[]>(`${API_BASE_URL}/config`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const { data } = await apiClient.get<SystemConfig[]>('/config');
             return data;
         }
     });
 
     const updateMutation = useMutation({
         mutationFn: async (config: { key: string; value: string; description?: string; is_secret?: boolean }) => {
-            const { data } = await axios.patch(`${API_BASE_URL}/config/${config.key}`, config, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const { data } = await apiClient.patch(`/config/${config.key}`, config);
             return data;
         },
         onSuccess: () => {
