@@ -35,6 +35,7 @@ import { FinancialMetricsSection } from './components/financial/FinancialMetrics
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 import { ArchitectureReviewQueuePage } from './pages/ArchitectureReviewQueuePage';
+import { ConstraintsPage } from './pages/architecture-review/constraints/ConstraintsPage';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
@@ -390,6 +391,14 @@ function App() {
               element={
                 <ProtectedRoute requiredRole="TL">
                   <ArchitectureReviewQueuePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/architecture-review/constraints"
+              element={
+                <ProtectedRoute requiredRole="TL">
+                  <ConstraintsPage />
                 </ProtectedRoute>
               }
             />

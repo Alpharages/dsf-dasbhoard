@@ -30,6 +30,12 @@ const mockAdr: AdrQueueItem = {
     title: 'Use Redis for Session Storage',
     status: 'PROPOSED',
     risk_level: 'MEDIUM',
+    risk_factors: {
+        scope: 'module',
+        reversibility: 'easy',
+        confidence: 0.85,
+        domain_complexity: 'medium'
+    },
     confidence: 0.85,
     context: 'We need a session store.',
     decision: 'We will use Redis.',

@@ -41,7 +41,6 @@ export const RiskBadge: React.FC<RiskBadgeProps> = ({ level, riskFactors, classN
     };
 
     return (
-    return (
         <Tooltip>
             <TooltipTrigger asChild>
                 <span

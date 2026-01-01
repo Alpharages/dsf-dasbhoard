@@ -9,7 +9,8 @@ import {
     CheckCircle,
     DollarSign,
     Gauge,
-    Building
+    Building,
+    SettingsIcon
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -22,6 +23,7 @@ const navItems = [
     { icon: BarChart3, label: 'Cost Analysis', path: '/cost' },
     { icon: Gauge, label: 'Capacity Monitor', path: '/capacity-monitor' },
     { icon: Building, label: 'Architecture Review', path: '/architecture-review/queue' },
+    { icon: SettingsIcon, label: 'Architecture Constraints', path: '/architecture-review/constraints' },
     { icon: DollarSign, label: 'Financial Metrics', path: '/financial-metrics' },
     { icon: Settings, label: 'Settings', path: '/settings' },
 ];
@@ -52,6 +54,14 @@ export const Sidebar: React.FC = () => {
 
                     // RBAC: Only show Architecture Review to TL or ADMIN
                     if (item.path === '/architecture-review/queue') {
+                        const userRole = localStorage.getItem('userRole') || 'USER';
+                        if (userRole !== 'TL' && userRole !== 'ADMIN') {
+                            return null;
+                        }
+                    }
+
+                    // RBAC: Only show Architecture Constraints to TL or ADMIN
+                    if (item.path === '/architecture-review/constraints') {
                         const userRole = localStorage.getItem('userRole') || 'USER';
                         if (userRole !== 'TL' && userRole !== 'ADMIN') {
                             return null;
