@@ -6,7 +6,6 @@ import type { ArchitectureConstraint } from '../../../types/architectureConstrai
 const mockConstraints: ArchitectureConstraint[] = [
     {
         id: '1',
-        projectId: null,
         scope: 'GLOBAL',
         type: 'ALLOWED_TECH',
         rules: { items: ['react', 'typescript'], reason: 'Modern stack' },
@@ -45,7 +44,7 @@ describe('ConstraintsList', () => {
         expect(screen.getByText('GLOBAL')).toBeInTheDocument();
         expect(screen.getByText('ALLOWED_TECH')).toBeInTheDocument();
         expect(screen.getByText(/2 packages/i)).toBeInTheDocument();
-        expect(screen.getByText(/Regex: \^\\[A-Z\\]/i)).toBeInTheDocument();
+        expect(screen.getByText(/Regex: \^\[A-Z\]/i)).toBeInTheDocument();
     });
 
     it('calls onEdit when edit button is clicked', () => {

@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ConstraintForm } from '../../../components/architecture-review/ConstraintForm';
-import type { CreateConstraintDto } from '../../../types/architectureConstraint';
 
 const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } }
