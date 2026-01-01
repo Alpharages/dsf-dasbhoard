@@ -10,7 +10,8 @@ import {
     DollarSign,
     Gauge,
     Building,
-    SettingsIcon
+    SettingsIcon,
+    Brain
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -24,6 +25,7 @@ const navItems = [
     { icon: Gauge, label: 'Capacity Monitor', path: '/capacity-monitor' },
     { icon: Building, label: 'Architecture Review', path: '/architecture-review/queue' },
     { icon: SettingsIcon, label: 'Architecture Constraints', path: '/architecture-review/constraints' },
+    { icon: Brain, label: 'AI Capabilities', path: '/architecture/capabilities' },
     { icon: DollarSign, label: 'Financial Metrics', path: '/financial-metrics' },
     { icon: Settings, label: 'Settings', path: '/settings' },
 ];
@@ -67,6 +69,9 @@ export const Sidebar: React.FC = () => {
                             return null;
                         }
                     }
+
+                    // AI Capabilities is visible to all authenticated users
+                    // PM gets read-only view, TL/ADMIN can edit
 
                     const isActive = location.pathname === item.path ||
                         (item.path !== '/' && location.pathname.startsWith(item.path));

@@ -349,6 +349,7 @@ function Dashboard() {
   );
 }
 
+import { CapabilityManagementPage } from './pages/CapabilityManagementPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TooltipProvider } from './components/ui/tooltip';
 
@@ -408,6 +409,14 @@ function App() {
               element={
                 <ProtectedRoute requiredRole="TL">
                   <EscalationAnalyticsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/architecture/capabilities"
+              element={
+                <ProtectedRoute requiredRole="USER">
+                  <CapabilityManagementPage />
                 </ProtectedRoute>
               }
             />
