@@ -30,6 +30,7 @@ import {
 import { DecisionDashboard } from './pages/DecisionDashboard';
 import { FinancialMetricsPage } from './pages/FinancialMetricsPage';
 import { WorkloadCapacityPage } from './pages/WorkloadCapacityPage';
+import { ProjectsSyncPage } from './pages/ProjectsSyncPage';
 import { Toaster, toast } from 'react-hot-toast';
 import { FinancialMetricsSection } from './components/financial/FinancialMetricsSection';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
@@ -368,6 +369,7 @@ function App() {
               <ConversationUploadForm onSuccess={(id) => navigate(`/conversations/${id}`)} />
             } />
             <Route path="/conversations/:id" element={<ConversationDetailViewWrapper />} />
+            <Route path="/projects/sync" element={<ProjectsSyncPage />} />
             <Route path="/decisions" element={<DecisionDashboard />} />
             <Route
               path="/financial-metrics"

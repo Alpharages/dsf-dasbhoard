@@ -17,7 +17,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
-    { icon: Briefcase, label: 'Projects', path: '/projects' },
+    { icon: Briefcase, label: 'Projects', path: '/projects/sync' },
     { icon: CheckCircle, label: 'Decisions', path: '/decisions' },
     { icon: MessageSquare, label: 'Conversations', path: '/conversations' },
     { icon: Clock, label: 'Activity', path: '/activity' },
