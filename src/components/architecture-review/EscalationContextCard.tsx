@@ -1,6 +1,6 @@
 import React from 'react';
-import { HelpCircle, Scale, AlertTriangle, FileQuestion } from 'lucide-react';
-import { EscalationBadge, type EscalationReasonCode } from './EscalationBadge';
+import { Scale, AlertTriangle, FileQuestion } from 'lucide-react';
+import { EscalationBadge } from './EscalationBadge';
 
 interface EscalationContext {
     questions?: string[];

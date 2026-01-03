@@ -2,7 +2,6 @@ import React from 'react';
 import type { AdrQueueItem } from '../../types/architectureReview';
 import { RiskBadge } from './RiskBadge';
 import { EscalationBadge } from './EscalationBadge';
-import { ConfidenceScoreGauge } from './ConfidenceScoreGauge';
 import { Clock, ExternalLink } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { TooltipProvider } from '../ui/tooltip';

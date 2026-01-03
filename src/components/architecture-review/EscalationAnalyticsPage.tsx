@@ -103,7 +103,7 @@ export const EscalationAnalyticsPage: React.FC = () => {
                                     dataKey="count"
                                     nameKey="reason"
                                 >
-                                    {metrics.topReasons.map((entry, index) => (
+                                    {metrics.topReasons.map((_entry, index) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>

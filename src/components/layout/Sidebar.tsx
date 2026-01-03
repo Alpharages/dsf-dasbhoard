@@ -11,9 +11,12 @@ import {
     Gauge,
     Building,
     SettingsIcon,
-    Brain
+    Brain,
+    UserPlus
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { canAccess } from '@/utils/roleHelpers';
 
 const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
@@ -28,11 +31,13 @@ const navItems = [
     { icon: SettingsIcon, label: 'Architecture Constraints', path: '/architecture-review/constraints' },
     { icon: Brain, label: 'AI Capabilities', path: '/architecture/capabilities' },
     { icon: DollarSign, label: 'Financial Metrics', path: '/financial-metrics' },
+    { icon: UserPlus, label: 'Invitations', path: '/admin/invitations' },
     { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
 export const Sidebar: React.FC = () => {
     const location = useLocation();
+    const { user } = useAuth();
 
     return (
         <aside className="w-64 bg-slate-950 border-r border-slate-800 flex flex-col fixed inset-y-0 z-40">
@@ -49,34 +54,27 @@ export const Sidebar: React.FC = () => {
                 {navItems.map((item) => {
                     // RBAC: Only show Financial Metrics to MANAGER or ADMIN
                     if (item.path === '/financial-metrics') {
-                        const userRole = localStorage.getItem('userRole') || 'USER';
-                        if (userRole !== 'MANAGER' && userRole !== 'ADMIN') {
-                            return null;
-                        }
+                        if (!user || !canAccess(user.role, 'MANAGER')) return null;
+                    }
+
+                    // RBAC: Only show Invitations to MANAGER or ADMIN
+                    if (item.path === '/admin/invitations') {
+                        if (!user || !canAccess(user.role, 'MANAGER')) return null;
                     }
 
                     // RBAC: Only show Architecture Review to TL or ADMIN
                     if (item.path === '/architecture-review/queue') {
-                        const userRole = localStorage.getItem('userRole') || 'USER';
-                        if (userRole !== 'TL' && userRole !== 'ADMIN') {
-                            return null;
-                        }
+                        if (!user || !canAccess(user.role, 'TL')) return null;
                     }
 
                     // RBAC: Only show Architecture Constraints to TL or ADMIN
                     if (item.path === '/architecture-review/constraints') {
-                        const userRole = localStorage.getItem('userRole') || 'USER';
-                        if (userRole !== 'TL' && userRole !== 'ADMIN') {
-                            return null;
-                        }
+                        if (!user || !canAccess(user.role, 'TL')) return null;
                     }
 
                     // RBAC: Only show Metrics & Insights to TL or ADMIN
                     if (item.path === '/architecture-review/metrics') {
-                        const userRole = localStorage.getItem('userRole') || 'USER';
-                        if (userRole !== 'TL' && userRole !== 'ADMIN') {
-                            return null;
-                        }
+                        if (!user || !canAccess(user.role, 'TL')) return null;
                     }
 
                     // AI Capabilities is visible to all authenticated users

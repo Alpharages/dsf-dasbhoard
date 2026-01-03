@@ -27,8 +27,8 @@ export function RegistrationPage() {
     const { user: currentUser } = useAuth(); // Already logged in check
 
     const [fullName, setFullName] = useState('');
-    const [email, setEmail] = useState('');
-    const [role, setRole] = useState('');
+    const [email] = useState('');
+    const [role] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);

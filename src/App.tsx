@@ -42,6 +42,7 @@ import { ArchitectureReviewQueuePage } from './pages/ArchitectureReviewQueuePage
 import { ConstraintsPage } from './pages/architecture-review/constraints/ConstraintsPage';
 import { EscalationAnalyticsPage } from './components/architecture-review/EscalationAnalyticsPage';
 import ArchitectureMetricsPage from './pages/architecture-review/ArchitectureMetricsPage';
+import { InvitationsPage } from './pages/InvitationsPage';
 
 
 
@@ -489,6 +490,13 @@ function AppContent({ navigate }: { navigate: any }) {
                 </ProtectedRoute>
               }
             />
+
+            {/* Admin/Manager routes */}
+            <Route path="/admin/invitations" element={
+              <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER']}>
+                <InvitationsPage />
+              </ProtectedRoute>
+            } />
 
             {/* Settings - all authenticated users */}
             <Route path="/settings" element={
