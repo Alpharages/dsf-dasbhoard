@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import apiClient from '../api/client';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { canAccess } from '../utils/roleHelpers';
 
 // User interface matching backend UserDto
 export interface User {
@@ -294,4 +295,51 @@ export function useAuth(): AuthContextValue {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
+}
+
+/**
+ * useHasRole hook - Check if user has required role or higher in hierarchy
+ * 
+ * Role Hierarchy: ADMIN > MANAGER > TL > PM > QA > VIEWER
+ * 
+ * Example:
+ * const isAdmin = useHasRole('ADMIN');
+ * const canManage = useHasRole('MANAGER'); // true for ADMIN and MANAGER
+ * 
+ * @param requiredRole - Role to check against
+ * @returns true if user has the required role or higher in hierarchy
+ */
+export function useHasRole(requiredRole: string): boolean {
+    const { user } = useAuth();
+    if (!user) return false;
+    return canAccess(user.role, requiredRole);
+}
+
+/**
+ * useRequireAuth hook - Enhanced auth hook with role guard function
+ * 
+ * Use this hook when you need to enforce role requirements within components
+ * 
+ * Example:
+ * const { requireRole } = useRequireAuth();
+ * useEffect(() => {
+ *   requireRole('ADMIN'); // Throws error if user is not ADMIN or higher
+ * }, []);
+ * 
+ * @returns Auth context with requireRole function
+ */
+export function useRequireAuth() {
+    const auth = useAuth();
+
+    const requireRole = (role: string) => {
+        if (!auth.user) {
+            throw new Error('User must be authenticated');
+        }
+
+        if (!canAccess(auth.user.role, role)) {
+            throw new Error(`Access denied. Required role: ${role}`);
+        }
+    };
+
+    return { ...auth, requireRole };
 }

@@ -34,7 +34,9 @@ import { ProjectsSyncPage } from './pages/ProjectsSyncPage';
 import { Toaster, toast } from 'react-hot-toast';
 import { FinancialMetricsSection } from './components/financial/FinancialMetricsSection';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ForbiddenPage } from './pages/ForbiddenPage';
+import { Loader2 } from 'lucide-react';
 
 import { ArchitectureReviewQueuePage } from './pages/ArchitectureReviewQueuePage';
 import { ConstraintsPage } from './pages/architecture-review/constraints/ConstraintsPage';
@@ -360,95 +362,158 @@ function App() {
 
   return (
     <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route element={<DashboardLayout />}>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/conversations" element={
-                <ConversationSearchInterface onConversationClick={(id) => navigate(`/conversations/${id}`)} />
-              } />
-              <Route path="/conversations/upload" element={
-                <ConversationUploadForm onSuccess={(id) => navigate(`/conversations/${id}`)} />
-              } />
-              <Route path="/conversations/:id" element={<ConversationDetailViewWrapper />} />
-              <Route path="/projects/sync" element={<ProjectsSyncPage />} />
-              <Route path="/decisions" element={<DecisionDashboard />} />
-              <Route
-                path="/financial-metrics"
-                element={
-                  <ProtectedRoute requiredRole="MANAGER">
-                    <FinancialMetricsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/capacity-monitor"
-                element={
-                  <ProtectedRoute requiredRole="USER">
-                    <WorkloadCapacityPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/architecture-review/queue"
-                element={
-                  <ProtectedRoute requiredRole="TL">
-                    <ArchitectureReviewQueuePage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/architecture-review/constraints"
-                element={
-                  <ProtectedRoute requiredRole="TL">
-                    <ConstraintsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/architecture-review/escalations"
-                element={
-                  <ProtectedRoute requiredRole="TL">
-                    <EscalationAnalyticsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/architecture-review/metrics"
-                element={
-                  <ProtectedRoute requiredRole="TL">
-                    <ArchitectureMetricsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/architecture/capabilities"
-                element={
-                  <ProtectedRoute requiredRole="USER">
-                    <CapabilityManagementPage />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route path="/settings" element={<SettingsLayout />}>
-                <Route path="cleanup" element={<CleanupPanel />} />
-                <Route path="self-healing" element={<SelfHealingPanel />} />
-                <Route path="dependency" element={<DependencyPanel />} />
-                <Route path="auto-merge" element={<AutoMergePanel />} />
-                <Route path="cost" element={<CostPanel />} />
-                <Route path="audit" element={<AuditPanel />} />
-                <Route path="health" element={<HealthPanel />} />
-                <Route index element={<CleanupPanel />} /> {/* Default to cleanup */}
-              </Route>
-
-              <Route path="*" element={<Dashboard />} />
-            </Route>
-          </Routes>
-        </TooltipProvider>
-      </QueryClientProvider>
+      <AppContent navigate={navigate} />
     </AuthProvider>
+  );
+}
+
+// Inner component to access useAuth hook
+function AppContent({ navigate }: { navigate: any }) {
+  const { isLoading } = useAuth();
+
+  // Show global loading overlay during initial auth check
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto" />
+          <p className="text-slate-400 mt-4">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/forbidden" element={<ForbiddenPage />} />
+
+          {/* Protected routes inside DashboardLayout */}
+          <Route element={<DashboardLayout />}>
+            {/* Dashboard - all authenticated users */}
+            <Route path="/" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            {/* Conversations - all authenticated users */}
+            <Route path="/conversations" element={
+              <ProtectedRoute>
+                <ConversationSearchInterface onConversationClick={(id) => navigate(`/conversations/${id}`)} />
+              </ProtectedRoute>
+            } />
+            <Route path="/conversations/upload" element={
+              <ProtectedRoute>
+                <ConversationUploadForm onSuccess={(id) => navigate(`/conversations/${id}`)} />
+              </ProtectedRoute>
+            } />
+            <Route path="/conversations/:id" element={
+              <ProtectedRoute>
+                <ConversationDetailViewWrapper />
+              </ProtectedRoute>
+            } />
+
+            {/* Projects sync - all authenticated users */}
+            <Route path="/projects/sync" element={
+              <ProtectedRoute>
+                <ProjectsSyncPage />
+              </ProtectedRoute>
+            } />
+
+            {/* Decisions - all authenticated users */}
+            <Route path="/decisions" element={
+              <ProtectedRoute>
+                <DecisionDashboard />
+              </ProtectedRoute>
+            } />
+            <Route
+              path="/financial-metrics"
+              element={
+                <ProtectedRoute requiredRole="MANAGER">
+                  <FinancialMetricsPage />
+                </ProtectedRoute>
+              }
+            />
+            {/* Capacity monitor - all authenticated users */}
+            <Route
+              path="/capacity-monitor"
+              element={
+                <ProtectedRoute>
+                  <WorkloadCapacityPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/architecture-review/queue"
+              element={
+                <ProtectedRoute requiredRole="TL">
+                  <ArchitectureReviewQueuePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/architecture-review/constraints"
+              element={
+                <ProtectedRoute requiredRole="TL">
+                  <ConstraintsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/architecture-review/escalations"
+              element={
+                <ProtectedRoute requiredRole="TL">
+                  <EscalationAnalyticsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/architecture-review/metrics"
+              element={
+                <ProtectedRoute requiredRole="TL">
+                  <ArchitectureMetricsPage />
+                </ProtectedRoute>
+              }
+            />
+            {/* Architecture capabilities - all authenticated users */}
+            <Route
+              path="/architecture/capabilities"
+              element={
+                <ProtectedRoute>
+                  <CapabilityManagementPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Settings - all authenticated users */}
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <SettingsLayout />
+              </ProtectedRoute>
+            }>
+              <Route path="cleanup" element={<CleanupPanel />} />
+              <Route path="self-healing" element={<SelfHealingPanel />} />
+              <Route path="dependency" element={<DependencyPanel />} />
+              <Route path="auto-merge" element={<AutoMergePanel />} />
+              <Route path="cost" element={<CostPanel />} />
+              <Route path="audit" element={<AuditPanel />} />
+              <Route path="health" element={<HealthPanel />} />
+              <Route index element={<CleanupPanel />} /> {/* Default to cleanup */}
+            </Route>
+
+            {/* Catch-all redirect to dashboard (protected) */}
+            <Route path="*" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+          </Route>
+        </Routes>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 }
 

@@ -125,6 +125,8 @@ apiClient.interceptors.response.use(
         // Handle 403 Forbidden (permission denied)
         if (error.response?.status === 403) {
             toast.error("You don't have permission to access this resource");
+            // Redirect to forbidden page
+            window.location.href = '/forbidden';
         }
 
         return Promise.reject(error);
