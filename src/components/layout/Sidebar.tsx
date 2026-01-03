@@ -12,7 +12,8 @@ import {
     Building,
     SettingsIcon,
     Brain,
-    UserPlus
+    UserPlus,
+    Users
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -32,6 +33,7 @@ const navItems = [
     { icon: Brain, label: 'AI Capabilities', path: '/architecture/capabilities' },
     { icon: DollarSign, label: 'Financial Metrics', path: '/financial-metrics' },
     { icon: UserPlus, label: 'Invitations', path: '/admin/invitations' },
+    { icon: Users, label: 'Users', path: '/admin/users' },
     { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
@@ -60,6 +62,11 @@ export const Sidebar: React.FC = () => {
                     // RBAC: Only show Invitations to MANAGER or ADMIN
                     if (item.path === '/admin/invitations') {
                         if (!user || !canAccess(user.role, 'MANAGER')) return null;
+                    }
+
+                    // RBAC: Only show Users to ADMIN
+                    if (item.path === '/admin/users') {
+                        if (!user || user.role !== 'ADMIN') return null;
                     }
 
                     // RBAC: Only show Architecture Review to TL or ADMIN

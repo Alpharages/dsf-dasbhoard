@@ -17,8 +17,9 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { RoleBadge } from '@/components/common/RoleBadge';
+import { StatusBadge } from '@/components/common/StatusBadge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
     Select,
@@ -42,32 +43,7 @@ interface InvitationsTableProps {
     onRevoke: (invitation: Invitation) => void;
 }
 
-const getRoleBadgeColor = (role: Role) => {
-    switch (role) {
-        case 'ADMIN': return 'bg-red-500 hover:bg-red-600';
-        case 'MANAGER': return 'bg-purple-500 hover:bg-purple-600';
-        case 'TL': return 'bg-blue-500 hover:bg-blue-600';
-        case 'PM': return 'bg-green-500 hover:bg-green-600';
-        case 'QA': return 'bg-yellow-500 hover:bg-yellow-600';
-        case 'VIEWER': return 'bg-slate-500 hover:bg-slate-600';
-        default: return 'bg-slate-500';
-    }
-};
 
-const getStatusBadgeStyles = (status: InvitationStatus) => {
-    switch (status) {
-        case InvitationStatus.PENDING:
-            return 'bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500/30';
-        case InvitationStatus.ACCEPTED:
-            return 'bg-green-500/20 text-green-500 hover:bg-green-500/30';
-        case InvitationStatus.EXPIRED:
-            return 'bg-red-500/20 text-red-500 hover:bg-red-500/30';
-        case InvitationStatus.REVOKED:
-            return 'bg-slate-500/20 text-slate-500 hover:bg-slate-500/30';
-        default:
-            return 'bg-slate-500/20 text-slate-500';
-    }
-};
 
 export function InvitationsTable({
     invitations,
@@ -102,9 +78,7 @@ export function InvitationsTable({
             accessorKey: 'role',
             header: 'Role',
             cell: ({ row }) => (
-                <Badge className={getRoleBadgeColor(row.original.role)}>
-                    {row.original.role}
-                </Badge>
+                <RoleBadge role={row.original.role} />
             ),
         },
         {
@@ -116,9 +90,7 @@ export function InvitationsTable({
             accessorKey: 'status',
             header: 'Status',
             cell: ({ row }) => (
-                <Badge variant="outline" className={`border-0 ${getStatusBadgeStyles(row.original.status)}`}>
-                    {row.original.status}
-                </Badge>
+                <StatusBadge status={row.original.status} />
             ),
             filterFn: (row, id, value) => {
                 if (value === 'all') return true;
@@ -308,16 +280,12 @@ export function InvitationsTable({
                                                 Expires: {new Date(invitation.expiresAt).toLocaleDateString()}
                                             </div>
                                         </div>
-                                        <Badge className={getRoleBadgeColor(invitation.role)}>
-                                            {invitation.role}
-                                        </Badge>
+                                        <RoleBadge role={invitation.role} />
                                     </div>
                                 </CardHeader>
                                 <CardContent className="pb-4">
                                     <div className="flex justify-between items-center mt-2">
-                                        <Badge variant="outline" className={`border-0 ${getStatusBadgeStyles(invitation.status)}`}>
-                                            {invitation.status}
-                                        </Badge>
+                                        <StatusBadge status={invitation.status} />
                                         <div className="flex gap-2">
                                             <Button
                                                 variant="ghost"

@@ -43,6 +43,7 @@ import { ConstraintsPage } from './pages/architecture-review/constraints/Constra
 import { EscalationAnalyticsPage } from './components/architecture-review/EscalationAnalyticsPage';
 import ArchitectureMetricsPage from './pages/architecture-review/ArchitectureMetricsPage';
 import { InvitationsPage } from './pages/InvitationsPage';
+import UsersPage from './pages/UsersPage';
 
 
 
@@ -495,6 +496,12 @@ function AppContent({ navigate }: { navigate: any }) {
             <Route path="/admin/invitations" element={
               <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER']}>
                 <InvitationsPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/admin/users" element={
+              <ProtectedRoute requiredRoles={['ADMIN']}>
+                <UsersPage />
               </ProtectedRoute>
             } />
 
