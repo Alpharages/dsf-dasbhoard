@@ -1,0 +1,289 @@
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import apiClient from '../api/client';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+
+// User interface matching backend UserDto
+export interface User {
+    id: string;
+    email: string;
+    fullName: string;
+    role: 'ADMIN' | 'MANAGER' | 'PM' | 'TL' | 'QA' | 'VIEWER';
+    isActive: boolean;
+    lastLoginAt: string | null;
+}
+
+// AuthContext value interface
+interface AuthContextValue {
+    user: User | null;
+    isAuthenticated: boolean;
+    isLoading: boolean;
+    login: (email: string, password: string, rememberMe: boolean) => Promise<void>;
+    logout: () => Promise<void>;
+    refreshToken: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+// Token storage helpers
+const getStorageType = (rememberMe: boolean): Storage => {
+    return rememberMe ? localStorage : sessionStorage;
+};
+
+const getAccessToken = (): string | null => {
+    return localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
+};
+
+const getRefreshToken = (): string | null => {
+    return localStorage.getItem('refresh_token') || sessionStorage.getItem('refresh_token');
+};
+
+const setTokens = (accessToken: string, refreshToken: string, rememberMe: boolean) => {
+    const storage = getStorageType(rememberMe);
+    storage.setItem('access_token', accessToken);
+    storage.setItem('refresh_token', refreshToken);
+
+    // Clear from the other storage type
+    const otherStorage = rememberMe ? sessionStorage : localStorage;
+    otherStorage.removeItem('access_token');
+    otherStorage.removeItem('refresh_token');
+};
+
+const clearTokens = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    sessionStorage.removeItem('access_token');
+    sessionStorage.removeItem('refresh_token');
+};
+
+// Decode JWT to get expiration time
+const decodeToken = (token: string): { exp: number } | null => {
+    try {
+        const payload = token.split('.')[1];
+        const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+        const decoded = JSON.parse(atob(base64));
+        return decoded;
+    } catch (error) {
+        console.error('Failed to decode token:', error);
+        return null;
+    }
+};
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+    const [user, setUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const refreshTimeoutRef = useRef<number | null>(null);
+    const navigate = useNavigate();
+
+    // Setup auto-refresh timer
+    const setupAutoRefresh = useCallback((accessToken: string) => {
+        // Clear existing timeout
+        if (refreshTimeoutRef.current) {
+            clearTimeout(refreshTimeoutRef.current);
+        }
+
+        const decoded = decodeToken(accessToken);
+        if (!decoded || !decoded.exp) {
+            return;
+        }
+
+        // Calculate time until refresh (5 minutes before expiry)
+        const expiresAt = decoded.exp * 1000;
+        const now = Date.now();
+        const refreshTime = expiresAt - now - (5 * 60 * 1000); // 5 min buffer
+
+        if (refreshTime > 0) {
+            refreshTimeoutRef.current = setTimeout(async () => {
+                try {
+                    await refreshTokenInternal();
+                } catch (error) {
+                    console.error('Auto-refresh failed:', error);
+                }
+            }, refreshTime);
+        }
+    }, []);
+
+    // Fetch current user from /auth/me
+    const fetchUser = useCallback(async (): Promise<User | null> => {
+        try {
+            const response = await apiClient.get('/api/v1/auth/me');
+            return response.data;
+        } catch (error) {
+            console.error('Failed to fetch user:', error);
+            return null;
+        }
+    }, []);
+
+    // Internal refresh token function
+    const refreshTokenInternal = useCallback(async () => {
+        const refreshTkn = getRefreshToken();
+        if (!refreshTkn) {
+            throw new Error('No refresh token available');
+        }
+
+        try {
+            const response = await apiClient.post('/api/v1/auth/refresh', {
+                refreshToken: refreshTkn
+            });
+
+            const { accessToken } = response.data;
+
+            // Determine storage type based on where the refresh token is stored
+            const rememberMe = localStorage.getItem('refresh_token') !== null;
+            const storage = getStorageType(rememberMe);
+            storage.setItem('access_token', accessToken);
+
+            // Setup next auto-refresh
+            setupAutoRefresh(accessToken);
+        } catch (error: any) {
+            console.error('Token refresh failed:', error);
+
+            // Clear tokens and redirect to login if refresh fails (401/403)
+            if (error.response?.status === 401 || error.response?.status === 403) {
+                clearTokens();
+                setUser(null);
+                const returnUrl = window.location.pathname;
+                navigate(`/login?returnUrl=${encodeURIComponent(returnUrl)}`);
+                toast.error('Session expired. Please log in again.');
+            }
+            throw error;
+        }
+    }, [setupAutoRefresh, navigate]);
+
+    // Login method
+    const login = useCallback(async (email: string, password: string, rememberMe: boolean) => {
+        setIsLoading(true);
+        try {
+            // Call login API
+            const response = await apiClient.post('/api/v1/auth/login', {
+                email,
+                password
+            });
+
+            const { accessToken, refreshToken, user: userData } = response.data;
+
+            // Store tokens
+            setTokens(accessToken, refreshToken, rememberMe);
+
+            // Set user state
+            setUser(userData);
+
+            // Setup auto-refresh
+            setupAutoRefresh(accessToken);
+
+            toast.success('Logged in successfully');
+        } catch (error: any) {
+            console.error('Login failed:', error);
+
+            // Handle different error types
+            if (error.response?.status === 401) {
+                throw new Error('Invalid email or password');
+            } else if (error.response?.status === 403) {
+                throw new Error('Your account has been deactivated. Contact admin.');
+            } else if (error.response?.status === 429) {
+                throw new Error('Too many login attempts. Try again in 15 minutes.');
+            } else if (!error.response) {
+                throw new Error('Unable to connect. Check your internet connection.');
+            } else {
+                throw new Error('Login failed. Please try again.');
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    }, [setupAutoRefresh]);
+
+    // Logout method
+    const logout = useCallback(async () => {
+        const refreshTkn = getRefreshToken();
+
+        try {
+            // Call logout API to revoke refresh token
+            if (refreshTkn) {
+                await apiClient.post('/api/v1/auth/logout', {
+                    refreshToken: refreshTkn
+                });
+            }
+        } catch (error) {
+            console.error('Logout API call failed:', error);
+            // Continue with logout even if API fails
+        }
+
+        // Clear tokens and user state
+        clearTokens();
+        setUser(null);
+
+        // Clear auto-refresh timer
+        if (refreshTimeoutRef.current) {
+            clearTimeout(refreshTimeoutRef.current);
+        }
+
+        // Redirect to login
+        navigate('/login');
+        toast.success('Logged out successfully');
+    }, [navigate]);
+
+    // Public refresh token method
+    const refreshToken = useCallback(async () => {
+        await refreshTokenInternal();
+    }, [refreshTokenInternal]);
+
+    // Initial auth check on mount
+    useEffect(() => {
+        const checkAuth = async () => {
+            const accessToken = getAccessToken();
+
+            if (!accessToken) {
+                setIsLoading(false);
+                return;
+            }
+
+            // Validate token by fetching user
+            const userData = await fetchUser();
+
+            if (userData) {
+                setUser(userData);
+                setupAutoRefresh(accessToken);
+            } else {
+                // Token invalid, clear it
+                clearTokens();
+            }
+
+            setIsLoading(false);
+        };
+
+        checkAuth();
+    }, [fetchUser, setupAutoRefresh]);
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            if (refreshTimeoutRef.current) {
+                clearTimeout(refreshTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    const value: AuthContextValue = {
+        user,
+        isAuthenticated: user !== null,
+        isLoading,
+        login,
+        logout,
+        refreshToken
+    };
+
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
+}
+
+// useAuth hook
+export function useAuth(): AuthContextValue {
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
+}

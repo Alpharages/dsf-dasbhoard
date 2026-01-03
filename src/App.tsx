@@ -34,6 +34,7 @@ import { ProjectsSyncPage } from './pages/ProjectsSyncPage';
 import { Toaster, toast } from 'react-hot-toast';
 import { FinancialMetricsSection } from './components/financial/FinancialMetricsSection';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { AuthProvider } from './contexts/AuthContext';
 
 import { ArchitectureReviewQueuePage } from './pages/ArchitectureReviewQueuePage';
 import { ConstraintsPage } from './pages/architecture-review/constraints/ConstraintsPage';
@@ -350,6 +351,7 @@ function Dashboard() {
 import { CapabilityManagementPage } from './pages/CapabilityManagementPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TooltipProvider } from './components/ui/tooltip';
+import { LoginPage } from './pages/LoginPage';
 
 const queryClient = new QueryClient();
 
@@ -357,93 +359,96 @@ function App() {
   const navigate = useNavigate();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Routes>
-          <Route element={<DashboardLayout />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/conversations" element={
-              <ConversationSearchInterface onConversationClick={(id) => navigate(`/conversations/${id}`)} />
-            } />
-            <Route path="/conversations/upload" element={
-              <ConversationUploadForm onSuccess={(id) => navigate(`/conversations/${id}`)} />
-            } />
-            <Route path="/conversations/:id" element={<ConversationDetailViewWrapper />} />
-            <Route path="/projects/sync" element={<ProjectsSyncPage />} />
-            <Route path="/decisions" element={<DecisionDashboard />} />
-            <Route
-              path="/financial-metrics"
-              element={
-                <ProtectedRoute requiredRole="MANAGER">
-                  <FinancialMetricsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/capacity-monitor"
-              element={
-                <ProtectedRoute requiredRole="USER">
-                  <WorkloadCapacityPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/architecture-review/queue"
-              element={
-                <ProtectedRoute requiredRole="TL">
-                  <ArchitectureReviewQueuePage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/architecture-review/constraints"
-              element={
-                <ProtectedRoute requiredRole="TL">
-                  <ConstraintsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/architecture-review/escalations"
-              element={
-                <ProtectedRoute requiredRole="TL">
-                  <EscalationAnalyticsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/architecture-review/metrics"
-              element={
-                <ProtectedRoute requiredRole="TL">
-                  <ArchitectureMetricsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/architecture/capabilities"
-              element={
-                <ProtectedRoute requiredRole="USER">
-                  <CapabilityManagementPage />
-                </ProtectedRoute>
-              }
-            />
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route element={<DashboardLayout />}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/conversations" element={
+                <ConversationSearchInterface onConversationClick={(id) => navigate(`/conversations/${id}`)} />
+              } />
+              <Route path="/conversations/upload" element={
+                <ConversationUploadForm onSuccess={(id) => navigate(`/conversations/${id}`)} />
+              } />
+              <Route path="/conversations/:id" element={<ConversationDetailViewWrapper />} />
+              <Route path="/projects/sync" element={<ProjectsSyncPage />} />
+              <Route path="/decisions" element={<DecisionDashboard />} />
+              <Route
+                path="/financial-metrics"
+                element={
+                  <ProtectedRoute requiredRole="MANAGER">
+                    <FinancialMetricsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/capacity-monitor"
+                element={
+                  <ProtectedRoute requiredRole="USER">
+                    <WorkloadCapacityPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/architecture-review/queue"
+                element={
+                  <ProtectedRoute requiredRole="TL">
+                    <ArchitectureReviewQueuePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/architecture-review/constraints"
+                element={
+                  <ProtectedRoute requiredRole="TL">
+                    <ConstraintsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/architecture-review/escalations"
+                element={
+                  <ProtectedRoute requiredRole="TL">
+                    <EscalationAnalyticsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/architecture-review/metrics"
+                element={
+                  <ProtectedRoute requiredRole="TL">
+                    <ArchitectureMetricsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/architecture/capabilities"
+                element={
+                  <ProtectedRoute requiredRole="USER">
+                    <CapabilityManagementPage />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route path="/settings" element={<SettingsLayout />}>
-              <Route path="cleanup" element={<CleanupPanel />} />
-              <Route path="self-healing" element={<SelfHealingPanel />} />
-              <Route path="dependency" element={<DependencyPanel />} />
-              <Route path="auto-merge" element={<AutoMergePanel />} />
-              <Route path="cost" element={<CostPanel />} />
-              <Route path="audit" element={<AuditPanel />} />
-              <Route path="health" element={<HealthPanel />} />
-              <Route index element={<CleanupPanel />} /> {/* Default to cleanup */}
+              <Route path="/settings" element={<SettingsLayout />}>
+                <Route path="cleanup" element={<CleanupPanel />} />
+                <Route path="self-healing" element={<SelfHealingPanel />} />
+                <Route path="dependency" element={<DependencyPanel />} />
+                <Route path="auto-merge" element={<AutoMergePanel />} />
+                <Route path="cost" element={<CostPanel />} />
+                <Route path="audit" element={<AuditPanel />} />
+                <Route path="health" element={<HealthPanel />} />
+                <Route index element={<CleanupPanel />} /> {/* Default to cleanup */}
+              </Route>
+
+              <Route path="*" element={<Dashboard />} />
             </Route>
-
-            <Route path="*" element={<Dashboard />} />
-          </Route>
-        </Routes>
-      </TooltipProvider>
-    </QueryClientProvider>
+          </Routes>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </AuthProvider>
   );
 }
 
