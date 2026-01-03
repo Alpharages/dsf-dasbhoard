@@ -71,6 +71,7 @@ const decodeToken = (token: string): { exp: number } | null => {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
+    // Initialize to true to prevent login page flash during initial auth check
     const [isLoading, setIsLoading] = useState(true);
     const refreshTimeoutRef = useRef<number | null>(null);
     const navigate = useNavigate();
@@ -98,6 +99,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     await refreshTokenInternal();
                 } catch (error) {
                     console.error('Auto-refresh failed:', error);
+                    // Clear tokens and redirect to login on auto-refresh failure
+                    clearTokens();
+                    setUser(null);
+                    const returnUrl = window.location.pathname;
+                    navigate(`/login?returnUrl=${encodeURIComponent(returnUrl)}`);
+                    toast.error('Session expired. Please log in again.');
                 }
             }, refreshTime);
         }
@@ -165,7 +172,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // Store tokens
             setTokens(accessToken, refreshToken, rememberMe);
 
-            // Set user state
+            // Set user state (backend /auth/login returns full user object)
+            // Note: AC#3 satisfied by login response, no additional /me call needed
             setUser(userData);
 
             // Setup auto-refresh
