@@ -354,6 +354,7 @@ import { CapabilityManagementPage } from './pages/CapabilityManagementPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TooltipProvider } from './components/ui/tooltip';
 import { LoginPage } from './pages/LoginPage';
+import { RegistrationPage } from './pages/RegistrationPage';
 
 const queryClient = new QueryClient();
 
@@ -389,6 +390,7 @@ function AppContent({ navigate }: { navigate: any }) {
         <Routes>
           {/* Public routes */}
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register/:inviteToken" element={<RegistrationPage />} />
           <Route path="/forbidden" element={<ForbiddenPage />} />
 
           {/* Protected routes inside DashboardLayout */}
