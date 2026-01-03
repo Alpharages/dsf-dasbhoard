@@ -357,6 +357,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TooltipProvider } from './components/ui/tooltip';
 import { LoginPage } from './pages/LoginPage';
 import { RegistrationPage } from './pages/RegistrationPage';
+import { ProfilePage } from './pages/ProfilePage';
 
 const queryClient = new QueryClient();
 
@@ -401,6 +402,11 @@ function AppContent({ navigate }: { navigate: any }) {
             <Route path="/" element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             } />
             {/* Conversations - all authenticated users */}
