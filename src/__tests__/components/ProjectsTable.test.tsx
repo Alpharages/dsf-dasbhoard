@@ -94,7 +94,7 @@ describe('ProjectsTable', () => {
         fireEvent.click(switches[1]); // Toggle the second project (currently disabled)
 
         await waitFor(() => {
-            expect(apiClient.patch).toHaveBeenCalledWith('/api/v1/projects/2', {
+            expect(apiClient.patch).toHaveBeenCalledWith('/projects/2', {
                 monitor_tasks: true
             });
             expect(toast.success).toHaveBeenCalledWith('Monitoring enabled successfully');

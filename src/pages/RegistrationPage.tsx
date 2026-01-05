@@ -124,7 +124,7 @@ export function RegistrationPage() {
                 fullName: fullName.trim()
             };
 
-            const response = await apiClient.post<RegisterResponse>('/api/v1/auth/register', requestData);
+            const response = await apiClient.post<RegisterResponse>('/auth/register', requestData);
             const { accessToken, refreshToken, user } = response.data;
 
             // Auto-login: Store tokens directly (AC#5 - DO NOT call backend login again)

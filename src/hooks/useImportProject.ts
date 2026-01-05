@@ -28,7 +28,7 @@ export function useImportProject(options?: UseImportProjectOptions) {
 
     return useMutation({
         mutationFn: async (data: ImportProjectRequest) => {
-            const response = await apiClient.post('/api/v1/projects/import', data);
+            const response = await apiClient.post('/projects/import', data);
             return response.data;
         },
         onSuccess: (data) => {

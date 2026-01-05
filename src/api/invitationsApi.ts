@@ -5,7 +5,7 @@ export const fetchInvitations = async (): Promise<Invitation[]> => {
     try {
         // Backend returns { invitations: Invitation[], total: number, ... }
         // We only return the array for now.
-        const response = await apiClient.get<{ invitations: Invitation[] }>('/api/v1/auth/invitations');
+        const response = await apiClient.get<{ invitations: Invitation[] }>('/auth/invitations');
         return response.data.invitations;
     } catch (error) {
         throw error;
@@ -14,7 +14,7 @@ export const fetchInvitations = async (): Promise<Invitation[]> => {
 
 export const createInvitation = async (data: CreateInvitationRequest): Promise<CreateInvitationResponse> => {
     try {
-        const response = await apiClient.post<CreateInvitationResponse>('/api/v1/auth/invitations', data);
+        const response = await apiClient.post<CreateInvitationResponse>('/auth/invitations', data);
         return response.data;
     } catch (error) {
         throw error;
@@ -23,7 +23,7 @@ export const createInvitation = async (data: CreateInvitationRequest): Promise<C
 
 export const revokeInvitation = async (id: string): Promise<void> => {
     try {
-        await apiClient.delete(`/api/v1/auth/invitations/${id}`);
+        await apiClient.delete(`/auth/invitations/${id}`);
     } catch (error) {
         throw error;
     }

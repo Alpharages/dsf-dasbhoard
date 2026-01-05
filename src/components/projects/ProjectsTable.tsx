@@ -33,7 +33,7 @@ export function ProjectsTable({ projects, onProjectUpdated }: ProjectsTableProps
         setLoadingStates(prev => ({ ...prev, [projectId]: true }));
 
         try {
-            await apiClient.patch(`/api/v1/projects/${projectId}`, {
+            await apiClient.patch(`/projects/${projectId}`, {
                 monitor_tasks: !currentValue
             });
 

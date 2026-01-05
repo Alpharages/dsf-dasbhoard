@@ -1,7 +1,7 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import { toast } from 'react-hot-toast';
 
-export const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+export const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
 const apiClient = axios.create({
     baseURL: BASE_URL,
@@ -85,7 +85,7 @@ apiClient.interceptors.response.use(
 
             try {
                 // Attempt to refresh the access token
-                const response = await axios.post(`${BASE_URL}/api/v1/auth/refresh`, {
+                const response = await axios.post(`${BASE_URL}/auth/refresh`, {
                     refreshToken
                 });
 

@@ -12,7 +12,7 @@ export function ProjectsSyncPage() {
     const { data: projects = [], isLoading, refetch } = useQuery<ProjectRowData[]>({
         queryKey: ['projects'],
         queryFn: async () => {
-            const response = await apiClient.get('/api/v1/projects');
+            const response = await apiClient.get('/projects');
             return response.data;
         },
         staleTime: 2 * 60 * 1000 // 2 minutes

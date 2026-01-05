@@ -114,7 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Fetch current user from /auth/me
     const fetchUser = useCallback(async (): Promise<User | null> => {
         try {
-            const response = await apiClient.get('/api/v1/auth/me');
+            const response = await apiClient.get('/auth/me');
             return response.data;
         } catch (error) {
             console.error('Failed to fetch user:', error);
@@ -130,7 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         try {
-            const response = await apiClient.post('/api/v1/auth/refresh', {
+            const response = await apiClient.post('/auth/refresh', {
                 refreshToken: refreshTkn
             });
 
@@ -163,7 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(true);
         try {
             // Call login API
-            const response = await apiClient.post('/api/v1/auth/login', {
+            const response = await apiClient.post('/auth/login', {
                 email,
                 password
             });
@@ -208,7 +208,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
             // Call logout API to revoke refresh token
             if (refreshTkn) {
-                await apiClient.post('/api/v1/auth/logout', {
+                await apiClient.post('/auth/logout', {
                     refreshToken: refreshTkn
                 });
             }

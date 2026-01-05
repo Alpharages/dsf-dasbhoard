@@ -24,7 +24,7 @@ export function useClickUpHierarchy(enabled: boolean = true) {
     return useQuery<HierarchyResponse>({
         queryKey: ['clickup-hierarchy'],
         queryFn: async () => {
-            const response = await apiClient.get('/api/v1/integrations/clickup/hierarchy');
+            const response = await apiClient.get('/integrations/clickup/hierarchy');
             return response.data;
         },
         enabled,
