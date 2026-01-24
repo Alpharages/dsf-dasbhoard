@@ -8,7 +8,7 @@ import type {
 export const capabilitiesApi = {
     /**
      * Get capability dashboard data with metrics and top limitations
-     * Endpoint: GET /api/v1/capabilities/dashboard
+     * Endpoint: GET /capabilities/dashboard
      * Access: TL, ADMIN, PM
      */
     getDashboard: async (_token: string): Promise<CapabilityDashboardResponse> => {
@@ -18,7 +18,7 @@ export const capabilitiesApi = {
 
     /**
      * Create a new AI limitation entry
-     * Endpoint: POST /api/v1/capabilities/limitations
+     * Endpoint: POST /capabilities/limitations
      * Access: TL, ADMIN only
      */
     createLimitation: async (
@@ -34,7 +34,7 @@ export const capabilitiesApi = {
 
     /**
      * Update an existing AI limitation
-     * Endpoint: PUT /api/v1/capabilities/limitations/:taskType
+     * Endpoint: PUT /capabilities/limitations/:taskType
      * Access: TL, ADMIN only
      */
     updateLimitation: async (
@@ -51,7 +51,7 @@ export const capabilitiesApi = {
 
     /**
      * Get AI limitations as Markdown knowledge base
-     * Endpoint: GET /api/v1/capabilities/knowledge-base.md
+     * Endpoint: GET /capabilities/knowledge-base.md
      * Access: All authenticated users
      */
     getKnowledgeBase: async (_token: string): Promise<string> => {
