@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Cloud, Database, ChevronRight, Loader2, FolderOpen, List } from 'lucide-react';
+import { Cloud, Database, ChevronRight, Loader2, FolderOpen, List, Check } from 'lucide-react';
 import { useClickUpHierarchy } from '../../hooks/useClickUpHierarchy';
 import { useImportProject } from '../../hooks/useImportProject';
 import { toast } from 'react-hot-toast';
+import { cn } from '../../lib/utils';
 
 interface ClickUpImportModalProps {
     isOpen: boolean;
@@ -82,165 +83,200 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
         });
     };
 
-    const providers: { name: Provider; icon: any; available: boolean }[] = [
-        { name: 'CLICKUP', icon: Cloud, available: true },
-        { name: 'JIRA', icon: Database, available: false },
-        { name: 'ASANA', icon: Database, available: false }
+    const providers: { name: Provider; icon: any; available: boolean; description: string }[] = [
+        { name: 'CLICKUP', icon: Cloud, available: true, description: 'Import tasks and lists' },
+        { name: 'JIRA', icon: Database, available: false, description: 'Import issues and epics' },
+        { name: 'ASANA', icon: Database, available: false, description: 'Import projects and tasks' }
     ];
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
-            <DialogContent className="sm:max-w-[600px] bg-slate-900 border-slate-800 text-slate-200">
-                <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold text-white">
-                        {step === 'provider' ? 'Select Integration Provider' : 'Browse ClickUp Workspace'}
+            {/* 
+                Forcing styles with !important mostly to override any potential conflicts 
+                with the default DialogContent components if they aren't using twMerge correctly.
+            */}
+            <DialogContent className="sm:max-w-[700px] !bg-[#0f1117]/90 !backdrop-blur-xl !border-[#1e293b] text-slate-200 p-0 overflow-hidden shadow-2xl shadow-black/50 gap-0">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 pointer-events-none" />
+
+                <DialogHeader className="p-8 pb-4 relative z-10">
+                    <DialogTitle className="text-2xl font-bold text-white tracking-tight">
+                        {step === 'provider' ? 'Import Project' : 'Select List'}
                     </DialogTitle>
-                    <DialogDescription className="text-slate-400">
+                    <DialogDescription className="text-slate-400 text-base mt-2">
                         {step === 'provider'
-                            ? 'Choose a provider to import your project from'
-                            : 'Select a space and list to import as a project'}
+                            ? 'Connect your existing workflow tools to sync projects.'
+                            : 'Choose where you want to import tasks from.'}
                     </DialogDescription>
                 </DialogHeader>
 
-                {step === 'provider' && (
-                    <div className="grid grid-cols-1 gap-4 py-6">
-                        {providers.map((provider) => (
-                            <button
-                                key={provider.name}
-                                onClick={() => handleProviderSelect(provider.name)}
-                                disabled={!provider.available}
-                                className={`
-                                    flex items-center justify-between p-6 rounded-xl border-2 transition-all
-                                    ${provider.available
-                                        ? 'border-slate-700 hover:border-blue-500 hover:bg-slate-800/50 cursor-pointer'
-                                        : 'border-slate-800 bg-slate-900/50 cursor-not-allowed opacity-50'
-                                    }
-                                `}
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className={`p-3 rounded-lg ${provider.available ? 'bg-blue-500/10' : 'bg-slate-800'}`}>
-                                        <provider.icon className={`w-6 h-6 ${provider.available ? 'text-blue-400' : 'text-slate-600'}`} />
-                                    </div>
-                                    <div className="text-left">
-                                        <div className="font-bold text-lg text-white">{provider.name}</div>
-                                        <div className="text-sm text-slate-400">
-                                            {provider.available ? 'Import tasks and lists' : 'Coming soon'}
+                <div className="p-8 pt-2 relative z-10 min-h-[400px]">
+                    {step === 'provider' && (
+                        <div className="grid grid-cols-1 gap-4 mt-2">
+                            {providers.map((provider) => (
+                                <button
+                                    key={provider.name}
+                                    onClick={() => handleProviderSelect(provider.name)}
+                                    disabled={!provider.available}
+                                    className={cn(
+                                        "group relative flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 w-full outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-[#0f1117]",
+                                        provider.available
+                                            ? "bg-[#161b27]/80 hover:bg-[#1e2330] border-[#293042] hover:border-blue-500/50 cursor-pointer shadow-lg hover:shadow-blue-900/10"
+                                            : "bg-[#12141c]/50 border-[#1e293b] cursor-not-allowed opacity-60"
+                                    )}
+                                >
+                                    <div className="flex items-center gap-5">
+                                        <div className={cn(
+                                            "w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300",
+                                            provider.available
+                                                ? "bg-blue-500/10 text-blue-400 group-hover:bg-blue-500/20 group-hover:scale-110"
+                                                : "bg-slate-800/50 text-slate-600"
+                                        )}>
+                                            <provider.icon className="w-6 h-6" />
+                                        </div>
+                                        <div className="text-left">
+                                            <div className="font-bold text-lg text-white mb-0.5 group-hover:text-blue-100 transition-colors">
+                                                {provider.name}
+                                            </div>
+                                            <div className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
+                                                {provider.description}
+                                            </div>
                                         </div>
                                     </div>
+                                    {provider.available ? (
+                                        <div className="w-8 h-8 rounded-full bg-slate-800/50 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
+                                            <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-blue-400 transition-colors" />
+                                        </div>
+                                    ) : (
+                                        <Badge variant="secondary" className="bg-slate-800/50 text-slate-500 border-none px-3 py-1 font-medium">
+                                            Soon
+                                        </Badge>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {step === 'hierarchy' && (
+                        <div className="h-full flex flex-col">
+                            {isLoadingHierarchy ? (
+                                <div className="flex flex-col items-center justify-center flex-1 min-h-[300px]">
+                                    <div className="relative">
+                                        <div className="absolute inset-0 bg-blue-500 blur-xl opacity-20 animate-pulse"></div>
+                                        <Loader2 className="w-10 h-10 text-blue-400 animate-spin relative z-10" />
+                                    </div>
+                                    <p className="text-slate-400 mt-4 font-medium animate-pulse">Connecting to ClickUp...</p>
                                 </div>
-                                {provider.available ? (
-                                    <ChevronRight className="w-5 h-5 text-slate-400" />
-                                ) : (
-                                    <Badge variant="secondary" className="bg-amber-500/10 text-amber-400 border-amber-500/20">
-                                        Soon
-                                    </Badge>
-                                )}
-                            </button>
-                        ))}
-                    </div>
-                )}
-
-                {step === 'hierarchy' && (
-                    <div className="py-6">
-                        {isLoadingHierarchy ? (
-                            <div className="flex flex-col items-center justify-center py-12">
-                                <Loader2 className="w-8 h-8 text-blue-400 animate-spin mb-4" />
-                                <p className="text-slate-400">Loading ClickUp workspace...</p>
-                            </div>
-                        ) : hierarchyData?.spaces && hierarchyData.spaces.length > 0 ? (
-                            <div className="space-y-4">
-                                {/* Space Selection */}
-                                {!selectedSpace && (
-                                    <div>
-                                        <h3 className="text-sm font-bold text-slate-400 uppercase mb-3">
-                                            Select a Space
-                                        </h3>
-                                        <div className="grid grid-cols-1 gap-2 max-h-[400px] overflow-y-auto">
-                                            {hierarchyData.spaces.map((space: Space) => (
-                                                <button
-                                                    key={space.id}
-                                                    onClick={() => setSelectedSpace(space)}
-                                                    className="flex items-center justify-between p-4 rounded-lg border border-slate-700 hover:border-blue-500 hover:bg-slate-800/50 transition-all text-left"
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <FolderOpen className="w-5 h-5 text-blue-400" />
-                                                        <span className="font-semibold text-white">{space.name}</span>
-                                                    </div>
-                                                    <ChevronRight className="w-4 h-4 text-slate-400" />
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* List Selection */}
-                                {selectedSpace && (
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-3">
-                                            <button
-                                                onClick={() => {
-                                                    setSelectedSpace(null);
-                                                    setSelectedList(null);
-                                                }}
-                                                className="text-blue-400 hover:text-blue-300 text-sm font-semibold"
-                                            >
-                                                ← Back to Spaces
-                                            </button>
-                                        </div>
-                                        <h3 className="text-sm font-bold text-slate-400 uppercase mb-3">
-                                            Select a List from "{selectedSpace.name}"
-                                        </h3>
-                                        <div className="grid grid-cols-1 gap-2 max-h-[400px] overflow-y-auto">
-                                            {selectedSpace && hierarchyData.spaces
-                                                .find((s: Space) => s.id === selectedSpace.id)
-                                                ?.lists?.map((list: ListItem) => (
+                            ) : hierarchyData?.spaces && hierarchyData.spaces.length > 0 ? (
+                                <div className="space-y-6 flex-1">
+                                    {/* Space Selection */}
+                                    {!selectedSpace && (
+                                        <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                                            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 px-1">
+                                                Available Spaces
+                                            </h3>
+                                            <div className="grid grid-cols-1 gap-2.5 max-h-[360px] overflow-y-auto pr-2 custom-scrollbar">
+                                                {hierarchyData.spaces.map((space: Space) => (
                                                     <button
-                                                        key={list.id}
-                                                        onClick={() => setSelectedList(list)}
-                                                        className={`
-                                                            flex items-center justify-between p-4 rounded-lg border transition-all text-left
-                                                            ${selectedList?.id === list.id
-                                                                ? 'border-blue-500 bg-blue-500/10'
-                                                                : 'border-slate-700 hover:border-blue-500 hover:bg-slate-800/50'
-                                                            }
-                                                        `}
+                                                        key={space.id}
+                                                        onClick={() => setSelectedSpace(space)}
+                                                        className="group flex items-center justify-between p-4 rounded-xl border border-[#293042] bg-[#161b27] hover:bg-[#1e2330] hover:border-blue-500/50 transition-all text-left w-full focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-1 focus:ring-offset-[#0f1117]"
                                                     >
-                                                        <div className="flex items-center gap-3">
-                                                            <List className={`w-5 h-5 ${selectedList?.id === list.id ? 'text-blue-400' : 'text-slate-400'}`} />
-                                                            <span className="font-semibold text-white">{list.name}</span>
+                                                        <div className="flex items-center gap-3.5">
+                                                            <FolderOpen className="w-5 h-5 text-blue-400/80 group-hover:text-blue-400 transition-colors" />
+                                                            <span className="font-semibold text-slate-200 group-hover:text-white transition-colors">{space.name}</span>
                                                         </div>
-                                                        {selectedList?.id === list.id && (
-                                                            <Badge className="bg-blue-500 text-white">Selected</Badge>
-                                                        )}
+                                                        <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-blue-400 transition-colors transform group-hover:translate-x-0.5" />
                                                     </button>
                                                 ))}
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="text-center py-12 text-slate-500">
-                                <p>No spaces found in your ClickUp workspace.</p>
-                                <p className="text-sm mt-2">Make sure you have access to at least one space.</p>
-                            </div>
-                        )}
-                    </div>
-                )}
+                                    )}
+
+                                    {/* List Selection */}
+                                    {selectedSpace && (
+                                        <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                                            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800/50">
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedSpace(null);
+                                                        setSelectedList(null);
+                                                    }}
+                                                    className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+                                                >
+                                                    <ChevronRight className="w-5 h-5 rotate-180" />
+                                                </button>
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Selected Space</span>
+                                                    <span className="text-sm font-bold text-white flex items-center gap-2">
+                                                        <FolderOpen className="w-4 h-4 text-blue-400" />
+                                                        {selectedSpace.name}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 px-1">
+                                                Select List
+                                            </h3>
+                                            <div className="grid grid-cols-1 gap-2.5 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                                                {hierarchyData.spaces
+                                                    .find((s: Space) => s.id === selectedSpace.id)
+                                                    ?.lists?.map((list: ListItem) => (
+                                                        <button
+                                                            key={list.id}
+                                                            onClick={() => setSelectedList(list)}
+                                                            className={cn(
+                                                                "group flex items-center justify-between p-4 rounded-xl border transition-all text-left w-full outline-none",
+                                                                selectedList?.id === list.id
+                                                                    ? "border-blue-500/50 bg-blue-500/10 shadow-[0_0_20px_-10px_rgba(59,130,246,0.2)]"
+                                                                    : "border-[#293042] bg-[#161b27] hover:bg-[#1e2330] hover:border-blue-500/30"
+                                                            )}
+                                                        >
+                                                            <div className="flex items-center gap-3.5">
+                                                                <List className={cn(
+                                                                    "w-5 h-5 transition-colors",
+                                                                    selectedList?.id === list.id ? "text-blue-400" : "text-slate-500 group-hover:text-slate-400"
+                                                                )} />
+                                                                <span className={cn(
+                                                                    "font-semibold transition-colors",
+                                                                    selectedList?.id === list.id ? "text-blue-100" : "text-slate-300 group-hover:text-white"
+                                                                )}>{list.name}</span>
+                                                            </div>
+                                                            {selectedList?.id === list.id && (
+                                                                <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center animate-in zoom-in spin-in-180 duration-300">
+                                                                    <Check className="w-3.5 h-3.5" />
+                                                                </div>
+                                                            )}
+                                                        </button>
+                                                    ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="text-center flex flex-col items-center justify-center py-12 text-slate-500 border-2 border-dashed border-slate-800 rounded-2xl bg-slate-900/30">
+                                    <FolderOpen className="w-12 h-12 text-slate-700 mb-3" />
+                                    <p className="font-medium text-slate-400">No spaces found</p>
+                                    <p className="text-sm mt-1 text-slate-500">Check your ClickUp permissions</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
 
                 {/* Footer Actions */}
-                <div className="flex items-center justify-between pt-6 border-t border-slate-800">
+                <div className="flex items-center justify-between p-6 bg-[#0B0D12] border-t border-[#1e293b]">
                     <Button
-                        variant="outline"
+                        variant="ghost"
                         onClick={handleClose}
-                        className="border-slate-700 text-slate-300 hover:bg-slate-800"
+                        className="text-slate-400 hover:text-white hover:bg-slate-800/50 px-6 font-medium"
                     >
                         Cancel
                     </Button>
-                    {step === 'hierarchy' && (
+                    {step === 'hierarchy' && selectedList && (
                         <Button
                             onClick={handleImport}
-                            disabled={!selectedList || isImporting}
-                            className="bg-blue-600 hover:bg-blue-500 text-white"
+                            disabled={isImporting}
+                            className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-2.5 rounded-lg font-semibold shadow-lg shadow-blue-900/20 hover:shadow-blue-500/20 transition-all"
                         >
                             {isImporting ? (
                                 <>

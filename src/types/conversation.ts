@@ -46,7 +46,7 @@ export interface SearchConversationsDto {
 }
 
 export interface PaginatedConversationsResponseDto {
-    data: ConversationResponseDto[];
+    conversations: ConversationResponseDto[];
     total: number;
     limit: number;
     offset: number;

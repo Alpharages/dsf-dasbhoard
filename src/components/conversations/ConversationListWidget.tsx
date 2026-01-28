@@ -26,7 +26,7 @@ export const ConversationListWidget: React.FC<ConversationListWidgetProps> = ({
             setLoading(true);
             try {
                 const result = await searchConversations({ limit: 5, offset: 0 });
-                setConversations(result.data);
+                setConversations(result.conversations);
             } catch (err) {
                 console.error('Error fetching recent conversations:', err);
             } finally {
