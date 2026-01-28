@@ -26,10 +26,8 @@ export const ArchitectureReviewQueuePage: React.FC = () => {
 
     useEffect(() => {
         const fetchProjects = async () => {
-            // In a real app, use auth context token
-            const token = localStorage.getItem('token') || '';
             try {
-                const data = await projectsApi.getProjects(token);
+                const data = await projectsApi.getProjects();
                 setProjects(data);
             } catch (err) {
                 console.error('Failed to fetch projects', err);

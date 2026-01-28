@@ -6,7 +6,7 @@ export function useProjects() {
 
     return useQuery({
         queryKey: ['projects'],
-        queryFn: () => projectsApi.getProjects(token),
+        queryFn: () => projectsApi.getProjects(),
         enabled: !!token,
         staleTime: 5 * 60 * 1000 // 5 minutes
     });

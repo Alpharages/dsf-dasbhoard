@@ -3,16 +3,20 @@ import { useQuery } from '@tanstack/react-query';
 import { Plus, RefreshCw } from 'lucide-react';
 import { ProjectsTable } from '../components/projects/ProjectsTable';
 import { ClickUpImportModal } from '../components/projects/ClickUpImportModal';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import apiClient from '../api/client';
 import type { ProjectRowData } from '../components/projects/ProjectsTable';
 
 export function ProjectsSyncPage() {
     const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+    const [activeFilter, setActiveFilter] = useState<string>('all');
 
     const { data: projects = [], isLoading, refetch } = useQuery<ProjectRowData[]>({
-        queryKey: ['projects'],
+        queryKey: ['projects', activeFilter],
         queryFn: async () => {
-            const response = await apiClient.get('/projects');
+            const response = await apiClient.get('/projects', {
+                params: { active: activeFilter }
+            });
             return response.data;
         },
         staleTime: 2 * 60 * 1000 // 2 minutes
@@ -32,6 +36,18 @@ export function ProjectsSyncPage() {
                 </div>
 
                 <div className="flex items-center gap-4">
+                    <div className="w-[180px]">
+                        <Select value={activeFilter} onValueChange={setActiveFilter}>
+                            <SelectTrigger className="bg-slate-900 border-slate-800 text-slate-300">
+                                <SelectValue placeholder="Filter projects" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Projects</SelectItem>
+                                <SelectItem value="true">Active Only</SelectItem>
+                                <SelectItem value="false">Inactive Only</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
                     <button
                         onClick={() => refetch()}
                         className="p-3 bg-slate-900 border border-slate-800 text-slate-400 hover:text-white rounded-2xl transition-all"

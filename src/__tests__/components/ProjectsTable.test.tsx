@@ -8,7 +8,8 @@ import { toast } from 'react-hot-toast';
 // Mock apiClient
 vi.mock('../../api/client', () => ({
     default: {
-        patch: vi.fn()
+        patch: vi.fn(),
+        post: vi.fn()
     }
 }));
 
@@ -63,18 +64,24 @@ describe('ProjectsTable', () => {
         render(<ProjectsTable projects={mockProjects} onProjectUpdated={mockOnUpdate} />);
 
         const switches = screen.getAllByRole('switch');
-        expect(switches[0]).toBeChecked();
-        expect(switches[1]).not.toBeChecked();
+        // First project: switches[0]=status (active), switches[1]=monitoring (true)
+        // Second project: switches[2]=status (active by default), switches[3]=monitoring (false)
+        expect(switches[1]).toBeChecked(); // First project monitoring
+        expect(switches[3]).not.toBeChecked(); // Second project monitoring
     });
 
     it('expands row when chevron is clicked', async () => {
         render(<ProjectsTable projects={mockProjects} />);
 
-        const expandButtons = screen.getAllByRole('button');
-        fireEvent.click(expandButtons[0]);
+        // Get all buttons - there are 2 per row: sync button + chevron button
+        const allButtons = screen.getAllByRole('button');
+        // First project: buttons[0]=sync, buttons[1]=chevron
+        // Second project: buttons[2]=sync, buttons[3]=chevron
+        const chevronButton = allButtons[1]; // First project's chevron button
+        fireEvent.click(chevronButton);
 
         await waitFor(() => {
-            expect(screen.getByText('Project ID:')).toBeInTheDocument();
+            expect(screen.getByText('Project ID')).toBeInTheDocument();
         });
     });
 
@@ -91,7 +98,8 @@ describe('ProjectsTable', () => {
         render(<ProjectsTable projects={mockProjects} onProjectUpdated={mockOnUpdate} />);
 
         const switches = screen.getAllByRole('switch');
-        fireEvent.click(switches[1]); // Toggle the second project (currently disabled)
+        // Toggle monitoring (4th switch overall = 2nd project monitoring switch)
+        fireEvent.click(switches[3]);
 
         await waitFor(() => {
             expect(apiClient.patch).toHaveBeenCalledWith('/projects/2', {
@@ -115,7 +123,7 @@ describe('ProjectsTable', () => {
         render(<ProjectsTable projects={mockProjects} onProjectUpdated={mockOnUpdate} />);
 
         const switches = screen.getAllByRole('switch');
-        fireEvent.click(switches[0]);
+        fireEvent.click(switches[0]); // Click status switch
 
         await waitFor(() => {
             expect(toast.error).toHaveBeenCalledWith('Custom error from API');
@@ -129,10 +137,10 @@ describe('ProjectsTable', () => {
         render(<ProjectsTable projects={mockProjects} />);
 
         const switches = screen.getAllByRole('switch');
-        fireEvent.click(switches[0]);
+        fireEvent.click(switches[0]); // Click status switch
 
         await waitFor(() => {
-            expect(toast.error).toHaveBeenCalledWith('Failed to update monitoring status');
+            expect(toast.error).toHaveBeenCalledWith('Failed to update status');
         });
     });
 
