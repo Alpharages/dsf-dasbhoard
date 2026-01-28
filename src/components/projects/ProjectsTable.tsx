@@ -58,8 +58,9 @@ export function ProjectsTable({ projects, onProjectUpdated }: ProjectsTableProps
     const handleSync = async (projectId: string) => {
         setLoadingStates(prev => ({ ...prev, [`sync-${projectId}`]: true }));
         try {
-            await apiClient.post(`/projects/${projectId}/sync`);
-            toast.success('Project synced with ClickUp successfully');
+            const response = await apiClient.post(`/projects/${projectId}/sync`);
+            const count = response.data?.syncedTasksCount ?? 0;
+            toast.success(`Project synced successfully. ${count} tasks updated.`);
             onProjectUpdated?.();
         } catch (error) {
             handleError(error, 'Sync failed');

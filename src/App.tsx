@@ -58,6 +58,17 @@ function DashboardLayout() {
           <Outlet />
         </div>
       </main>
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            background: '#0f172a',
+            color: '#cbd5e1',
+            border: '1px solid #1e293b',
+            borderRadius: '12px',
+          }
+        }}
+      />
     </div>
   );
 }
@@ -337,17 +348,6 @@ function Dashboard() {
 
       <CommandPalette isOpen={isPaletteOpen} onClose={() => setIsPaletteOpen(false)} onOpenHelp={() => setIsHelpOpen(true)} />
       <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
-      <Toaster
-        position="bottom-right"
-        toastOptions={{
-          style: {
-            background: '#0f172a',
-            color: '#cbd5e1',
-            border: '1px solid #1e293b',
-            borderRadius: '12px',
-          }
-        }}
-      />
     </>
   );
 }
