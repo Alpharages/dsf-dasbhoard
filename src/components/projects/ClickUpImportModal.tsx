@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Cloud, Database, ChevronRight, Loader2, FolderOpen, List, Check } from 'lucide-react';
+import { Cloud, Database, ChevronRight, Loader2, FolderOpen, List, Check, Building2 } from 'lucide-react';
 import { useClickUpHierarchy } from '../../hooks/useClickUpHierarchy';
+import type { Organization, Space, ListItem } from '../../types/integrations';
 import { useImportProject } from '../../hooks/useImportProject';
 import { toast } from 'react-hot-toast';
 import { cn } from '../../lib/utils';
@@ -21,25 +22,30 @@ interface ApiErrorResponse {
 
 type Provider = 'CLICKUP' | 'JIRA' | 'ASANA';
 
-interface Space {
-    id: string;
-    name: string;
-}
-
-interface ListItem {
-    id: string;
-    name: string;
-}
-
 export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUpImportModalProps) {
-    const [step, setStep] = useState<'provider' | 'hierarchy'>('provider');
+    const [step, setStep] = useState<'provider' | 'organization' | 'hierarchy'>('provider');
     const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
+    const [selectedOrganization, setSelectedOrganization] = useState<Organization | null>(null);
     const [selectedSpace, setSelectedSpace] = useState<Space | null>(null);
     const [selectedList, setSelectedList] = useState<ListItem | null>(null);
+    const [hasMultipleOrgs, setHasMultipleOrgs] = useState(false);
 
     const { data: hierarchyData, isLoading: isLoadingHierarchy } = useClickUpHierarchy(
-        selectedProvider === 'CLICKUP' && step === 'hierarchy'
+        selectedProvider === 'CLICKUP' && step !== 'provider',
+        selectedOrganization?.id
     );
+
+    // Auto-select organization if only one exists
+    if (!selectedOrganization && hierarchyData?.organizations?.length === 1 && step === 'organization') {
+        setSelectedOrganization(hierarchyData.organizations[0]);
+        setHasMultipleOrgs(false);
+        setStep('hierarchy');
+    }
+
+    // Detect multiple organizations
+    if (!selectedOrganization && hierarchyData?.organizations && hierarchyData.organizations.length > 1 && !hasMultipleOrgs) {
+        setHasMultipleOrgs(true);
+    }
 
     const { mutate: importProject, isPending: isImporting } = useImportProject({
         onSuccess: () => {
@@ -57,8 +63,10 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
     const handleClose = () => {
         setStep('provider');
         setSelectedProvider(null);
+        setSelectedOrganization(null);
         setSelectedSpace(null);
         setSelectedList(null);
+        setHasMultipleOrgs(false);
         onClose();
     };
 
@@ -68,7 +76,25 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
             return;
         }
         setSelectedProvider(provider);
-        setStep('hierarchy');
+        setStep('organization');
+    };
+
+    const handleBack = () => {
+        if (step === 'hierarchy') {
+            setSelectedSpace(null);
+            setSelectedList(null);
+            if (hasMultipleOrgs) {
+                setStep('organization');
+                setSelectedOrganization(null);
+            } else {
+                setStep('provider');
+                setSelectedProvider(null);
+                setSelectedOrganization(null);
+            }
+        } else if (step === 'organization') {
+            setStep('provider');
+            setSelectedProvider(null);
+        }
     };
 
     const handleImport = () => {
@@ -100,12 +126,15 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
 
                 <DialogHeader className="p-8 pb-4 relative z-10">
                     <DialogTitle className="text-2xl font-bold text-white tracking-tight">
-                        {step === 'provider' ? 'Import Project' : 'Select List'}
+                        {step === 'provider' ? 'Import Project' :
+                            step === 'organization' ? 'Select Organization' : 'Select List'}
                     </DialogTitle>
                     <DialogDescription className="text-slate-400 text-base mt-2">
                         {step === 'provider'
                             ? 'Connect your existing workflow tools to sync projects.'
-                            : 'Choose where you want to import tasks from.'}
+                            : step === 'organization'
+                                ? 'Choose a ClickUp Workspace.'
+                                : 'Choose where you want to import tasks from.'}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -156,6 +185,47 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                         </div>
                     )}
 
+                    {step === 'organization' && (
+                        <div className="h-full flex flex-col">
+                            {isLoadingHierarchy ? (
+                                <div className="flex flex-col items-center justify-center flex-1 min-h-[300px]">
+                                    <div className="relative">
+                                        <div className="absolute inset-0 bg-blue-500 blur-xl opacity-20 animate-pulse"></div>
+                                        <Loader2 className="w-10 h-10 text-blue-400 animate-spin relative z-10" />
+                                    </div>
+                                    <p className="text-slate-400 mt-4 font-medium animate-pulse">Loading Organizations...</p>
+                                </div>
+                            ) : hierarchyData?.organizations && hierarchyData.organizations.length > 0 ? (
+                                <div className="space-y-4 flex-1">
+                                    <div className="grid grid-cols-1 gap-2.5 max-h-[360px] overflow-y-auto pr-2 custom-scrollbar">
+                                        {hierarchyData.organizations.map((org: Organization) => (
+                                            <button
+                                                key={org.id}
+                                                onClick={() => {
+                                                    setSelectedOrganization(org);
+                                                    setStep('hierarchy');
+                                                }}
+                                                className="group flex items-center justify-between p-4 rounded-xl border border-[#293042] bg-[#161b27] hover:bg-[#1e2330] hover:border-blue-500/50 transition-all text-left w-full focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-1 focus:ring-offset-[#0f1117]"
+                                            >
+                                                <div className="flex items-center gap-3.5">
+                                                    <Building2 className="w-5 h-5 text-blue-400/80 group-hover:text-blue-400 transition-colors" />
+                                                    <span className="font-semibold text-slate-200 group-hover:text-white transition-colors">{org.name}</span>
+                                                </div>
+                                                <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-blue-400 transition-colors transform group-hover:translate-x-0.5" />
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-center flex flex-col items-center justify-center py-12 text-slate-500 border-2 border-dashed border-slate-800 rounded-2xl bg-slate-900/30">
+                                    <Cloud className="w-12 h-12 text-slate-700 mb-3" />
+                                    <p className="font-medium text-slate-400">No organizations found</p>
+                                    <p className="text-sm mt-1 text-slate-500">Check your ClickUp permissions</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {step === 'hierarchy' && (
                         <div className="h-full flex flex-col">
                             {isLoadingHierarchy ? (
@@ -164,18 +234,18 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                                         <div className="absolute inset-0 bg-blue-500 blur-xl opacity-20 animate-pulse"></div>
                                         <Loader2 className="w-10 h-10 text-blue-400 animate-spin relative z-10" />
                                     </div>
-                                    <p className="text-slate-400 mt-4 font-medium animate-pulse">Connecting to ClickUp...</p>
+                                    <p className="text-slate-400 mt-4 font-medium animate-pulse">Loading Spaces...</p>
                                 </div>
-                            ) : hierarchyData?.spaces && hierarchyData.spaces.length > 0 ? (
+                            ) : hierarchyData?.organizations?.[0]?.spaces && hierarchyData.organizations[0].spaces.length > 0 ? (
                                 <div className="space-y-6 flex-1">
                                     {/* Space Selection */}
                                     {!selectedSpace && (
                                         <div className="animate-in fade-in slide-in-from-right-4 duration-300">
                                             <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 px-1">
-                                                Available Spaces
+                                                Available Spaces ({selectedOrganization?.name})
                                             </h3>
                                             <div className="grid grid-cols-1 gap-2.5 max-h-[360px] overflow-y-auto pr-2 custom-scrollbar">
-                                                {hierarchyData.spaces.map((space: Space) => (
+                                                {hierarchyData.organizations[0].spaces.map((space: Space) => (
                                                     <button
                                                         key={space.id}
                                                         onClick={() => setSelectedSpace(space)}
@@ -218,7 +288,7 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                                                 Select List
                                             </h3>
                                             <div className="grid grid-cols-1 gap-2.5 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                                                {hierarchyData.spaces
+                                                {hierarchyData.organizations[0].spaces
                                                     .find((s: Space) => s.id === selectedSpace.id)
                                                     ?.lists?.map((list: ListItem) => (
                                                         <button
@@ -267,10 +337,13 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                 <div className="flex items-center justify-between p-6 bg-[#0B0D12] border-t border-[#1e293b]">
                     <Button
                         variant="ghost"
-                        onClick={handleClose}
+                        onClick={selectedSpace ? () => {
+                            setSelectedSpace(null);
+                            setSelectedList(null);
+                        } : handleBack}
                         className="text-slate-400 hover:text-white hover:bg-slate-800/50 px-6 font-medium"
                     >
-                        Cancel
+                        {selectedSpace ? 'Back to Spaces' : 'Back'}
                     </Button>
                     {step === 'hierarchy' && selectedList && (
                         <Button
