@@ -34,7 +34,7 @@ import {
     CardHeader,
 } from '@/components/ui/card';
 import { Copy, XCircle, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
-import { type Invitation, InvitationStatus, type Role } from '@/types/invitation';
+import { type Invitation, InvitationStatus } from '@/types/invitation';
 
 interface InvitationsTableProps {
     invitations: Invitation[];

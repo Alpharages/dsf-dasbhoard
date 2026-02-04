@@ -44,6 +44,7 @@ import { EscalationAnalyticsPage } from './components/architecture-review/Escala
 import ArchitectureMetricsPage from './pages/architecture-review/ArchitectureMetricsPage';
 import { InvitationsPage } from './pages/InvitationsPage';
 import UsersPage from './pages/UsersPage';
+import { LeadQaReviewDashboardPage } from './pages/QaReviewDashboardPage';
 
 
 
@@ -453,6 +454,14 @@ function AppContent({ navigate }: { navigate: any }) {
               element={
                 <ProtectedRoute>
                   <WorkloadCapacityPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/qa-review/dashboard"
+              element={
+                <ProtectedRoute requiredRoles={['QA', 'TL', 'ADMIN', 'MANAGER']}>
+                  <LeadQaReviewDashboardPage />
                 </ProtectedRoute>
               }
             />

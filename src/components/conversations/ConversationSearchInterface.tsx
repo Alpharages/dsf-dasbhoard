@@ -61,10 +61,10 @@ export const ConversationSearchInterface: React.FC<ConversationSearchInterfacePr
             const result = await searchConversations(filters);
 
             if (isLoadMore) {
-                setConversations(prev => [...prev, ...result.data]);
+                setConversations(prev => [...prev, ...result.conversations]);
                 setOffset(prev => prev + limit);
             } else {
-                setConversations(result.data);
+                setConversations(result.conversations);
                 setOffset(limit);
             }
 

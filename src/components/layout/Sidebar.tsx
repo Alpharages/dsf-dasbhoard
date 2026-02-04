@@ -13,7 +13,8 @@ import {
     SettingsIcon,
     Brain,
     UserPlus,
-    Users
+    Users,
+    ShieldCheck
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -22,6 +23,7 @@ import { canAccess } from '@/utils/roleHelpers';
 const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
     { icon: Briefcase, label: 'Projects', path: '/projects/sync' },
+    { icon: ShieldCheck, label: 'QA Review', path: '/qa-review/dashboard' },
     { icon: CheckCircle, label: 'Decisions', path: '/decisions' },
     { icon: MessageSquare, label: 'Conversations', path: '/conversations' },
     { icon: Clock, label: 'Activity', path: '/activity' },
@@ -67,6 +69,11 @@ export const Sidebar: React.FC = () => {
                     // RBAC: Only show Users to ADMIN
                     if (item.path === '/admin/users') {
                         if (!user || user.role !== 'ADMIN') return null;
+                    }
+
+                    // RBAC: Only show QA Review to QA, TL, ADMIN, or MANAGER
+                    if (item.path === '/qa-review/dashboard') {
+                        if (!user || (!canAccess(user.role, 'QA') && !canAccess(user.role, 'TL'))) return null;
                     }
 
                     // RBAC: Only show Architecture Review to TL or ADMIN

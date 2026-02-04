@@ -1,10 +1,9 @@
-export interface RegisterRequest {
-    inviteToken: string;
+export interface LoginCredentials {
+    email: string;
     password: string;
-    fullName: string;
 }
 
-export interface RegisterResponse {
+export interface LoginResponse {
     accessToken: string;
     refreshToken: string;
     user: {
@@ -16,3 +15,11 @@ export interface RegisterResponse {
         lastLoginAt: string | null;
     };
 }
+
+export interface RegisterRequest {
+    inviteToken: string;
+    password: string;
+    fullName: string;
+}
+
+export type RegisterResponse = LoginResponse;
