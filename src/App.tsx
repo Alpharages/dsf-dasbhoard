@@ -45,6 +45,7 @@ import ArchitectureMetricsPage from './pages/architecture-review/ArchitectureMet
 import { InvitationsPage } from './pages/InvitationsPage';
 import UsersPage from './pages/UsersPage';
 import { LeadQaReviewDashboardPage } from './pages/QaReviewDashboardPage';
+import { ProductionErrorDashboard } from './pages/ProductionErrorDashboard';
 
 
 
@@ -535,6 +536,16 @@ function AppContent({ navigate }: { navigate: any }) {
               <Route path="health" element={<HealthPanel />} />
               <Route index element={<CleanupPanel />} /> {/* Default to cleanup */}
             </Route>
+
+            {/* Production Errors - all authenticated users */}
+            <Route
+              path="/production-errors"
+              element={
+                <ProtectedRoute>
+                  <ProductionErrorDashboard />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Catch-all redirect to dashboard (protected) */}
             <Route path="*" element={

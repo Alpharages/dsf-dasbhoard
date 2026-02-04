@@ -14,7 +14,8 @@ import {
     Brain,
     UserPlus,
     Users,
-    ShieldCheck
+    ShieldCheck,
+    AlertTriangle
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -34,6 +35,7 @@ const navItems = [
     { icon: SettingsIcon, label: 'Architecture Constraints', path: '/architecture-review/constraints' },
     { icon: Brain, label: 'AI Capabilities', path: '/architecture/capabilities' },
     { icon: DollarSign, label: 'Financial Metrics', path: '/financial-metrics' },
+    { icon: AlertTriangle, label: 'Production Errors', path: '/production-errors' },
     { icon: UserPlus, label: 'Invitations', path: '/admin/invitations' },
     { icon: Users, label: 'Users', path: '/admin/users' },
     { icon: Settings, label: 'Settings', path: '/settings' },
