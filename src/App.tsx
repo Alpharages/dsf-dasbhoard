@@ -34,7 +34,7 @@ import { ProjectsSyncPage } from './pages/ProjectsSyncPage';
 import { Toaster, toast } from 'react-hot-toast';
 import { FinancialMetricsSection } from './components/financial/FinancialMetricsSection';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts';
 import { ForbiddenPage } from './pages/ForbiddenPage';
 import { Loader2 } from 'lucide-react';
 
@@ -54,7 +54,7 @@ import { NotificationPreferences } from './pages/NotificationPreferences';
 // Shared Layout component
 function DashboardLayout() {
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-200">
+    <div className="flex min-h-screen bg-[var(--color-bg)] text-[var(--color-text-primary)] transition-colors duration-200">
       <Sidebar />
       <main className="flex-1 ml-64 p-8 relative">
         <Header />
@@ -66,9 +66,9 @@ function DashboardLayout() {
         position="bottom-right"
         toastOptions={{
           style: {
-            background: '#0f172a',
-            color: '#cbd5e1',
-            border: '1px solid #1e293b',
+            background: 'var(--color-surface)',
+            color: 'var(--color-text-primary)',
+            border: '1px solid var(--color-border)',
             borderRadius: '12px',
           }
         }}

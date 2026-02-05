@@ -1,0 +1,380 @@
+/**
+ * Improved Sidebar Component
+ * Features: Collapsible groups, favorites, recent items, icon-only mode
+ */
+
+import { useState, useMemo } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { canAccess } from '@/utils/roleHelpers';
+import { cn } from '@/lib/utils';
+import {
+  LayoutDashboard,
+  Briefcase,
+  MessageSquare,
+  Settings,
+  CheckCircle,
+  DollarSign,
+  Gauge,
+  Building,
+  Brain,
+  UserPlus,
+  Users,
+  ShieldCheck,
+  AlertTriangle,
+  Activity,
+  Bell,
+  ChevronDown,
+  ChevronRight,
+  Star,
+  Clock,
+  Pin,
+  PanelLeft,
+  BarChart3,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
+// Navigation groups with hierarchy
+const navigationGroups = [
+  {
+    id: 'overview',
+    label: 'Overview',
+    icon: LayoutDashboard,
+    items: [
+      { icon: LayoutDashboard, label: 'Dashboard', path: '/', shortcut: 'G D' },
+      { icon: Activity, label: 'Executions', path: '/executions', shortcut: 'G E' },
+    ],
+  },
+  {
+    id: 'projects',
+    label: 'Projects & Work',
+    icon: Briefcase,
+    items: [
+      { icon: Briefcase, label: 'Projects', path: '/projects/sync', shortcut: 'G P' },
+      { icon: CheckCircle, label: 'Decisions', path: '/decisions', shortcut: 'G N' },
+      { icon: ShieldCheck, label: 'QA Review', path: '/qa-review/dashboard', roles: ['QA', 'TL', 'ADMIN', 'MANAGER'] },
+    ],
+  },
+  {
+    id: 'analytics',
+    label: 'Analytics',
+    icon: BarChart3,
+    items: [
+      { icon: Gauge, label: 'Capacity Monitor', path: '/capacity-monitor' },
+      { icon: DollarSign, label: 'Financial Metrics', path: '/financial-metrics', roles: ['MANAGER', 'ADMIN'] },
+      { icon: BarChart3, label: 'Cost Analysis', path: '/cost' },
+    ],
+  },
+  {
+    id: 'architecture',
+    label: 'Architecture',
+    icon: Building,
+    items: [
+      { icon: Building, label: 'Review Queue', path: '/architecture-review/queue', roles: ['TL', 'ADMIN'] },
+      { icon: BarChart3, label: 'Metrics & Insights', path: '/architecture-review/metrics', roles: ['TL', 'ADMIN'] },
+      { icon: Settings, label: 'Constraints', path: '/architecture-review/constraints', roles: ['TL', 'ADMIN'] },
+      { icon: Brain, label: 'AI Capabilities', path: '/architecture/capabilities' },
+    ],
+  },
+  {
+    id: 'operations',
+    label: 'Operations',
+    icon: AlertTriangle,
+    items: [
+      { icon: AlertTriangle, label: 'Production Errors', path: '/production-errors' },
+      { icon: MessageSquare, label: 'Conversations', path: '/conversations' },
+    ],
+  },
+  {
+    id: 'admin',
+    label: 'Administration',
+    icon: Users,
+    items: [
+      { icon: UserPlus, label: 'Invitations', path: '/admin/invitations', roles: ['MANAGER', 'ADMIN'] },
+      { icon: Users, label: 'Users', path: '/admin/users', roles: ['ADMIN'] },
+      { icon: Bell, label: 'Notifications', path: '/notifications/preferences' },
+      { icon: Settings, label: 'Settings', path: '/settings' },
+    ],
+  },
+];
+
+interface SidebarProps {
+  className?: string;
+}
+
+export function ImprovedSidebar({ className }: SidebarProps) {
+  const location = useLocation();
+  const { user } = useAuth();
+  
+  // State for collapsible features
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState<string[]>(['overview', 'projects']);
+  const [favorites, setFavorites] = useState<string[]>(['/']);
+
+  // Toggle group expansion
+  const toggleGroup = (groupId: string) => {
+    setExpandedGroups(prev =>
+      prev.includes(groupId)
+        ? prev.filter(id => id !== groupId)
+        : [...prev, groupId]
+    );
+  };
+
+  // Toggle favorite
+  const toggleFavorite = (path: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setFavorites(prev =>
+      prev.includes(path)
+        ? prev.filter(p => p !== path)
+        : [...prev, path]
+    );
+  };
+
+  // Check if item is active
+  const isActive = (path: string) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(path);
+  };
+
+  // Filter items based on user role
+  const getVisibleItems = (items: any[]) => {
+    return items.filter(item => {
+      if (!item.roles) return true;
+      return item.roles.some((role: string) => user?.role && canAccess(user.role, role));
+    });
+  };
+
+  // Get all visible navigation items for favorites
+  const allVisibleItems = useMemo(() => {
+    const items: { path: string; label: string; icon: any }[] = [];
+    navigationGroups.forEach(group => {
+      group.items.forEach(item => {
+        if (!item.roles || (user?.role && item.roles.some((role: string) => canAccess(user.role, role)))) {
+          items.push({ path: item.path, label: item.label, icon: item.icon });
+        }
+      });
+    });
+    return items;
+  }, [user?.role]);
+
+  return (
+    <TooltipProvider delayDuration={0}>
+      <aside
+        className={cn(
+          'fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-slate-800 bg-slate-950 transition-all duration-300',
+          isCollapsed ? 'w-[72px]' : 'w-[280px]',
+          className
+        )}
+      >
+        {/* Logo Section */}
+        <div className="flex h-[72px] items-center justify-between border-b border-slate-800 px-4">
+          <Link to="/" className="flex items-center gap-3 overflow-hidden">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 shadow-lg shadow-blue-500/20">
+              <Briefcase className="h-5 w-5 text-white" />
+            </div>
+            {!isCollapsed && (
+              <div className="flex flex-col">
+                <span className="whitespace-nowrap text-lg font-bold tracking-tight text-white">
+                  DSF
+                </span>
+                <span className="whitespace-nowrap text-[10px] font-medium text-slate-500">
+                  Dark Software Factory
+                </span>
+              </div>
+            )}
+          </Link>
+          {!isCollapsed && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-slate-400 hover:text-white"
+              onClick={() => setIsCollapsed(true)}
+            >
+              <PanelLeft className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+
+        {/* Favorites Section - Only show when not collapsed */}
+        {!isCollapsed && favorites.length > 0 && (
+          <div className="border-b border-slate-800/50 px-4 py-3">
+            <p className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              <Pin className="h-3 w-3" />
+              Favorites
+            </p>
+            <div className="space-y-1">
+              {favorites.slice(0, 4).map(path => {
+                const item = allVisibleItems.find(i => i.path === path);
+                if (!item) return null;
+                const active = isActive(path);
+                return (
+                  <Link
+                    key={path}
+                    to={path}
+                    className={cn(
+                      'flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors',
+                      active
+                        ? 'bg-blue-500/10 text-blue-400'
+                        : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+                    )}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span className="truncate">{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Navigation Groups */}
+        <ScrollArea className="flex-1 px-3 py-4">
+          <div className="space-y-1">
+            {navigationGroups.map(group => {
+              const visibleItems = getVisibleItems(group.items);
+              if (visibleItems.length === 0) return null;
+
+              const isExpanded = expandedGroups.includes(group.id);
+
+              if (isCollapsed) {
+                // Collapsed mode: Show icons only with tooltip
+                return (
+                  <Tooltip key={group.id}>
+                    <TooltipTrigger asChild>
+                      <button
+                        className={cn(
+                          'flex h-10 w-full items-center justify-center rounded-lg transition-colors',
+                          visibleItems.some(item => isActive(item.path))
+                            ? 'bg-blue-500/10 text-blue-400'
+                            : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+                        )}
+                        onClick={() => toggleGroup(group.id)}
+                      >
+                        <group.icon className="h-5 w-5" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" className="flex flex-col gap-1">
+                      <span className="font-semibold">{group.label}</span>
+                      <div className="space-y-1">
+                        {visibleItems.map(item => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className={cn(
+                              'block text-xs',
+                              isActive(item.path) ? 'text-blue-400' : 'text-slate-400'
+                            )}
+                          >
+                            {item.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              }
+
+              return (
+                <div key={group.id} className="mb-2">
+                  <button
+                    onClick={() => toggleGroup(group.id)}
+                    className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-slate-400"
+                  >
+                    <span>{group.label}</span>
+                    {isExpanded ? (
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    ) : (
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    )}
+                  </button>
+
+                  {isExpanded && (
+                    <div className="mt-1 space-y-0.5">
+                      {visibleItems.map(item => {
+                        const active = isActive(item.path);
+                        return (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className={cn(
+                              'group flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-all',
+                              active
+                                ? 'bg-blue-500/10 text-blue-400'
+                                : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+                            )}
+                          >
+                            <div className="flex items-center gap-3">
+                              <item.icon
+                                className={cn(
+                                  'h-4 w-4 transition-colors',
+                                  active ? 'text-blue-500' : 'text-slate-500 group-hover:text-slate-400'
+                                )}
+                              />
+                              <span>{item.label}</span>
+                            </div>
+                            <button
+                              onClick={(e) => toggleFavorite(item.path, e)}
+                              className={cn(
+                                'opacity-0 transition-opacity group-hover:opacity-100',
+                                favorites.includes(item.path) && 'opacity-100'
+                              )}
+                            >
+                              <Star
+                                className={cn(
+                                  'h-3.5 w-3.5',
+                                  favorites.includes(item.path)
+                                    ? 'fill-amber-400 text-amber-400'
+                                    : 'text-slate-600'
+                                )}
+                              />
+                            </button>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </ScrollArea>
+
+        {/* Bottom Section */}
+        <div className="border-t border-slate-800 p-3">
+          {isCollapsed ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-full text-slate-400 hover:text-white"
+                  onClick={() => setIsCollapsed(false)}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">Expand sidebar</TooltipContent>
+            </Tooltip>
+          ) : (
+            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10">
+                  <Clock className="h-4 w-4 text-blue-400" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-slate-300">Last sync</p>
+                  <p className="text-[10px] text-slate-500">2 minutes ago</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </aside>
+    </TooltipProvider>
+  );
+}
