@@ -55,13 +55,19 @@ import { NotificationPreferences } from './pages/NotificationPreferences';
 function DashboardLayout() {
   return (
     <div className="flex min-h-screen bg-[var(--color-bg)] text-[var(--color-text-primary)] transition-colors duration-200">
-      <Sidebar />
-      <main className="flex-1 ml-64 p-8 relative">
+      {/* Desktop Sidebar - hidden on mobile */}
+      <div className="hidden lg:block">
+        <Sidebar />
+      </div>
+      
+      {/* Main Content - responsive margin */}
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 lg:ml-64 relative">
         <Header />
-        <div className="max-w-7xl mx-auto pt-8">
+        <div className="max-w-7xl mx-auto pt-4 sm:pt-6 lg:pt-8">
           <Outlet />
         </div>
       </main>
+      
       <Toaster
         position="bottom-right"
         toastOptions={{

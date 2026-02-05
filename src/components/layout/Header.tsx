@@ -3,9 +3,10 @@
  * Features: Search, notifications, user menu, theme toggle
  */
 
-import { Search, User, LogOut, Settings } from 'lucide-react';
+import { Search, User, LogOut, Settings, Menu } from 'lucide-react';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 import { ThemeToggleCompact } from '@/components/improved/ThemeToggle';
+import { MobileSidebar } from './MobileSidebar';
 import { useAuth } from '@/contexts';
 import {
   DropdownMenu,
@@ -25,9 +26,10 @@ export const Header: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       className="h-16 border-b border-slate-800 bg-slate-900/80 backdrop-blur-xl flex items-center justify-between px-6 sticky top-0 z-30"
     >
-      {/* Search */}
+      {/* Left: Mobile Menu + Search */}
       <div className="flex items-center gap-4 flex-1">
-        <div className="relative w-96 max-w-full group">
+        <MobileSidebar />
+        <div className="relative w-full max-w-md group hidden sm:block">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-400 transition-colors" />
           <input
             type="text"
