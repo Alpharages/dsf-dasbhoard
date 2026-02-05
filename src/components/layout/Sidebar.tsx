@@ -15,7 +15,9 @@ import {
     UserPlus,
     Users,
     ShieldCheck,
-    AlertTriangle
+    AlertTriangle,
+    Activity,
+    Bell
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -24,6 +26,7 @@ import { canAccess } from '@/utils/roleHelpers';
 const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
     { icon: Briefcase, label: 'Projects', path: '/projects/sync' },
+    { icon: Activity, label: 'Executions', path: '/executions' },
     { icon: ShieldCheck, label: 'QA Review', path: '/qa-review/dashboard' },
     { icon: CheckCircle, label: 'Decisions', path: '/decisions' },
     { icon: MessageSquare, label: 'Conversations', path: '/conversations' },
@@ -36,6 +39,7 @@ const navItems = [
     { icon: Brain, label: 'AI Capabilities', path: '/architecture/capabilities' },
     { icon: DollarSign, label: 'Financial Metrics', path: '/financial-metrics' },
     { icon: AlertTriangle, label: 'Production Errors', path: '/production-errors' },
+    { icon: Bell, label: 'Notifications', path: '/notifications/preferences' },
     { icon: UserPlus, label: 'Invitations', path: '/admin/invitations' },
     { icon: Users, label: 'Users', path: '/admin/users' },
     { icon: Settings, label: 'Settings', path: '/settings' },

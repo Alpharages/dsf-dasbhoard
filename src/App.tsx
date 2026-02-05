@@ -46,6 +46,8 @@ import { InvitationsPage } from './pages/InvitationsPage';
 import UsersPage from './pages/UsersPage';
 import { LeadQaReviewDashboardPage } from './pages/QaReviewDashboardPage';
 import { ProductionErrorDashboard } from './pages/ProductionErrorDashboard';
+import { ExecutionMonitoringDashboard } from './pages/ExecutionMonitoringDashboard';
+import { NotificationPreferences } from './pages/NotificationPreferences';
 
 
 
@@ -543,6 +545,26 @@ function AppContent({ navigate }: { navigate: any }) {
               element={
                 <ProtectedRoute>
                   <ProductionErrorDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Execution Monitoring - PM, TL, Manager, Admin */}
+            <Route
+              path="/executions"
+              element={
+                <ProtectedRoute requiredRoles={['PM', 'TL', 'MANAGER', 'ADMIN']}>
+                  <ExecutionMonitoringDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Notification Preferences - all authenticated users */}
+            <Route
+              path="/notifications/preferences"
+              element={
+                <ProtectedRoute>
+                  <NotificationPreferences />
                 </ProtectedRoute>
               }
             />

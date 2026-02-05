@@ -23,7 +23,12 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ open, onOpenChange, children 
     )
 }
 
-const AlertDialogContent: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => {
+interface AlertDialogContentProps {
+    children: React.ReactNode;
+    className?: string;
+}
+
+const AlertDialogContent: React.FC<AlertDialogContentProps> = ({ children, className }) => {
     return <DialogContent className={className}>{children}</DialogContent>
 }
 
@@ -31,24 +36,38 @@ const AlertDialogHeader: React.FC<{ children: React.ReactNode }> = ({ children }
     return <DialogHeader>{children}</DialogHeader>
 }
 
-const AlertDialogTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    return <DialogTitle>{children}</DialogTitle>
+const AlertDialogTitle: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => {
+    return <DialogTitle className={className}>{children}</DialogTitle>
 }
 
 const AlertDialogDescription: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => {
     return <DialogDescription className={className}>{children}</DialogDescription>
 }
 
-const AlertDialogFooter: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    return <DialogFooter>{children}</DialogFooter>
+const AlertDialogFooter: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => {
+    return <DialogFooter className={className}>{children}</DialogFooter>
 }
 
-const AlertDialogAction: React.FC<{ children: React.ReactNode; onClick?: () => void; className?: string }> = ({ children, onClick, className }) => {
-    return <Button onClick={onClick} className={className}>{children}</Button>
+interface AlertDialogActionProps {
+    children: React.ReactNode;
+    onClick?: () => void;
+    className?: string;
+    disabled?: boolean;
 }
 
-const AlertDialogCancel: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => {
-    return <Button variant="outline" className={className}>{children}</Button>
+const AlertDialogAction: React.FC<AlertDialogActionProps> = ({ children, onClick, className, disabled }) => {
+    return <Button onClick={onClick} className={className} disabled={disabled}>{children}</Button>
+}
+
+interface AlertDialogCancelProps {
+    children: React.ReactNode;
+    onClick?: () => void;
+    className?: string;
+    disabled?: boolean;
+}
+
+const AlertDialogCancel: React.FC<AlertDialogCancelProps> = ({ children, onClick, className, disabled }) => {
+    return <Button variant="outline" onClick={onClick} className={className} disabled={disabled}>{children}</Button>
 }
 
 export {

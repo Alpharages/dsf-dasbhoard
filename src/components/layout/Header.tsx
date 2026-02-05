@@ -1,4 +1,5 @@
-import { Bell, Search, User } from 'lucide-react';
+import { Search, User } from 'lucide-react';
+import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 
 export const Header: React.FC = () => {
     return (
@@ -15,10 +16,7 @@ export const Header: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-4">
-                <button className="relative p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-full transition-colors">
-                    <Bell className="w-5 h-5" />
-                    <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-slate-900"></span>
-                </button>
+                <NotificationCenter />
                 <div className="h-8 w-px bg-slate-700 mx-2"></div>
                 <div className="flex items-center gap-3 pl-2">
                     <div className="text-right hidden sm:block">

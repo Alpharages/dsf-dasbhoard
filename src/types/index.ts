@@ -62,3 +62,8 @@ export interface ExecutionProgressPayload {
     percentage?: number;
     message?: string;
 }
+
+// Export new types for execution monitoring and notifications
+export * from './execution';
+export * from './notifications';
+export * from './project';
