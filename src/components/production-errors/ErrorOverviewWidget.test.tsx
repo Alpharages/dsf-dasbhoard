@@ -34,7 +34,7 @@ const renderWithQueryClient = (ui: React.ReactElement) => {
 
 describe('ErrorOverviewWidget', () => {
   it('renders loading state', () => {
-    (useProductionErrorsOverview as any).mockReturnValue({
+    (useProductionErrorsOverview as ReturnType<typeof vi.fn>).mockReturnValue({
       data: null,
       isLoading: true,
     });
@@ -46,7 +46,7 @@ describe('ErrorOverviewWidget', () => {
   });
 
   it('renders overview data correctly', () => {
-    (useProductionErrorsOverview as any).mockReturnValue({
+    (useProductionErrorsOverview as ReturnType<typeof vi.fn>).mockReturnValue({
       data: {
         totalActiveErrors: 10,
         newErrors24h: 5,
@@ -70,7 +70,7 @@ describe('ErrorOverviewWidget', () => {
   });
 
   it('handles missing mttr data', () => {
-    (useProductionErrorsOverview as any).mockReturnValue({
+    (useProductionErrorsOverview as ReturnType<typeof vi.fn>).mockReturnValue({
       data: {
         totalActiveErrors: 5,
         newErrors24h: 2,

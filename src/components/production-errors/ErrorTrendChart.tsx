@@ -13,7 +13,7 @@
 import { memo, useMemo } from 'react';
 import { useProductionErrorTrends } from '@/hooks/useProductionErrors';
 import { Skeleton } from '@/components/ui/skeleton';
-// Note: Using barrel import from recharts - tree-shaking works via ESM
+// Note: Using barrel import from recharts - Vite handles tree-shaking via ESM
 import {
   LineChart,
   Line,

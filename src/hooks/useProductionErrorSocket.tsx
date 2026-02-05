@@ -5,7 +5,7 @@
  * Socket.IO hook for real-time error notifications.
  */
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { toast } from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
@@ -49,6 +49,7 @@ export function useProductionErrorSocket(
 ) {
   const socketRef = useRef<Socket | null>(null);
   const queryClient = useQueryClient();
+  const [isConnected, setIsConnected] = useState(false);
 
   // Default error created handler with toast notification
   const handleErrorCreated = useCallback((error: ErrorCreatedEvent) => {
@@ -118,12 +119,14 @@ export function useProductionErrorSocket(
 
     socket.on('connect', () => {
       console.log('Connected to production events socket');
+      setIsConnected(true);
       // Join the production_events room
       socket.emit('join', 'production_events');
     });
 
     socket.on('disconnect', () => {
       console.log('Disconnected from production events socket');
+      setIsConnected(false);
     });
 
     // Listen for error events
@@ -134,12 +137,12 @@ export function useProductionErrorSocket(
     socketRef.current = socket;
 
     return () => {
+      setIsConnected(false);
       socket.disconnect();
     };
   }, [token, handleErrorCreated, handleErrorAcknowledged, handleTicketCreated]);
 
   return {
-    socket: socketRef.current,
-    isConnected: !!socketRef.current?.connected,
+    isConnected,
   };
 }

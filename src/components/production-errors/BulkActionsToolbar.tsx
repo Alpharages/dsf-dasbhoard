@@ -39,9 +39,7 @@ function BulkActionsToolbarComponent({ selectedErrors, onClearSelection }: BulkA
   const { mutate: acknowledgeError, isPending: isAcknowledging } = useAcknowledgeError();
   const { mutate: exportErrors, isPending: isExporting } = useExportErrors();
 
-  if (selectedErrors.length === 0) return null;
-
-  // useCallback for stable function references
+  // useCallback for stable function references - must be before any conditional returns
   const handleCreateTickets = useCallback(() => {
     bulkCreateTickets(selectedErrors, {
       onSuccess: (result) => {
@@ -111,6 +109,9 @@ function BulkActionsToolbarComponent({ selectedErrors, onClearSelection }: BulkA
       },
     });
   }, [exportErrors, selectedErrors, onClearSelection]);
+
+  // Conditional return after all hooks
+  if (selectedErrors.length === 0) return null;
 
   return (
     <>
