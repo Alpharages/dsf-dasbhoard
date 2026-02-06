@@ -91,14 +91,14 @@ export function LoginPage() {
     // Show loading spinner during initial auth check
     if (authLoading) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-slate-950">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+            <div className="flex min-h-screen items-center justify-center bg-background">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
         );
     }
 
     return (
-        <div className="flex min-h-screen bg-slate-950">
+        <div className="flex min-h-screen bg-background">
             {/* Left side - Branding */}
             <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 to-purple-600 items-center justify-center p-12">
                 <div className="max-w-md text-white">
@@ -116,20 +116,20 @@ export function LoginPage() {
                 <div className="w-full max-w-md">
                     {/* Logo for mobile */}
                     <div className="lg:hidden mb-8 text-center">
-                        <h1 className="text-3xl font-extrabold text-white">DSF Dashboard</h1>
+                        <h1 className="text-3xl font-extrabold text-foreground">DSF Dashboard</h1>
                     </div>
 
                     {/* Login Card */}
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
+                    <div className="bg-card border border-border rounded-2xl p-8 shadow-2xl">
                         <div className="mb-8">
-                            <h2 className="text-3xl font-bold text-white mb-2">Welcome Back</h2>
-                            <p className="text-slate-400">Enter your credentials to access the dashboard</p>
+                            <h2 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h2>
+                            <p className="text-muted-foreground">Enter your credentials to access the dashboard</p>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {/* Email Field */}
                             <div className="space-y-2">
-                                <Label htmlFor="email" className="text-slate-300 font-medium">
+                                <Label htmlFor="email" className="text-muted-foreground font-medium">
                                     Email
                                 </Label>
                                 <Input
@@ -139,16 +139,16 @@ export function LoginPage() {
                                     value={email}
                                     onChange={(e) => handleEmailChange(e.target.value)}
                                     autoFocus
-                                    className={errors.email ? 'border-rose-500 focus-visible:ring-rose-500' : ''}
+                                    className={errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}
                                 />
                                 {errors.email && (
-                                    <p className="text-sm text-rose-500 mt-1">{errors.email}</p>
+                                    <p className="text-sm text-destructive mt-1">{errors.email}</p>
                                 )}
                             </div>
 
                             {/* Password Field */}
                             <div className="space-y-2">
-                                <Label htmlFor="password" className="text-slate-300 font-medium">
+                                <Label htmlFor="password" className="text-muted-foreground font-medium">
                                     Password
                                 </Label>
                                 <Input
@@ -157,10 +157,10 @@ export function LoginPage() {
                                     placeholder="••••••••"
                                     value={password}
                                     onChange={(e) => handlePasswordChange(e.target.value)}
-                                    className={errors.password ? 'border-rose-500 focus-visible:ring-rose-500' : ''}
+                                    className={errors.password ? 'border-destructive focus-visible:ring-destructive' : ''}
                                 />
                                 {errors.password && (
-                                    <p className="text-sm text-rose-500 mt-1">{errors.password}</p>
+                                    <p className="text-sm text-destructive mt-1">{errors.password}</p>
                                 )}
                             </div>
 
@@ -171,17 +171,17 @@ export function LoginPage() {
                                     type="checkbox"
                                     checked={rememberMe}
                                     onChange={(e) => setRememberMe(e.target.checked)}
-                                    className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+                                    className="w-4 h-4 rounded border-input bg-background/50 text-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
                                 />
-                                <Label htmlFor="remember-me" className="text-sm text-slate-400 cursor-pointer">
+                                <Label htmlFor="remember-me" className="text-sm text-muted-foreground cursor-pointer">
                                     Remember me for 30 days
                                 </Label>
                             </div>
 
                             {/* General Error */}
                             {errors.general && (
-                                <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4">
-                                    <p className="text-sm text-rose-500">{errors.general}</p>
+                                <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-4">
+                                    <p className="text-sm text-destructive">{errors.general}</p>
                                 </div>
                             )}
 
@@ -189,7 +189,7 @@ export function LoginPage() {
                             <Button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 text-base rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:translate-y-[-2px] active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 text-base rounded-xl shadow-lg shadow-primary/20 transition-all hover:translate-y-[-2px] active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                             >
                                 {isSubmitting ? (
                                     <>
@@ -204,7 +204,7 @@ export function LoginPage() {
                     </div>
 
                     {/* Footer */}
-                    <p className="text-center text-slate-500 text-sm mt-6">
+                    <p className="text-center text-muted-foreground text-sm mt-6">
                         © 2026 Dark Software Factory. All rights reserved.
                     </p>
                 </div>

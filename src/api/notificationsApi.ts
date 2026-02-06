@@ -103,6 +103,6 @@ export async function markAllNotificationsAsRead(): Promise<MarkAllAsReadRespons
  * Get unread notification count
  */
 export async function getUnreadNotificationCount(): Promise<{ count: number }> {
-  const response = await apiClient.get(`${BASE_URL}/in-app/count`);
+  const response = await apiClient.get(`${BASE_URL}/in-app/unread-count`);
   return response.data;
 }

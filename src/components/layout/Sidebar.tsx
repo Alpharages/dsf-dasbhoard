@@ -166,23 +166,23 @@ export function Sidebar({ className }: SidebarProps) {
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          'fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-slate-800 bg-slate-950 transition-all duration-300',
+          'fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300',
           isCollapsed ? 'w-[72px]' : 'w-[280px]',
           className
         )}
       >
         {/* Logo Section */}
-        <div className="flex h-[72px] items-center justify-between border-b border-slate-800 px-4">
+        <div className="flex h-[72px] items-center justify-between border-b border-sidebar-border px-4">
           <Link to="/" className="flex items-center gap-3 overflow-hidden">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 shadow-lg shadow-blue-500/20">
               <Briefcase className="h-5 w-5 text-white" />
             </div>
             {!isCollapsed && (
               <div className="flex flex-col">
-                <span className="whitespace-nowrap text-lg font-bold tracking-tight text-white">
+                <span className="whitespace-nowrap text-lg font-bold tracking-tight text-sidebar-foreground">
                   DSF
                 </span>
-                <span className="whitespace-nowrap text-[10px] font-medium text-slate-500">
+                <span className="whitespace-nowrap text-[10px] font-medium text-sidebar-foreground/60">
                   Dark Software Factory
                 </span>
               </div>
@@ -192,7 +192,7 @@ export function Sidebar({ className }: SidebarProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-slate-400 hover:text-white"
+              className="h-8 w-8 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent"
               onClick={() => setIsCollapsed(true)}
             >
               <PanelLeft className="h-4 w-4" />
@@ -202,8 +202,8 @@ export function Sidebar({ className }: SidebarProps) {
 
         {/* Favorites Section - Only show when not collapsed */}
         {!isCollapsed && favorites.length > 0 && (
-          <div className="border-b border-slate-800/50 px-4 py-3">
-            <p className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+          <div className="border-b border-sidebar-border px-4 py-3">
+            <p className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-sidebar-foreground/50">
               <Pin className="h-3 w-3" />
               Favorites
             </p>
@@ -213,14 +213,14 @@ export function Sidebar({ className }: SidebarProps) {
                 if (!item) return null;
                 const active = isActive(path);
                 return (
-                  <Link
+                    <Link
                     key={path}
                     to={path}
                     className={cn(
                       'flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors',
                       active
-                        ? 'bg-blue-500/10 text-blue-400'
-                        : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+                        ? 'bg-sidebar-primary/10 text-sidebar-primary'
+                        : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                     )}
                   >
                     <item.icon className="h-4 w-4" />
@@ -250,8 +250,8 @@ export function Sidebar({ className }: SidebarProps) {
                         className={cn(
                           'flex h-10 w-full items-center justify-center rounded-lg transition-colors',
                           visibleItems.some(item => isActive(item.path))
-                            ? 'bg-blue-500/10 text-blue-400'
-                            : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+                            ? 'bg-sidebar-primary/10 text-sidebar-primary'
+                            : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                         )}
                         onClick={() => toggleGroup(group.id)}
                       >
@@ -267,7 +267,7 @@ export function Sidebar({ className }: SidebarProps) {
                             to={item.path}
                             className={cn(
                               'block text-xs',
-                              isActive(item.path) ? 'text-blue-400' : 'text-slate-400'
+                              isActive(item.path) ? 'text-sidebar-primary' : 'text-muted-foreground'
                             )}
                           >
                             {item.label}
@@ -283,7 +283,7 @@ export function Sidebar({ className }: SidebarProps) {
                 <div key={group.id} className="mb-2">
                   <button
                     onClick={() => toggleGroup(group.id)}
-                    className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-slate-400"
+                    className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider text-sidebar-foreground/50 transition-colors hover:text-sidebar-foreground/80"
                   >
                     <span>{group.label}</span>
                     {isExpanded ? (
@@ -304,15 +304,15 @@ export function Sidebar({ className }: SidebarProps) {
                             className={cn(
                               'group flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-all',
                               active
-                                ? 'bg-blue-500/10 text-blue-400'
-                                : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+                                ? 'bg-sidebar-primary/10 text-sidebar-primary'
+                                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                             )}
                           >
                             <div className="flex items-center gap-3">
                               <item.icon
                                 className={cn(
                                   'h-4 w-4 transition-colors',
-                                  active ? 'text-blue-500' : 'text-slate-500 group-hover:text-slate-400'
+                                  active ? 'text-sidebar-primary' : 'text-sidebar-foreground/50 group-hover:text-sidebar-foreground/80'
                                 )}
                               />
                               <span>{item.label}</span>
@@ -329,7 +329,7 @@ export function Sidebar({ className }: SidebarProps) {
                                   'h-3.5 w-3.5',
                                   favorites.includes(item.path)
                                     ? 'fill-amber-400 text-amber-400'
-                                    : 'text-slate-600'
+                                    : 'text-sidebar-foreground/50'
                                 )}
                               />
                             </button>
@@ -345,14 +345,14 @@ export function Sidebar({ className }: SidebarProps) {
         </ScrollArea>
 
         {/* Bottom Section */}
-        <div className="border-t border-slate-800 p-3">
+        <div className="border-t border-sidebar-border p-3">
           {isCollapsed ? (
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-full text-slate-400 hover:text-white"
+                  className="h-10 w-full text-sidebar-foreground/50 hover:text-sidebar-foreground"
                   onClick={() => setIsCollapsed(false)}
                 >
                   <ChevronRight className="h-4 w-4" />
@@ -361,14 +361,14 @@ export function Sidebar({ className }: SidebarProps) {
               <TooltipContent side="right">Expand sidebar</TooltipContent>
             </Tooltip>
           ) : (
-            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3">
+            <div className="rounded-xl border border-sidebar-border bg-sidebar-accent/50 p-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10">
-                  <Clock className="h-4 w-4 text-blue-400" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary/10">
+                  <Clock className="h-4 w-4 text-sidebar-primary" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs font-medium text-slate-300">Last sync</p>
-                  <p className="text-[10px] text-slate-500">2 minutes ago</p>
+                  <p className="text-xs font-medium text-sidebar-foreground">Last sync</p>
+                  <p className="text-[10px] text-muted-foreground">2 minutes ago</p>
                 </div>
               </div>
             </div>

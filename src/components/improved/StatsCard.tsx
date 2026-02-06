@@ -167,17 +167,17 @@ export function StatsCard({
     return (
       <div
         className={cn(
-          'relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50',
+          'relative overflow-hidden rounded-2xl border border-border bg-card/50',
           sizes.padding,
           className
         )}
       >
         <div className="animate-pulse space-y-4">
           <div className="flex items-start justify-between">
-            <div className="h-4 w-24 rounded bg-slate-800" />
-            <div className={cn('rounded-xl bg-slate-800', sizes.iconSize)} />
+            <div className="h-4 w-24 rounded bg-secondary" />
+            <div className={cn('rounded-xl bg-secondary', sizes.iconSize)} />
           </div>
-          <div className={cn('h-8 w-20 rounded bg-slate-800', sizes.value)} />
+          <div className={cn('h-8 w-20 rounded bg-secondary', sizes.value)} />
         </div>
       </div>
     );
@@ -186,8 +186,8 @@ export function StatsCard({
   return (
     <div
       className={cn(
-        'group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 backdrop-blur-sm transition-all duration-300',
-        onClick && 'cursor-pointer hover:border-slate-700 hover:shadow-lg hover:shadow-black/20',
+        'group relative overflow-hidden rounded-2xl border border-border bg-card/80 backdrop-blur-sm transition-all duration-300',
+        onClick && 'cursor-pointer hover:border-border/80 hover:shadow-lg hover:shadow-primary/5',
         sizes.padding,
         className
       )}
@@ -215,11 +215,11 @@ export function StatsCard({
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <p className={cn('font-medium text-slate-500', sizes.title)}>
+            <p className={cn('font-medium text-muted-foreground', sizes.title)}>
               {title}
             </p>
             {subtitle && (
-              <p className="mt-0.5 text-xs text-slate-600">{subtitle}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{subtitle}</p>
             )}
           </div>
           <div
@@ -239,7 +239,7 @@ export function StatsCard({
         <div className="mt-4">
           <h3
             className={cn(
-              'font-black tracking-tight text-white',
+              'font-black tracking-tight text-foreground/90',
               sizes.value
             )}
           >
@@ -262,7 +262,7 @@ export function StatsCard({
               {Math.abs(change.value)}%
             </div>
             {change.label && (
-              <span className="text-xs text-slate-500">{change.label}</span>
+              <span className="text-xs text-muted-foreground">{change.label}</span>
             )}
           </div>
         )}
@@ -271,7 +271,7 @@ export function StatsCard({
         {onClick && (
           <div
             className={cn(
-              'mt-4 flex items-center gap-1 text-xs font-medium text-slate-500 transition-all duration-300',
+              'mt-4 flex items-center gap-1 text-xs font-medium text-muted-foreground transition-all duration-300',
               colors.text,
               isHovered ? 'translate-x-0 opacity-100' : '-translate-x-2 opacity-0'
             )}

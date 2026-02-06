@@ -6,11 +6,9 @@ import {
   Terminal, 
   Loader2,
   AlertTriangle,
-  CheckCircle2,
-  XCircle,
-  Clock
+  MoreVertical,
+  ChevronRight
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
@@ -35,8 +33,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 
 interface ExecutionCardProps {
   execution: Execution;
@@ -46,50 +42,50 @@ interface ExecutionCardProps {
 const statusConfig: Record<ExecutionStatus, { 
   label: string; 
   color: string; 
-  icon: React.ReactNode;
   bgColor: string;
+  borderColor: string;
 }> = {
   'QUEUED': {
     label: 'Queued',
-    color: 'text-slate-400',
-    icon: <Clock className="w-4 h-4" />,
+    color: 'text-slate-500',
     bgColor: 'bg-slate-500/10',
+    borderColor: 'border-slate-500/20'
   },
   'IN_PROGRESS': {
     label: 'In Progress',
     color: 'text-blue-400',
-    icon: <Loader2 className="w-4 h-4 animate-spin" />,
-    bgColor: 'bg-blue-500/10',
+    bgColor: 'bg-blue-500/20',
+    borderColor: 'border-blue-500/30'
   },
   'PAUSED': {
     label: 'Paused',
-    color: 'text-yellow-400',
-    icon: <Pause className="w-4 h-4" />,
-    bgColor: 'bg-yellow-500/10',
+    color: 'text-amber-500',
+    bgColor: 'bg-amber-500/10',
+    borderColor: 'border-amber-500/20'
   },
   'COMPLETED': {
     label: 'Completed',
-    color: 'text-emerald-400',
-    icon: <CheckCircle2 className="w-4 h-4" />,
+    color: 'text-emerald-500',
     bgColor: 'bg-emerald-500/10',
+    borderColor: 'border-emerald-500/20'
   },
   'FAILED': {
     label: 'Failed',
-    color: 'text-rose-400',
-    icon: <XCircle className="w-4 h-4" />,
+    color: 'text-rose-500',
     bgColor: 'bg-rose-500/10',
+    borderColor: 'border-rose-500/20'
   },
   'TIMEOUT': {
     label: 'Timeout',
-    color: 'text-orange-400',
-    icon: <Clock className="w-4 h-4" />,
+    color: 'text-orange-500',
     bgColor: 'bg-orange-500/10',
+    borderColor: 'border-orange-500/20'
   },
   'CANCELLED': {
     label: 'Cancelled',
-    color: 'text-slate-400',
-    icon: <Square className="w-4 h-4" />,
+    color: 'text-slate-500',
     bgColor: 'bg-slate-500/10',
+    borderColor: 'border-slate-500/20'
   },
 };
 
@@ -144,195 +140,184 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
 
   return (
     <TooltipProvider>
-      <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition-all">
+      <div className="bg-card border border-border rounded-2xl p-6 hover:shadow-2xl hover:shadow-primary/5 transition-all group relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        
         {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${status.bgColor} ${status.color}`}>
-              {status.icon}
-            </div>
-            <div>
-              <h3 className="font-semibold text-slate-200 text-sm">
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <h3 className="text-lg font-bold text-card-foreground group-hover:text-primary transition-colors">
                 {execution.projectName}
               </h3>
-              <p className="text-xs text-slate-500 font-mono">
-                {execution.ticketId}
-              </p>
+              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${status.bgColor} ${status.color} ${status.borderColor}`}>
+                {status.label}
+              </span>
             </div>
+            <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+              Ticket: <span className="text-foreground/80 font-medium font-mono">{execution.ticketId}</span>
+            </p>
           </div>
-          <Badge 
-            variant="outline" 
-            className={`${status.color} border-current ${status.bgColor}`}
-          >
-            {status.label}
-          </Badge>
+          <div className="flex gap-3 items-center">
+            {execution.status === 'IN_PROGRESS' && (
+              <span className="bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded text-[10px] font-bold animate-pulse">
+                RUNNING
+              </span>
+            )}
+            <button className="text-muted-foreground hover:text-foreground transition-colors">
+              <MoreVertical className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Progress */}
-        <div className="mb-4">
-          <div className="flex justify-between text-xs mb-2">
-            <span className="text-slate-400">{execution.currentStep || 'Initializing...'}</span>
-            <span className="text-slate-300 font-medium">{execution.percentComplete}%</span>
+        <div className="mb-8">
+          <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">
+            <span>{execution.currentStep || 'Initializing...'}</span>
+            <span>{execution.percentComplete}%</span>
           </div>
-          <Progress 
-            value={execution.percentComplete} 
-            className="h-2 bg-slate-800"
-          />
+          <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+             <div 
+               className={`h-full rounded-full transition-all duration-1000 ${
+                 execution.status === 'FAILED' ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]' :
+                 execution.status === 'COMPLETED' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' :
+                 'bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.5)]'
+               }`}
+               style={{ width: `${execution.percentComplete}%` }}
+             />
+          </div>
         </div>
 
-        {/* Metadata */}
-        <div className="grid grid-cols-2 gap-3 mb-4 text-xs">
-          <div>
-            <span className="text-slate-500">Provider</span>
-            <p className="text-slate-300 font-medium">{execution.aiProvider}</p>
+        {/* Metadata Grid */}
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="bg-secondary/30 rounded-xl p-3 border border-border/50">
+             <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Provider</p>
+             <p className="text-sm font-bold text-foreground">{execution.aiProvider}</p>
           </div>
-          <div>
-            <span className="text-slate-500">Duration</span>
-            <p className="text-slate-300 font-medium">{formatDuration(execution.duration)}</p>
-          </div>
-          <div>
-            <span className="text-slate-500">Started</span>
-            <p className="text-slate-300 font-medium">
-              {formatDistanceToNow(new Date(execution.startTime), { addSuffix: true })}
-            </p>
-          </div>
-          <div>
-            <span className="text-slate-500">Execution ID</span>
-            <p className="text-slate-300 font-medium font-mono truncate">
-              {execution.id.slice(0, 8)}...
-            </p>
+          <div className="bg-secondary/30 rounded-xl p-3 border border-border/50">
+             <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Duration</p>
+             <p className="text-sm font-bold text-foreground">{formatDuration(execution.duration)}</p>
           </div>
         </div>
 
         {/* Error message if failed */}
         {execution.errorMessage && (
           <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg">
-            <p className="text-xs text-rose-400">
-              <AlertTriangle className="w-3 h-3 inline mr-1" />
+            <p className="text-xs text-rose-500 font-medium flex items-center gap-1.5">
+              <AlertTriangle className="w-3.5 h-3.5" />
               {execution.errorMessage}
             </p>
           </div>
         )}
 
-        {/* Actions */}
-        <div className="flex items-center justify-between pt-3 border-t border-slate-800">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-slate-400 hover:text-slate-200"
-                onClick={() => onViewLogs?.(execution.id)}
-              >
-                <Terminal className="w-4 h-4 mr-1" />
-                Logs
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>View execution logs</p>
-            </TooltipContent>
-          </Tooltip>
+        {/* Actions Footer */}
+        <div className="flex items-center justify-between pt-4 border-t border-border/50 mt-4">
+          <div className="flex gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-2 bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground rounded-lg transition-all h-8"
+                  onClick={() => onViewLogs?.(execution.id)}
+                >
+                  <Terminal className="w-4 h-4 mr-1.5" />
+                  Logs
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>View execution logs</p>
+              </TooltipContent>
+            </Tooltip>
 
-          {/* Control Buttons */}
-          {canControl && availableControls.length > 0 && (
-            <div className="flex items-center gap-2">
-              {availableControls.includes('pause') && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10"
-                      onClick={() => handleControlAction('pause')}
-                      disabled={controlMutation.isPending}
-                    >
-                      {controlMutation.isPending ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Pause className="w-4 h-4 mr-1" />
-                      )}
-                      Pause
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Pause execution</p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
+            {/* Control Buttons */}
+            {canControl && availableControls.length > 0 && (
+              <div className="flex items-center gap-2">
+                {availableControls.includes('pause') && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 border-amber-500/30 text-amber-500 hover:bg-amber-500/10 hover:text-amber-400 bg-transparent"
+                    onClick={() => handleControlAction('pause')}
+                    disabled={controlMutation.isPending}
+                  >
+                    {controlMutation.isPending ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Pause className="w-3.5 h-3.5 mr-1" />
+                    )}
+                    Pause
+                  </Button>
+                )}
 
-              {availableControls.includes('resume') && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10"
-                      onClick={() => handleControlAction('resume')}
-                      disabled={controlMutation.isPending}
-                    >
-                      {controlMutation.isPending ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Play className="w-4 h-4 mr-1" />
-                      )}
-                      Resume
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Resume execution</p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
+                {availableControls.includes('resume') && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/10 hover:text-emerald-400 bg-transparent"
+                    onClick={() => handleControlAction('resume')}
+                    disabled={controlMutation.isPending}
+                  >
+                     {controlMutation.isPending ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Play className="w-3.5 h-3.5 mr-1" />
+                    )}
+                    Resume
+                  </Button>
+                )}
 
-              {availableControls.includes('emergency-stop') && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-rose-500/30 text-rose-400 hover:bg-rose-500/10"
-                      onClick={() => handleControlAction('emergency-stop')}
-                      disabled={controlMutation.isPending}
-                    >
-                      {controlMutation.isPending ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Square className="w-4 h-4 mr-1" />
-                      )}
-                      Stop
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Emergency stop execution</p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-            </div>
-          )}
+                {availableControls.includes('emergency-stop') && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 border-rose-500/30 text-rose-500 hover:bg-rose-500/10 hover:text-rose-400 bg-transparent"
+                    onClick={() => handleControlAction('emergency-stop')}
+                    disabled={controlMutation.isPending}
+                  >
+                    {controlMutation.isPending ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Square className="w-3.5 h-3.5 mr-1" />
+                    )}
+                    Stop
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
+
+          <button
+            className="text-xs font-bold text-primary hover:text-primary/80 flex items-center gap-1 py-1 px-2 hover:bg-primary/5 rounded-lg transition-all"
+            onClick={() => onViewLogs?.(execution.id)}
+          >
+            Details
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
         </div>
 
         {/* Emergency Stop Confirmation Dialog */}
         <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-          <DialogContent className="bg-slate-900 border-slate-800">
+          <DialogContent className="bg-card border-border text-card-foreground">
             <DialogHeader>
-              <DialogTitle className="text-rose-400 flex items-center gap-2">
+              <DialogTitle className="text-rose-500 flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5" />
                 Emergency Stop
               </DialogTitle>
-              <DialogDescription className="text-slate-400">
+              <DialogDescription className="text-muted-foreground">
                 Are you sure you want to emergency stop this execution? This action cannot be undone.
               </DialogDescription>
             </DialogHeader>
             <div className="py-4">
-              <div className="p-3 bg-slate-800 rounded-lg">
-                <p className="text-sm text-slate-300">
-                  <span className="text-slate-500">Project:</span> {execution.projectName}
+              <div className="p-3 bg-secondary/50 border border-border rounded-lg">
+                <p className="text-sm text-foreground/80">
+                  <span className="text-muted-foreground">Project:</span> {execution.projectName}
                 </p>
-                <p className="text-sm text-slate-300">
-                  <span className="text-slate-500">Ticket:</span> {execution.ticketId}
+                <p className="text-sm text-foreground/80">
+                  <span className="text-muted-foreground">Ticket:</span> {execution.ticketId}
                 </p>
-                <p className="text-sm text-slate-300">
-                  <span className="text-slate-500">Current Step:</span> {execution.currentStep || 'N/A'}
+                <p className="text-sm text-foreground/80">
+                  <span className="text-muted-foreground">Current Step:</span> {execution.currentStep || 'N/A'}
                 </p>
               </div>
             </div>
@@ -340,7 +325,7 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
               <Button
                 variant="outline"
                 onClick={() => setShowConfirmDialog(false)}
-                className="border-slate-700 text-slate-300"
+                className="border-border text-foreground hover:bg-secondary"
               >
                 Cancel
               </Button>

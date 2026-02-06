@@ -75,7 +75,7 @@ export function ThemeToggleCompact({ className }: { className?: string }) {
               'h-9 w-9 rounded-lg transition-colors',
               resolvedTheme === 'light' 
                 ? 'text-amber-500 hover:bg-amber-500/10' 
-                : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200',
+                : 'text-muted-foreground hover:bg-secondary hover:text-foreground',
               className
             )}
           >
@@ -103,7 +103,7 @@ export function ThemeToggle({ className }: { className?: string }) {
           variant="ghost"
           size="sm"
           className={cn(
-            'gap-2 px-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200',
+            'gap-2 px-2 text-muted-foreground hover:bg-secondary hover:text-foreground',
             className
           )}
         >
@@ -116,9 +116,9 @@ export function ThemeToggle({ className }: { className?: string }) {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-64 border-slate-800 bg-slate-900">
-        <div className="px-2 py-1.5 text-sm font-semibold text-slate-500">Appearance</div>
-        <DropdownMenuSeparator className="bg-slate-800" />
+      <DropdownMenuContent align="end" className="w-64 border-border bg-popover">
+        <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">Appearance</div>
+        <DropdownMenuSeparator className="bg-border" />
         {themeOptions.map((option) => {
           const Icon = option.icon;
           const isActive = theme === option.value;
@@ -133,8 +133,8 @@ export function ThemeToggle({ className }: { className?: string }) {
               }}
               className={cn(
                 'flex cursor-pointer items-start gap-3 py-3',
-                isActive && 'bg-slate-800',
-                'focus:bg-slate-800'
+                isActive && 'bg-secondary',
+                'focus:bg-secondary'
               )}
             >
               <div
@@ -142,22 +142,22 @@ export function ThemeToggle({ className }: { className?: string }) {
                   'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                   isActive
                     ? 'bg-blue-500/20 text-blue-400'
-                    : 'bg-slate-800 text-slate-400'
+                    : 'bg-secondary text-muted-foreground'
                 )}
               >
                 <Icon className="h-4 w-4" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className={cn('font-medium', isActive ? 'text-slate-200' : 'text-slate-400')}>
+                  <span className={cn('font-medium', isActive ? 'text-foreground' : 'text-muted-foreground')}>
                     {option.label}
                   </span>
                   {isActive && <Check className="h-3.5 w-3.5 text-blue-400" />}
                   {isResolvedActive && (
-                    <span className="text-[10px] text-slate-500">(active)</span>
+                    <span className="text-[10px] text-muted-foreground">(active)</span>
                   )}
                 </div>
-                <p className="mt-0.5 text-xs text-slate-500">{option.description}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{option.description}</p>
               </div>
             </DropdownMenuItem>
           );

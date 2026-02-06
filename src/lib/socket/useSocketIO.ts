@@ -141,7 +141,7 @@ export function useSocketIO(options: UseSocketIOOptions = {}) {
       socketRef.current = null;
       joinedRoomsRef.current.clear();
     };
-  }, [autoConnect, isAuthenticated, user, reconnectionAttempts, reconnectionDelay, initialProjectIds]);
+  }, [autoConnect, isAuthenticated, user, reconnectionAttempts, reconnectionDelay]);
 
   // Join rooms based on user role and projects
   const joinUserRooms = useCallback((socket: Socket, userData: typeof user, projects: string[]) => {
@@ -203,31 +203,31 @@ export function useSocketIO(options: UseSocketIOOptions = {}) {
   // Join a specific room
   const joinRoom = useCallback((room: string) => {
     const socket = socketRef.current;
-    if (!socket || !state.connected) {
+    if (!socket || !socket.connected) {
       logger.warn(`[Socket.IO] Cannot join room ${room}: socket not connected`);
       return false;
     }
 
     socket.emit(RoomEvents.JOIN_ROOM, { room });
     return true;
-  }, [state.connected]);
+  }, []);
 
   // Leave a specific room
   const leaveRoom = useCallback((room: string) => {
     const socket = socketRef.current;
-    if (!socket || !state.connected) {
+    if (!socket || !socket.connected) {
       logger.warn(`[Socket.IO] Cannot leave room ${room}: socket not connected`);
       return false;
     }
 
     socket.emit(RoomEvents.LEAVE_ROOM, { room });
     return true;
-  }, [state.connected]);
+  }, []);
 
   // Join project rooms (call this after fetching user's projects)
   const joinProjectRooms = useCallback((projectIds: string[]) => {
     const socket = socketRef.current;
-    if (!socket || !state.connected) return false;
+    if (!socket || !socket.connected) return false;
 
     projectIds.forEach(projectId => {
       const room = RoomNames.project(projectId);
@@ -237,7 +237,7 @@ export function useSocketIO(options: UseSocketIOOptions = {}) {
     });
 
     return true;
-  }, [state.connected]);
+  }, []);
 
   // Check if connected to a specific room
   const isInRoom = useCallback((room: string): boolean => {
@@ -376,10 +376,10 @@ export function useNotificationEvents(
     onReadAll?: () => void;
   }
 ) {
+  const { onNew, onRead, onReadAll } = handlers;
+  
   useEffect(() => {
     if (!socket) return;
-
-    const { onNew, onRead, onReadAll } = handlers;
 
     if (onNew) socket.on('notification.new', onNew);
     if (onRead) socket.on('notification.read', onRead);
@@ -390,5 +390,5 @@ export function useNotificationEvents(
       if (onRead) socket.off('notification.read', onRead);
       if (onReadAll) socket.off('notification.read_all', onReadAll);
     };
-  }, [socket, handlers]);
+  }, [socket, onNew, onRead, onReadAll]);
 }

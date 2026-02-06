@@ -61,22 +61,22 @@ export const ArchitectureReviewQueuePage: React.FC = () => {
             <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-white tracking-tight">Architecture Review Queue</h1>
-                        <p className="text-slate-400">
+                        <h1 className="text-3xl font-bold text-foreground tracking-tight">Architecture Review Queue</h1>
+                        <p className="text-muted-foreground">
                             Review and approve AI-generated Architecture Decision Records (ADRs).
                         </p>
                     </div>
                     {data?.total !== undefined && (
-                        <div className="flex items-center gap-2 bg-blue-500/10 px-4 py-2 rounded-xl border border-blue-500/20">
-                            <Info className="w-5 h-5 text-blue-400" />
-                            <span className="text-blue-200 font-semibold">{data.total} Decisions Pending</span>
+                        <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-xl border border-primary/20">
+                            <Info className="w-5 h-5 text-primary" />
+                            <span className="text-primary font-semibold">{data.total} Decisions Pending</span>
                         </div>
                     )}
                 </div>
             </div>
 
             {error && (
-                <div className="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-4 flex items-center gap-3 text-rose-500">
+                <div className="bg-destructive/10 border border-destructive/20 rounded-2xl p-4 flex items-center gap-3 text-destructive">
                     <ShieldAlert className="w-5 h-5 flex-shrink-0" />
                     <p className="font-medium">Failed to load ADR queue. Please try refreshing.</p>
                 </div>

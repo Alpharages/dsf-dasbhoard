@@ -30,8 +30,8 @@ export const SettingsLayout = () => {
     return (
         <div className="grid grid-cols-12 gap-8 h-[calc(100vh-8rem)]">
             {/* Settings Navigation */}
-            <div className="col-span-3 bg-slate-900/50 border border-slate-800 rounded-2xl p-4 h-full overflow-y-auto">
-                <h2 className="text-lg font-bold text-white mb-6 px-4">System Configuration</h2>
+            <div className="col-span-3 bg-muted/30 border border-border rounded-2xl p-4 h-full overflow-y-auto">
+                <h2 className="text-lg font-bold text-foreground mb-6 px-4">System Configuration</h2>
                 <nav className="space-y-1">
                     {panels.map((panel) => (
                         <NavLink
@@ -39,8 +39,8 @@ export const SettingsLayout = () => {
                             to={`/settings/${panel.id}`}
                             className={({ isActive }) =>
                                 `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive
-                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                                 }`
                             }
                         >
@@ -52,7 +52,7 @@ export const SettingsLayout = () => {
             </div>
 
             {/* Content Area */}
-            <div className="col-span-9 bg-slate-900 border border-slate-800 rounded-2xl p-8 h-full overflow-y-auto">
+            <div className="col-span-9 bg-card border border-border rounded-2xl p-8 h-full overflow-y-auto">
                 <Outlet />
             </div>
         </div>

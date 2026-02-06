@@ -99,10 +99,10 @@ export const WorkloadCapacityPage: React.FC = () => {
     if (pmLoading || trendsLoading || (isManager && teamLoading)) {
         return (
             <div className="space-y-8 animate-pulse">
-                <div className="h-10 w-64 bg-slate-800 rounded-xl"></div>
+                <div className="h-10 w-64 bg-muted rounded-xl"></div>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="h-[400px] bg-slate-900/50 rounded-2xl border border-slate-800"></div>
-                    <div className="lg:col-span-2 h-[400px] bg-slate-900/50 rounded-2xl border border-slate-800"></div>
+                    <div className="h-[400px] bg-card/50 rounded-2xl border border-border"></div>
+                    <div className="lg:col-span-2 h-[400px] bg-card/50 rounded-2xl border border-border"></div>
                 </div>
             </div>
         );
@@ -114,14 +114,14 @@ export const WorkloadCapacityPage: React.FC = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
                     <div className="flex items-center gap-4 mb-2">
-                        <h1 className="text-4xl font-extrabold text-white tracking-tight leading-none">
+                        <h1 className="text-4xl font-extrabold text-foreground tracking-tight leading-none">
                             Capacity Monitor
                         </h1>
                         <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-bold rounded-full uppercase tracking-wider h-fit">
                             System Healthy
                         </div>
                     </div>
-                    <p className="text-slate-500 font-medium">
+                    <p className="text-muted-foreground font-medium">
                         Monitor your capacity metrics and manage team distribution.
                     </p>
                 </div>
@@ -129,13 +129,13 @@ export const WorkloadCapacityPage: React.FC = () => {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => queryClient.invalidateQueries({ queryKey: ['workload'] })}
-                        className="p-3 bg-slate-900 border border-slate-800 text-slate-400 hover:text-white rounded-2xl transition-all"
+                        className="p-3 bg-card border border-border text-muted-foreground hover:text-foreground rounded-2xl transition-all"
                     >
                         <RefreshCw className="w-5 h-5" />
                     </button>
                     <button
                         onClick={() => setIsSettingsOpen(true)}
-                        className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-6 rounded-2xl border border-slate-700/50 shadow-lg transition-all"
+                        className="flex items-center gap-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-bold py-3 px-6 rounded-2xl border border-secondary/50 shadow-lg transition-all"
                     >
                         <Settings2 className="w-5 h-5" />
                         Configure
@@ -165,8 +165,8 @@ export const WorkloadCapacityPage: React.FC = () => {
             {isManager && teamWorkload && (
                 <div className="space-y-6">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                            <LayoutGrid className="w-6 h-6 text-blue-500" />
+                        <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
+                            <LayoutGrid className="w-6 h-6 text-primary" />
                             Team Load Balancing
                         </h2>
                         {teamWorkload.data.some(pm => pm.utilization > 80) && (
@@ -186,17 +186,17 @@ export const WorkloadCapacityPage: React.FC = () => {
                     />
 
                     {/* Quick Reassign Section */}
-                    <div className="p-8 bg-blue-600/5 border border-blue-500/10 rounded-3xl flex flex-col items-center text-center">
-                        <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-4">
-                            <RefreshCw className="w-8 h-8 text-blue-400" />
+                    <div className="p-8 bg-primary/5 border border-primary/10 rounded-3xl flex flex-col items-center text-center">
+                        <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mb-4">
+                            <RefreshCw className="w-8 h-8 text-primary" />
                         </div>
-                        <h4 className="text-lg font-bold text-white mb-2">Need to rebalance?</h4>
-                        <p className="text-sm text-slate-400 max-w-md mb-6">
+                        <h4 className="text-lg font-bold text-foreground mb-2">Need to rebalance?</h4>
+                        <p className="text-sm text-muted-foreground max-w-md mb-6">
                             You can reassign projects manually to prevent burnout.
                         </p>
                         <button
                             onClick={handleQuickReassign}
-                            className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-2xl transition-all shadow-lg shadow-blue-500/20"
+                            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 px-8 rounded-2xl transition-all shadow-lg shadow-primary/20"
                         >
                             Quick Reassign
                         </button>

@@ -47,8 +47,8 @@ export const DecisionDashboard: React.FC = () => {
         return (
             <div className="flex h-96 items-center justify-center">
                 <div className="text-center">
-                    <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
-                    <p className="text-slate-400">Loading pending decisions...</p>
+                    <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                    <p className="text-muted-foreground">Loading pending decisions...</p>
                 </div>
             </div>
         );
@@ -64,14 +64,14 @@ export const DecisionDashboard: React.FC = () => {
             >
                 <div>
                     <div className="flex items-center gap-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/10">
-                            <TrendingUp className="h-6 w-6 text-blue-400" />
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                            <TrendingUp className="h-6 w-6 text-primary" />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-bold text-slate-100">
+                            <h1 className="text-3xl font-bold text-foreground">
                                 Go/No-Go Decision Dashboard
                             </h1>
-                            <p className="text-slate-400">
+                            <p className="text-muted-foreground">
                                 Review and approve high-risk AI executions
                             </p>
                         </div>
@@ -82,16 +82,16 @@ export const DecisionDashboard: React.FC = () => {
                     {/* Pending Count Card */}
                     <motion.div 
                         whileHover={{ scale: 1.02 }}
-                        className="flex items-center gap-4 rounded-xl border border-slate-800 bg-slate-900/50 px-6 py-4"
+                        className="flex items-center gap-4 rounded-xl border border-border bg-card/50 px-6 py-4"
                     >
                         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10">
-                            <AlertCircle className="h-5 w-5 text-amber-400" />
+                            <AlertCircle className="h-5 w-5 text-amber-500" />
                         </div>
                         <div>
-                            <div className="text-2xl font-bold text-amber-400">
+                            <div className="text-2xl font-bold text-amber-500">
                                 {metrics?.pendingCount || 0}
                             </div>
-                            <div className="text-xs font-medium uppercase tracking-wider text-slate-500">
+                            <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                                 Pending
                             </div>
                         </div>
@@ -100,16 +100,16 @@ export const DecisionDashboard: React.FC = () => {
                     {/* Blocked Cost Card */}
                     <motion.div 
                         whileHover={{ scale: 1.02 }}
-                        className="flex items-center gap-4 rounded-xl border border-slate-800 bg-slate-900/50 px-6 py-4"
+                        className="flex items-center gap-4 rounded-xl border border-border bg-card/50 px-6 py-4"
                     >
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-500/10">
-                            <DollarSign className="h-5 w-5 text-rose-400" />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/10">
+                            <DollarSign className="h-5 w-5 text-destructive" />
                         </div>
                         <div>
-                            <div className="text-2xl font-bold text-rose-400">
+                            <div className="text-2xl font-bold text-destructive">
                                 ${metrics?.totalBlockedCost?.toFixed(2) || '0.00'}
                             </div>
-                            <div className="text-xs font-medium uppercase tracking-wider text-slate-500">
+                            <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                                 Blocked Cost
                             </div>
                         </div>
@@ -120,7 +120,7 @@ export const DecisionDashboard: React.FC = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={handleRefresh}
-                        className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-700 bg-slate-800 text-slate-400 transition-colors hover:border-slate-600 hover:text-slate-200"
+                        className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-secondary text-muted-foreground transition-colors hover:border-border hover:text-foreground"
                     >
                         <RefreshCw className="h-5 w-5" />
                     </motion.button>
@@ -137,10 +137,10 @@ export const DecisionDashboard: React.FC = () => {
                     className="lg:col-span-2 space-y-4"
                 >
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-slate-200">
+                        <h2 className="text-xl font-semibold text-foreground">
                             Pending Approvals
                         </h2>
-                        <span className="text-sm text-slate-500">
+                        <span className="text-sm text-muted-foreground">
                             {tickets.length} tickets awaiting review
                         </span>
                     </div>
@@ -153,7 +153,7 @@ export const DecisionDashboard: React.FC = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="rounded-xl border border-slate-800 bg-slate-900/30">
+                        <div className="rounded-xl border border-border bg-card/30">
                             <PendingTicketsTable tickets={tickets} onDecisionMade={handleRefresh} />
                         </div>
                     )}
@@ -172,17 +172,17 @@ export const DecisionDashboard: React.FC = () => {
                             <BudgetUtilizationWidget ticket={selectedTicket} />
                         </>
                     ) : tickets.length > 0 ? (
-                        <div className="rounded-xl border border-slate-800 bg-slate-900/30 p-8 text-center">
-                            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-800">
-                                <TrendingUp className="h-8 w-8 text-slate-600" />
+                        <div className="rounded-xl border border-border bg-card/30 p-8 text-center">
+                            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-secondary">
+                                <TrendingUp className="h-8 w-8 text-muted-foreground" />
                             </div>
-                            <p className="text-slate-400">
+                            <p className="text-muted-foreground">
                                 Select a ticket to view ROI analysis
                             </p>
                         </div>
                     ) : (
-                        <div className="rounded-xl border border-slate-800 bg-slate-900/30 p-8 text-center">
-                            <p className="text-slate-500">No tickets pending review</p>
+                        <div className="rounded-xl border border-border bg-card/30 p-8 text-center">
+                            <p className="text-muted-foreground">No tickets pending review</p>
                         </div>
                     )}
                 </motion.div>

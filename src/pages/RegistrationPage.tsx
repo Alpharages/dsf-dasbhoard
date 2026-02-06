@@ -13,12 +13,12 @@ import type { RegisterRequest, RegisterResponse } from '../types/auth';
 
 // Role badge colors
 const roleColors = {
-    ADMIN: 'bg-red-500 text-white border-red-500',
-    MANAGER: 'bg-purple-500 text-white border-purple-500',
+    ADMIN: 'bg-destructive text-destructive-foreground border-destructive',
+    MANAGER: 'bg-indigo-500 text-white border-indigo-500', // Keep specific colors for roles if desired, or map to semantic
     TL: 'bg-blue-500 text-white border-blue-500',
-    PM: 'bg-green-500 text-white border-green-500',
-    QA: 'bg-yellow-500 text-slate-900 border-yellow-500',
-    VIEWER: 'bg-slate-500 text-white border-slate-500'
+    PM: 'bg-emerald-500 text-white border-emerald-500',
+    QA: 'bg-amber-500 text-black border-amber-500',
+    VIEWER: 'bg-secondary text-secondary-foreground border-secondary'
 } as const;
 
 export function RegistrationPage() {
@@ -197,8 +197,8 @@ export function RegistrationPage() {
     // Loading state
     if (isLoading) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-slate-950">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+            <div className="flex min-h-screen items-center justify-center bg-background">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
         );
     }
@@ -206,18 +206,18 @@ export function RegistrationPage() {
     // Token error state
     if (tokenError) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-slate-950 p-8">
-                <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl text-center">
-                    <Lock className="w-16 h-16 mx-auto text-rose-500 mb-4" />
-                    <h2 className="text-2xl font-bold text-white mb-3">Invalid Invitation</h2>
-                    <p className="text-slate-400 mb-6">{tokenError}</p>
+            <div className="flex min-h-screen items-center justify-center bg-background p-8">
+                <div className="w-full max-w-md bg-card border border-border rounded-2xl p-8 shadow-2xl text-center">
+                    <Lock className="w-16 h-16 mx-auto text-destructive mb-4" />
+                    <h2 className="text-2xl font-bold text-foreground mb-3">Invalid Invitation</h2>
+                    <p className="text-muted-foreground mb-6">{tokenError}</p>
                     <Button
                         onClick={() => navigate('/')}
-                        className="bg-slate-700 hover:bg-slate-600 text-white"
+                        className="bg-secondary hover:bg-secondary/80 text-secondary-foreground"
                     >
                         Go to Homepage
                     </Button>
-                    <p className="text-sm text-slate-500 mt-6">
+                    <p className="text-sm text-muted-foreground mt-6">
                         Need help? Contact your administrator for a new invitation link.
                     </p>
                 </div>
@@ -226,7 +226,7 @@ export function RegistrationPage() {
     }
 
     return (
-        <div className="flex min-h-screen bg-slate-950">
+        <div className="flex min-h-screen bg-background">
             {/* Left side - Branding */}
             <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-purple-600 to-blue-600 items-center justify-center p-12">
                 <div className="max-w-md text-white">
@@ -244,20 +244,20 @@ export function RegistrationPage() {
                 <div className="w-full max-w-md">
                     {/* Logo for mobile */}
                     <div className="lg:hidden mb-8 text-center">
-                        <h1 className="text-3xl font-extrabold text-white">Join the Team</h1>
+                        <h1 className="text-3xl font-extrabold text-foreground">Join the Team</h1>
                     </div>
 
                     {/* Registration Card */}
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
+                    <div className="bg-card border border-border rounded-2xl p-8 shadow-2xl">
                         <div className="mb-8">
-                            <h2 className="text-3xl font-bold text-white mb-2">Create Account</h2>
-                            <p className="text-slate-400">Fill in your details to get started</p>
+                            <h2 className="text-3xl font-bold text-foreground mb-2">Create Account</h2>
+                            <p className="text-muted-foreground">Fill in your details to get started</p>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {/* Full Name Field */}
                             <div className="space-y-2">
-                                <Label htmlFor="fullName" className="text-slate-300 font-medium">
+                                <Label htmlFor="fullName" className="text-muted-foreground font-medium">
                                     Full Name
                                 </Label>
                                 <Input
@@ -267,16 +267,16 @@ export function RegistrationPage() {
                                     value={fullName}
                                     onChange={(e) => handleFullNameChange(e.target.value)}
                                     autoFocus
-                                    className={errors.fullName ? 'border-rose-500 focus-visible:ring-rose-500' : ''}
+                                    className={errors.fullName ? 'border-destructive focus-visible:ring-destructive' : ''}
                                 />
                                 {errors.fullName && (
-                                    <p className="text-sm text-rose-500 mt-1">{errors.fullName}</p>
+                                    <p className="text-sm text-destructive mt-1">{errors.fullName}</p>
                                 )}
                             </div>
 
                             {/* Email Field (Read-only) */}
                             <div className="space-y-2">
-                                <Label htmlFor="email" className="text-slate-300 font-medium">
+                                <Label htmlFor="email" className="text-muted-foreground font-medium">
                                     Email
                                 </Label>
                                 <Input
@@ -284,29 +284,29 @@ export function RegistrationPage() {
                                     type="email"
                                     disabled
                                     value={email || 'Email from invitation'}
-                                    className="bg-slate-800 text-slate-500 cursor-not-allowed"
+                                    className="bg-muted text-muted-foreground cursor-not-allowed"
                                 />
-                                <p className="text-xs text-slate-500">Email is auto-filled from your invitation</p>
+                                <p className="text-xs text-muted-foreground">Email is auto-filled from your invitation</p>
                             </div>
 
                             {/* Role Badge (Read-only) */}
                             <div className="space-y-2">
-                                <Label className="text-slate-300 font-medium">Assigned Role</Label>
+                                <Label className="text-muted-foreground font-medium">Assigned Role</Label>
                                 <div className="flex items-center gap-2">
                                     <Badge
-                                        className={role && roleColors[role as keyof typeof roleColors] ? roleColors[role as keyof typeof roleColors] : 'bg-slate-700 text-white'}
+                                        className={role && roleColors[role as keyof typeof roleColors] ? roleColors[role as keyof typeof roleColors] : 'bg-secondary text-secondary-foreground'}
                                     >
                                         {role || 'Role from invitation'}
                                     </Badge>
                                 </div>
-                                <p className="text-xs text-slate-500">
+                                <p className="text-xs text-muted-foreground">
                                     Your role ({role || 'determined by invitation'}) has been assigned by the administrator and cannot be changed during registration.
                                 </p>
                             </div>
 
                             {/* Password Field */}
                             <div className="space-y-2">
-                                <Label htmlFor="password" className="text-slate-300 font-medium">
+                                <Label htmlFor="password" className="text-muted-foreground font-medium">
                                     Password
                                 </Label>
                                 <div className="relative">
@@ -316,19 +316,20 @@ export function RegistrationPage() {
                                         placeholder="••••••••"
                                         value={password}
                                         onChange={(e) => handlePasswordChange(e.target.value)}
-                                        className={errors.password ? 'border-rose-500 focus-visible:ring-rose-500 pr-10' : 'pr-10'}
+                                        onChange={(e) => handlePasswordChange(e.target.value)}
+                                        className={errors.password ? 'border-destructive focus-visible:ring-destructive pr-10' : 'pr-10'}
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300 transition-colors"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                         aria-label={showPassword ? 'Hide password' : 'Show password'}
                                     >
                                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                     </button>
                                 </div>
                                 {errors.password && (
-                                    <p className="text-sm text-rose-500 mt-1">{errors.password}</p>
+                                    <p className="text-sm text-destructive mt-1">{errors.password}</p>
                                 )}
 
                                 {/* Password Strength Indicator */}
@@ -340,7 +341,7 @@ export function RegistrationPage() {
 
                             {/* Confirm Password Field */}
                             <div className="space-y-2">
-                                <Label htmlFor="confirmPassword" className="text-slate-300 font-medium">
+                                <Label htmlFor="confirmPassword" className="text-muted-foreground font-medium">
                                     Confirm Password
                                 </Label>
                                 <div className="relative">
@@ -350,26 +351,27 @@ export function RegistrationPage() {
                                         placeholder="••••••••"
                                         value={confirmPassword}
                                         onChange={(e) => handleConfirmPasswordChange(e.target.value)}
-                                        className={errors.confirmPassword ? 'border-rose-500 focus-visible:ring-rose-500 pr-10' : 'pr-10'}
+                                        onChange={(e) => handleConfirmPasswordChange(e.target.value)}
+                                        className={errors.confirmPassword ? 'border-destructive focus-visible:ring-destructive pr-10' : 'pr-10'}
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300 transition-colors"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                         aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                                     >
                                         {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                     </button>
                                 </div>
                                 {errors.confirmPassword && (
-                                    <p className="text-sm text-rose-500 mt-1">{errors.confirmPassword}</p>
+                                    <p className="text-sm text-destructive mt-1">{errors.confirmPassword}</p>
                                 )}
                             </div>
 
                             {/* General Error */}
                             {errors.general && (
-                                <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4">
-                                    <p className="text-sm text-rose-500">{errors.general}</p>
+                                <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-4">
+                                    <p className="text-sm text-destructive">{errors.general}</p>
                                 </div>
                             )}
 
@@ -377,7 +379,7 @@ export function RegistrationPage() {
                             <Button
                                 type="submit"
                                 disabled={isSubmitting || passwordStrength < 2}
-                                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 text-base rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:translate-y-[-2px] active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 text-base rounded-xl shadow-lg shadow-primary/20 transition-all hover:translate-y-[-2px] active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                                 title={passwordStrength < 2 ? 'Password too weak' : ''}
                             >
                                 {isSubmitting ? (
@@ -393,7 +395,7 @@ export function RegistrationPage() {
                     </div>
 
                     {/* Footer */}
-                    <p className="text-center text-slate-500 text-sm mt-6">
+                    <p className="text-center text-muted-foreground text-sm mt-6">
                         © 2026 Dark Software Factory. All rights reserved.
                     </p>
                 </div>

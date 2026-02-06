@@ -117,30 +117,30 @@ export function ProjectsTable({ projects, onProjectUpdated }: ProjectsTableProps
     };
 
     return (
-        <div className="border border-slate-800 rounded-2xl overflow-hidden bg-slate-900/40">
+        <div className="border border-border rounded-2xl overflow-hidden bg-card">
             <Table>
                 <TableHeader>
-                    <TableRow className="border-slate-800 hover:bg-slate-800/50">
-                        <TableHead className="text-slate-400 font-bold text-xs uppercase">Project Name</TableHead>
-                        <TableHead className="text-slate-400 font-bold text-xs uppercase">Provider</TableHead>
-                        <TableHead className="text-slate-400 font-bold text-xs uppercase">Status</TableHead>
-                        <TableHead className="text-slate-400 font-bold text-xs uppercase text-center">Monitoring</TableHead>
-                        <TableHead className="text-slate-400 font-bold text-xs uppercase text-center">Sync</TableHead>
+                    <TableRow className="border-border hover:bg-muted/50">
+                        <TableHead className="text-muted-foreground font-bold text-xs uppercase">Project Name</TableHead>
+                        <TableHead className="text-muted-foreground font-bold text-xs uppercase">Provider</TableHead>
+                        <TableHead className="text-muted-foreground font-bold text-xs uppercase">Status</TableHead>
+                        <TableHead className="text-muted-foreground font-bold text-xs uppercase text-center">Monitoring</TableHead>
+                        <TableHead className="text-muted-foreground font-bold text-xs uppercase text-center">Sync</TableHead>
                         <TableHead className="w-12"></TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {projects.map((project) => (
                         <React.Fragment key={project.id}>
-                            <TableRow className="border-slate-800 hover:bg-slate-800/30 transition-colors">
-                                <TableCell className="font-semibold text-white">
+                            <TableRow className="border-border hover:bg-muted/50 transition-colors">
+                                <TableCell className="font-semibold text-foreground">
                                     {project.name}
-                                    <div className="text-xs text-slate-500 font-mono mt-0.5 max-w-[150px] truncate">{project.github_repository_url}</div>
+                                    <div className="text-xs text-muted-foreground font-mono mt-0.5 max-w-[150px] truncate">{project.github_repository_url}</div>
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex items-center gap-2">
                                         {getProviderIcon(project.provider)}
-                                        <span className="text-slate-300 text-sm">{project.provider || 'Unknown'}</span>
+                                        <span className="text-muted-foreground text-sm">{project.provider || 'Unknown'}</span>
                                     </div>
                                 </TableCell>
                                 <TableCell>
@@ -151,7 +151,7 @@ export function ProjectsTable({ projects, onProjectUpdated }: ProjectsTableProps
                                             disabled={loadingStates[`status-${project.id}`]}
                                             className="data-[state=checked]:bg-emerald-600 h-5 w-9"
                                         />
-                                        <span className={`text-xs ${project.is_active !== false ? 'text-emerald-400' : 'text-slate-500'}`}>
+                                        <span className={`text-xs ${project.is_active !== false ? 'text-emerald-500' : 'text-muted-foreground'}`}>
                                             {project.is_active !== false ? 'Active' : 'Inactive'}
                                         </span>
                                     </div>
@@ -170,7 +170,7 @@ export function ProjectsTable({ projects, onProjectUpdated }: ProjectsTableProps
                                     <button
                                         onClick={() => handleSync(project.id)}
                                         disabled={loadingStates[`sync-${project.id}`]}
-                                        className="p-2 hover:bg-blue-500/10 text-slate-400 hover:text-blue-400 rounded-lg transition-colors"
+                                        className="p-2 hover:bg-primary/10 text-muted-foreground hover:text-primary rounded-lg transition-colors"
                                         title="Sync from ClickUp"
                                     >
                                         <RefreshCw className={`w-4 h-4 ${loadingStates[`sync-${project.id}`] ? 'animate-spin' : ''}`} />
@@ -180,47 +180,47 @@ export function ProjectsTable({ projects, onProjectUpdated }: ProjectsTableProps
                                     <div className="flex items-center gap-1">
                                         <button
                                             onClick={() => setExpandedRow(expandedRow === project.id ? null : project.id)}
-                                            className="p-1 hover:bg-slate-700 rounded transition-colors"
+                                            className="p-1 hover:bg-muted rounded transition-colors"
                                         >
-                                            {expandedRow === project.id ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                                            {expandedRow === project.id ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
                                         </button>
                                     </div>
                                 </TableCell>
                             </TableRow>
                             {expandedRow === project.id && (
-                                <TableRow className="border-slate-800 bg-slate-900/60">
+                                <TableRow className="border-border bg-muted/30">
                                     <TableCell colSpan={6} className="py-4">
                                         <div className="grid grid-cols-2 gap-4 text-sm">
                                             <div>
-                                                <span className="text-slate-500 font-semibold block mb-1">Project ID</span>
-                                                <span className="text-slate-300 font-mono">{project.id}</span>
+                                                <span className="text-muted-foreground font-semibold block mb-1">Project ID</span>
+                                                <span className="text-foreground font-mono">{project.id}</span>
                                             </div>
                                             <div>
-                                                <span className="text-slate-500 font-semibold block mb-1">GitHub Repository</span>
+                                                <span className="text-muted-foreground font-semibold block mb-1">GitHub Repository</span>
                                                 {editingRepo === project.id ? (
                                                     <div className="flex items-center gap-2">
                                                         <input
                                                             value={repoUrlInput}
                                                             onChange={(e) => setRepoUrlInput(e.target.value)}
-                                                            className="bg-slate-950 border border-slate-700 rounded px-2 py-1 text-slate-200 text-sm focus:outline-none focus:border-blue-500 w-full"
+                                                            className="bg-background border border-input rounded px-2 py-1 text-foreground text-sm focus:outline-none focus:border-primary w-full"
                                                             placeholder="https://github.com/owner/repo"
                                                         />
-                                                        <button onClick={() => handleSaveRepo(project.id)} className="p-1.5 bg-blue-600 text-white rounded hover:bg-blue-500"><Save className="w-3 h-3" /></button>
-                                                        <button onClick={() => setEditingRepo(null)} className="p-1.5 bg-slate-700 text-slate-300 rounded hover:bg-slate-600"><X className="w-3 h-3" /></button>
+                                                        <button onClick={() => handleSaveRepo(project.id)} className="p-1.5 bg-primary text-primary-foreground rounded hover:bg-primary/90"><Save className="w-3 h-3" /></button>
+                                                        <button onClick={() => setEditingRepo(null)} className="p-1.5 bg-secondary text-secondary-foreground rounded hover:bg-secondary/80"><X className="w-3 h-3" /></button>
                                                     </div>
                                                 ) : (
                                                     <div className="flex items-center gap-2 group">
-                                                        <a href={project.github_repository_url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline truncate max-w-[200px]">{project.github_repository_url}</a>
+                                                        <a href={project.github_repository_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate max-w-[200px]">{project.github_repository_url}</a>
                                                         <button
                                                             onClick={() => { setEditingRepo(project.id); setRepoUrlInput(project.github_repository_url); }}
-                                                            className="opacity-0 group-hover:opacity-100 p-1 hover:bg-slate-700 rounded text-slate-400"
+                                                            className="opacity-0 group-hover:opacity-100 p-1 hover:bg-muted rounded text-muted-foreground"
                                                         >
                                                             <Edit2 className="w-3 h-3" />
                                                         </button>
                                                     </div>
                                                 )}
                                             </div>
-                                            <div className="col-span-2 pt-2 border-t border-slate-800 mt-2 flex justify-end">
+                                            <div className="col-span-2 pt-2 border-t border-border mt-2 flex justify-end">
                                                 <button
                                                     onClick={() => handleDelete(project.id)}
                                                     disabled={isDeleting === project.id}

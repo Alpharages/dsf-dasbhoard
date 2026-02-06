@@ -31,14 +31,14 @@ export function FinancialMetricsPage() {
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                     <div>
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-12 h-12 bg-emerald-600/10 border border-emerald-600/20 rounded-2xl flex items-center justify-center">
-                                <DollarSign className="w-6 h-6 text-emerald-500" />
+                            <div className="w-12 h-12 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-center">
+                                <DollarSign className="w-6 h-6 text-primary" />
                             </div>
-                            <h1 className="text-4xl font-extrabold text-white tracking-tight">
+                            <h1 className="text-4xl font-extrabold text-foreground tracking-tight">
                                 Financial Metrics Dashboard
                             </h1>
                         </div>
-                        <p className="text-slate-400 font-medium">
+                        <p className="text-muted-foreground font-medium">
                             Comprehensive financial analysis, ROI tracking, and cost optimization insights
                         </p>
                     </div>
@@ -57,7 +57,7 @@ export function FinancialMetricsPage() {
 
                         <button
                             onClick={() => setIsShareModalOpen(true)}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 rounded-xl font-medium transition-all"
+                            className="flex items-center gap-2 px-4 py-2.5 bg-card border border-border text-muted-foreground hover:text-foreground hover:border-foreground/20 rounded-xl font-medium transition-all"
                         >
                             <Share2 className="w-4 h-4" />
                             Share

@@ -121,15 +121,15 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                 Forcing styles with !important mostly to override any potential conflicts 
                 with the default DialogContent components if they aren't using twMerge correctly.
             */}
-            <DialogContent className="sm:max-w-[700px] !bg-[#0f1117]/90 !backdrop-blur-xl !border-[#1e293b] text-slate-200 p-0 overflow-hidden shadow-2xl shadow-black/50 gap-0">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 pointer-events-none" />
+            <DialogContent className="sm:max-w-[700px] bg-card border-border text-foreground p-0 overflow-hidden shadow-2xl gap-0">
+                <div className="absolute inset-0 bg-primary/5 pointer-events-none" />
 
                 <DialogHeader className="p-8 pb-4 relative z-10">
-                    <DialogTitle className="text-2xl font-bold text-white tracking-tight">
+                    <DialogTitle className="text-2xl font-bold text-foreground tracking-tight">
                         {step === 'provider' ? 'Import Project' :
                             step === 'organization' ? 'Select Organization' : 'Select List'}
                     </DialogTitle>
-                    <DialogDescription className="text-slate-400 text-base mt-2">
+                    <DialogDescription className="text-muted-foreground text-base mt-2">
                         {step === 'provider'
                             ? 'Connect your existing workflow tools to sync projects.'
                             : step === 'organization'
@@ -147,18 +147,18 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                                     onClick={() => handleProviderSelect(provider.name)}
                                     disabled={!provider.available}
                                     className={cn(
-                                        "group relative flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 w-full outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-[#0f1117]",
+                                        "group relative flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 w-full outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background",
                                         provider.available
-                                            ? "bg-[#161b27]/80 hover:bg-[#1e2330] border-[#293042] hover:border-blue-500/50 cursor-pointer shadow-lg hover:shadow-blue-900/10"
-                                            : "bg-[#12141c]/50 border-[#1e293b] cursor-not-allowed opacity-60"
+                                            ? "bg-card hover:bg-muted/50 border-input hover:border-primary/50 cursor-pointer shadow-lg hover:shadow-primary/10"
+                                            : "bg-muted/30 border-input cursor-not-allowed opacity-60"
                                     )}
                                 >
                                     <div className="flex items-center gap-5">
                                         <div className={cn(
                                             "w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300",
                                             provider.available
-                                                ? "bg-blue-500/10 text-blue-400 group-hover:bg-blue-500/20 group-hover:scale-110"
-                                                : "bg-slate-800/50 text-slate-600"
+                                                ? "bg-primary/10 text-primary group-hover:bg-primary/20 group-hover:scale-110"
+                                                : "bg-muted text-muted-foreground"
                                         )}>
                                             <provider.icon className="w-6 h-6" />
                                         </div>
@@ -205,22 +205,22 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                                                     setSelectedOrganization(org);
                                                     setStep('hierarchy');
                                                 }}
-                                                className="group flex items-center justify-between p-4 rounded-xl border border-[#293042] bg-[#161b27] hover:bg-[#1e2330] hover:border-blue-500/50 transition-all text-left w-full focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-1 focus:ring-offset-[#0f1117]"
+                                                className="group flex items-center justify-between p-4 rounded-xl border border-input bg-card hover:bg-muted/50 hover:border-primary/50 transition-all text-left w-full focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1 focus:ring-offset-background"
                                             >
                                                 <div className="flex items-center gap-3.5">
-                                                    <Building2 className="w-5 h-5 text-blue-400/80 group-hover:text-blue-400 transition-colors" />
-                                                    <span className="font-semibold text-slate-200 group-hover:text-white transition-colors">{org.name}</span>
+                                                    <Building2 className="w-5 h-5 text-primary/80 group-hover:text-primary transition-colors" />
+                                                    <span className="font-semibold text-foreground group-hover:text-primary transition-colors">{org.name}</span>
                                                 </div>
-                                                <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-blue-400 transition-colors transform group-hover:translate-x-0.5" />
+                                                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors transform group-hover:translate-x-0.5" />
                                             </button>
                                         ))}
                                     </div>
                                 </div>
                             ) : (
-                                <div className="text-center flex flex-col items-center justify-center py-12 text-slate-500 border-2 border-dashed border-slate-800 rounded-2xl bg-slate-900/30">
-                                    <Cloud className="w-12 h-12 text-slate-700 mb-3" />
-                                    <p className="font-medium text-slate-400">No organizations found</p>
-                                    <p className="text-sm mt-1 text-slate-500">Check your ClickUp permissions</p>
+                                <div className="text-center flex flex-col items-center justify-center py-12 text-muted-foreground border-2 border-dashed border-border rounded-2xl bg-muted/30">
+                                    <Cloud className="w-12 h-12 text-muted-foreground mb-3" />
+                                    <p className="font-medium text-foreground">No organizations found</p>
+                                    <p className="text-sm mt-1 text-muted-foreground">Check your ClickUp permissions</p>
                                 </div>
                             )}
                         </div>
@@ -249,13 +249,13 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                                                     <button
                                                         key={space.id}
                                                         onClick={() => setSelectedSpace(space)}
-                                                        className="group flex items-center justify-between p-4 rounded-xl border border-[#293042] bg-[#161b27] hover:bg-[#1e2330] hover:border-blue-500/50 transition-all text-left w-full focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-1 focus:ring-offset-[#0f1117]"
+                                                        className="group flex items-center justify-between p-4 rounded-xl border border-input bg-card hover:bg-muted/50 hover:border-primary/50 transition-all text-left w-full focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1 focus:ring-offset-background"
                                                     >
                                                         <div className="flex items-center gap-3.5">
-                                                            <FolderOpen className="w-5 h-5 text-blue-400/80 group-hover:text-blue-400 transition-colors" />
-                                                            <span className="font-semibold text-slate-200 group-hover:text-white transition-colors">{space.name}</span>
+                                                            <FolderOpen className="w-5 h-5 text-primary/80 group-hover:text-primary transition-colors" />
+                                                            <span className="font-semibold text-foreground group-hover:text-primary transition-colors">{space.name}</span>
                                                         </div>
-                                                        <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-blue-400 transition-colors transform group-hover:translate-x-0.5" />
+                                                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors transform group-hover:translate-x-0.5" />
                                                     </button>
                                                 ))}
                                             </div>
@@ -297,22 +297,22 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                                                             className={cn(
                                                                 "group flex items-center justify-between p-4 rounded-xl border transition-all text-left w-full outline-none",
                                                                 selectedList?.id === list.id
-                                                                    ? "border-blue-500/50 bg-blue-500/10 shadow-[0_0_20px_-10px_rgba(59,130,246,0.2)]"
-                                                                    : "border-[#293042] bg-[#161b27] hover:bg-[#1e2330] hover:border-blue-500/30"
+                                                                    ? "border-primary/50 bg-primary/10 shadow-[0_0_20px_-10px_rgba(var(--primary),0.2)]"
+                                                                    : "border-input bg-card hover:bg-muted/50 hover:border-primary/30"
                                                             )}
                                                         >
                                                             <div className="flex items-center gap-3.5">
                                                                 <List className={cn(
                                                                     "w-5 h-5 transition-colors",
-                                                                    selectedList?.id === list.id ? "text-blue-400" : "text-slate-500 group-hover:text-slate-400"
+                                                                    selectedList?.id === list.id ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
                                                                 )} />
                                                                 <span className={cn(
                                                                     "font-semibold transition-colors",
-                                                                    selectedList?.id === list.id ? "text-blue-100" : "text-slate-300 group-hover:text-white"
+                                                                    selectedList?.id === list.id ? "text-primary-foreground" : "text-foreground group-hover:text-primary"
                                                                 )}>{list.name}</span>
                                                             </div>
                                                             {selectedList?.id === list.id && (
-                                                                <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center animate-in zoom-in spin-in-180 duration-300">
+                                                                <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center animate-in zoom-in spin-in-180 duration-300">
                                                                     <Check className="w-3.5 h-3.5" />
                                                                 </div>
                                                             )}

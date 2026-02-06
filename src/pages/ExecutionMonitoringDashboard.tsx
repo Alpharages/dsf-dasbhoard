@@ -8,9 +8,13 @@ import {
   XCircle,
   Clock,
   Loader2,
-  WifiOff
+  WifiOff,
+  Filter,
+  SortAsc
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+
+
 import { useSocketIO, useExecutionEvents } from '@/lib/socket/useSocketIO';
 import { useActiveExecutions } from '@/hooks/queries/useExecutions';
 import { useUserProjects } from '@/hooks/queries/useProjects';
@@ -18,14 +22,14 @@ import { ExecutionCard } from '@/components/execution/ExecutionCard';
 const ExecutionLogsViewer = lazy(() => import('@/components/execution/ExecutionLogsViewer'));
 import type { ExecutionStatus } from '@/types/execution';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface StatusFilter {
   label: string;
   value: ExecutionStatus | 'ALL';
   icon: React.ReactNode;
   color: string;
+  activeColor: string;
+  activeBg: string;
 }
 
 const statusFilters: StatusFilter[] = [
@@ -33,41 +37,54 @@ const statusFilters: StatusFilter[] = [
     label: 'All', 
     value: 'ALL', 
     icon: <Activity className="w-4 h-4" />,
-    color: 'text-slate-400'
+    color: 'text-slate-400',
+    activeColor: 'text-primary-foreground',
+    activeBg: 'bg-primary'
   },
   { 
     label: 'In Progress', 
     value: 'IN_PROGRESS', 
     icon: <Loader2 className="w-4 h-4" />,
-    color: 'text-blue-400'
+    color: 'text-blue-500',
+    activeColor: 'text-white',
+    activeBg: 'bg-blue-600'
   },
   { 
     label: 'Queued', 
     value: 'QUEUED', 
     icon: <Clock className="w-4 h-4" />,
-    color: 'text-slate-400'
+    color: 'text-slate-400',
+    activeColor: 'text-white',
+    activeBg: 'bg-slate-600'
   },
   { 
     label: 'Paused', 
     value: 'PAUSED', 
     icon: <Pause className="w-4 h-4" />,
-    color: 'text-yellow-400'
+    color: 'text-amber-500',
+    activeColor: 'text-white',
+    activeBg: 'bg-amber-600'
   },
   { 
     label: 'Completed', 
     value: 'COMPLETED', 
     icon: <CheckCircle2 className="w-4 h-4" />,
-    color: 'text-emerald-400'
+    color: 'text-emerald-500',
+    activeColor: 'text-white',
+    activeBg: 'bg-emerald-600'
   },
   { 
     label: 'Failed', 
     value: 'FAILED', 
     icon: <XCircle className="w-4 h-4" />,
-    color: 'text-rose-400'
+    color: 'text-rose-500',
+    activeColor: 'text-white',
+    activeBg: 'bg-rose-600'
   },
 ];
 
 export function ExecutionMonitoringDashboard() {
+
   const [selectedStatus, setSelectedStatus] = useState<ExecutionStatus | 'ALL'>('ALL');
   const [viewingLogsFor, setViewingLogsFor] = useState<string | null>(null);
   
@@ -78,7 +95,6 @@ export function ExecutionMonitoringDashboard() {
   const { 
     socket, 
     connected, 
-    connecting, 
     error: socketError,
     joinProjectRooms
   } = useSocketIO({
@@ -160,113 +176,101 @@ export function ExecutionMonitoringDashboard() {
   }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-white">Active Executions</h1>
-            <Badge 
-              variant="outline" 
-              className={`${
-                connected 
-                  ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' 
-                  : 'text-rose-400 border-rose-500/30 bg-rose-500/10'
-              }`}
-            >
-              {connected ? (
-                <>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse" />
-                  Real-time
-                </>
-              ) : connecting ? (
-                <>
-                  <Loader2 className="w-3 h-3 mr-1.5 animate-spin" />
-                  Connecting...
-                </>
-              ) : (
-                <>
-                  <WifiOff className="w-3 h-3 mr-1.5" />
-                  Offline
-                </>
-              )}
-            </Badge>
+          <div className="flex items-center gap-4 mb-2">
+            <h1 className="text-4xl font-extrabold text-foreground tracking-tight leading-none">Active Executions</h1>
+            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+              connected 
+                ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' 
+                : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
+            }`}>
+              <div className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`}></div>
+              {connected ? 'Real-time Live' : 'Offline'}
+            </div>
           </div>
-          <p className="text-slate-500 mt-1">
+          <p className="text-muted-foreground font-medium">
             Monitor and control AI executions in real-time
           </p>
         </div>
 
-        <Button
-          variant="outline"
+        <button
           onClick={() => refetch()}
           disabled={isLoading}
-          className="border-slate-700 text-slate-300"
+          className="p-3 bg-secondary/50 border border-border text-muted-foreground hover:text-foreground hover:bg-secondary rounded-2xl transition-all"
+          title="Refresh Data"
         >
-          <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
+          <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+        </button>
       </div>
 
       {/* Socket Error Banner */}
       {socketError && (
-        <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl flex items-center gap-3">
-          <WifiOff className="w-5 h-5 text-rose-400" />
-          <div className="flex-1">
-            <p className="text-sm text-rose-400 font-medium">
-              Real-time updates unavailable
-            </p>
-            <p className="text-xs text-rose-400/70">
-              {socketError.message}. Data will refresh every 30 seconds.
-            </p>
+        <div className="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-6 text-rose-500 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <WifiOff className="w-5 h-5" />
+            <div>
+              <p className="font-semibold">Real-time updates unavailable</p>
+              <p className="text-sm opacity-80">{socketError.message}. Data will refresh every 30 seconds.</p>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Status Filters */}
-      <div className="flex flex-wrap gap-2">
-        {statusFilters.map((filter) => (
-          <Button
-            key={filter.value}
-            variant={selectedStatus === filter.value ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setSelectedStatus(filter.value)}
-            className={`${
-              selectedStatus === filter.value 
-                ? 'bg-blue-600 hover:bg-blue-700' 
-                : 'border-slate-700 text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <span className={filter.color}>{filter.icon}</span>
-            <span className="ml-2">{filter.label}</span>
-            <Badge 
-              variant="secondary" 
-              className={`ml-2 ${
+      {/* Controls & Filters Bar */}
+      <div className="bg-card/50 border border-border rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap gap-2">
+          {statusFilters.map((filter) => (
+            <button
+              key={filter.value}
+              onClick={() => setSelectedStatus(filter.value)}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
                 selectedStatus === filter.value 
-                  ? 'bg-blue-500/30 text-white' 
-                  : 'bg-slate-800 text-slate-400'
+                  ? `${filter.activeBg} ${filter.activeColor} border-transparent shadow-lg` 
+                  : `bg-secondary/50 text-muted-foreground border-transparent hover:bg-secondary hover:text-foreground`
               }`}
             >
-              {statusCounts[filter.value] || 0}
-            </Badge>
-          </Button>
-        ))}
+              {filter.icon}
+              <span>{filter.label}</span>
+              <span className={`px-1.5 py-0.5 rounded-md text-[10px] ${
+                selectedStatus === filter.value 
+                  ? 'bg-white/20' 
+                  : 'bg-black/10 dark:bg-white/10'
+              }`}>
+                {statusCounts[filter.value] || 0}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button className="flex items-center gap-2 px-4 py-2 bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-foreground text-sm font-semibold rounded-xl border border-transparent transition-all">
+            <Filter className="w-4 h-4" />
+            Filter
+          </button>
+          <button className="flex items-center gap-2 px-4 py-2 bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-foreground text-sm font-semibold rounded-xl border border-transparent transition-all">
+            <SortAsc className="w-4 h-4" />
+            Sort
+          </button>
+        </div>
       </div>
 
       {/* Error State */}
       {error && (
         <div className="p-8 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-center">
-          <AlertCircle className="w-12 h-12 text-rose-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-rose-400 mb-2">
+          <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-rose-500 mb-2">
             Failed to load executions
           </h3>
-          <p className="text-sm text-rose-400/70 mb-4">
+          <p className="text-sm text-rose-500/70 mb-4">
             {error.message}
           </p>
           <Button 
             onClick={() => refetch()}
             variant="outline"
-            className="border-rose-500/30 text-rose-400"
+            className="border-rose-500/30 text-rose-500 hover:bg-rose-500/10"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
             Try Again
@@ -276,36 +280,21 @@ export function ExecutionMonitoringDashboard() {
 
       {/* Loading State */}
       {isLoading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
-              <div className="flex items-center gap-3 mb-4">
-                <Skeleton className="w-10 h-10 rounded-lg" />
-                <div className="flex-1">
-                  <Skeleton className="h-4 w-32 mb-2" />
-                  <Skeleton className="h-3 w-20" />
-                </div>
-              </div>
-              <Skeleton className="h-2 w-full mb-4" />
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <Skeleton className="h-8" />
-                <Skeleton className="h-8" />
-                <Skeleton className="h-8" />
-                <Skeleton className="h-8" />
-              </div>
-            </div>
+            <div key={i} className="h-64 bg-card/50 border border-border animate-pulse rounded-2xl"></div>
           ))}
         </div>
       )}
 
       {/* Empty State */}
       {!isLoading && !error && filteredExecutions.length === 0 && (
-        <div className="text-center py-20 bg-slate-900/20 border border-dashed border-slate-800 rounded-3xl">
-          <Activity className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-slate-400 mb-2">
+        <div className="text-center py-24 bg-card/30 border border-dashed border-border rounded-3xl">
+          <Activity className="w-16 h-16 text-muted-foreground/50 mx-auto mb-6" />
+          <h3 className="text-xl font-bold text-muted-foreground mb-2">
             No active executions
           </h3>
-          <p className="text-slate-500 max-w-md mx-auto">
+          <p className="text-muted-foreground/70 max-w-md mx-auto">
             {selectedStatus === 'ALL' 
               ? "There are no executions running at the moment. New executions will appear here automatically."
               : `No executions with status "${selectedStatus.replace('_', ' ')}" found.`
@@ -316,7 +305,7 @@ export function ExecutionMonitoringDashboard() {
 
       {/* Executions Grid */}
       {!isLoading && !error && filteredExecutions.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           {filteredExecutions.map((execution) => (
             <ExecutionCard
               key={execution.id}

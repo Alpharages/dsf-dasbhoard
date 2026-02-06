@@ -103,29 +103,29 @@ export default function UsersPage() {
         <div className="container mx-auto py-8 space-y-8">
             <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                    <div className="p-2 bg-slate-800 rounded-lg">
-                        <Users className="h-6 w-6 text-indigo-400" />
+                    <div className="p-2 bg-card border border-border rounded-lg">
+                        <Users className="h-6 w-6 text-primary" />
                     </div>
-                    <h1 className="text-3xl font-bold tracking-tight text-slate-100">User Management</h1>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">User Management</h1>
                 </div>
-                <p className="text-slate-400">
+                <p className="text-muted-foreground">
                     View, search, and manage registered users and their access levels.
                 </p>
             </div>
 
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                 <div className="relative w-full md:w-72">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-500" />
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
                         placeholder="Search users..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="pl-8 bg-slate-900 border-slate-700 hover:border-slate-600 focus:border-indigo-500"
+                        className="pl-8 bg-background border-input hover:border-ring focus:border-primary"
                     />
                 </div>
                 <div className="flex gap-4 w-full md:w-auto">
                     <Select value={roleFilter} onValueChange={handleFilterChange(setRoleFilter)}>
-                        <SelectTrigger className="w-[180px] bg-slate-900 border-slate-700">
+                        <SelectTrigger className="w-[180px] bg-background border-input">
                             <SelectValue placeholder="Role" />
                         </SelectTrigger>
                         <SelectContent>
@@ -140,7 +140,7 @@ export default function UsersPage() {
                     </Select>
 
                     <Select value={statusFilter} onValueChange={handleFilterChange(setStatusFilter)}>
-                        <SelectTrigger className="w-[180px] bg-slate-900 border-slate-700">
+                        <SelectTrigger className="w-[180px] bg-background border-input">
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
                         <SelectContent>

@@ -54,7 +54,7 @@ import { NotificationPreferences } from './pages/NotificationPreferences';
 // Shared Layout component
 function DashboardLayout() {
   return (
-    <div className="flex min-h-screen bg-[var(--color-bg)] text-[var(--color-text-primary)] transition-colors duration-200">
+    <div className="flex min-h-screen bg-background text-foreground transition-colors duration-200">
       {/* Desktop Sidebar - hidden on mobile */}
       <div className="hidden lg:block">
         <Sidebar />
@@ -72,9 +72,9 @@ function DashboardLayout() {
         position="bottom-right"
         toastOptions={{
           style: {
-            background: 'var(--color-surface)',
-            color: 'var(--color-text-primary)',
-            border: '1px solid var(--color-border)',
+            background: 'var(--card)',
+            color: 'var(--card-foreground)',
+            border: '1px solid var(--border)',
             borderRadius: '12px',
           }
         }}
@@ -246,16 +246,16 @@ function Dashboard() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
         <div>
           <div className="flex items-center gap-4 mb-2">
-            <h1 className="text-4xl font-extrabold text-white tracking-tight leading-none">
+            <h1 className="text-4xl font-extrabold text-foreground tracking-tight leading-none">
               PM Dashboard
             </h1>
-            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${connected ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-rose-500/10 text-rose-500 border-rose-500/20 '
+            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${connected ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-destructive/10 text-destructive border-destructive/20 '
               }`}>
-              <div className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`}></div>
+              <div className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-emerald-500 animate-pulse' : 'bg-destructive'}`}></div>
               {connected ? 'Real-time Live' : 'Offline'}
             </div>
           </div>
-          <p className="text-slate-500 font-medium">
+          <p className="text-muted-foreground font-medium">
             Monitor your project portfolio and AI metrics in real-time.
           </p>
         </div>
@@ -263,7 +263,7 @@ function Dashboard() {
         <div className="flex items-center gap-4">
           <button
             onClick={fetchData}
-            className="p-3 bg-slate-900 border border-slate-800 text-slate-400 hover:text-white rounded-2xl transition-all"
+            className="p-3 bg-card border border-border text-muted-foreground hover:text-foreground rounded-2xl transition-all"
             title="Refresh Data"
           >
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
@@ -276,9 +276,9 @@ function Dashboard() {
       </div>
 
       {error && (
-        <div className="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-6 mb-8 text-rose-500 flex items-center justify-between">
+        <div className="bg-destructive/10 border border-destructive/20 rounded-2xl p-6 mb-8 text-destructive flex items-center justify-between">
           <p className="font-semibold">{error}</p>
-          <button onClick={fetchData} className="px-4 py-2 bg-rose-500 text-white rounded-xl text-sm font-bold">Retry</button>
+          <button onClick={fetchData} className="px-4 py-2 bg-destructive text-destructive-foreground rounded-xl text-sm font-bold">Retry</button>
         </div>
       )}
 
@@ -295,26 +295,26 @@ function Dashboard() {
       {/* Financial Metrics Section (Manager/Admin only) - Story 6-R-3 */}
       <FinancialMetricsSection projectId={projects[0]?.id} />
 
-      <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 mb-8 flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-card/40 border border-border rounded-2xl p-4 mb-8 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <button className="p-2 bg-slate-800 text-blue-400 rounded-lg shadow-inner ring-1 ring-white/5">
+          <button className="p-2 bg-secondary text-primary rounded-lg shadow-inner ring-1 ring-background/5">
             <Grid className="w-5 h-5" />
           </button>
-          <button className="p-2 text-slate-500 hover:text-slate-300 transition-colors">
+          <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
             <List className="w-5 h-5" />
           </button>
-          <div className="h-6 w-px bg-slate-800 mx-2"></div>
-          <div className="text-sm font-bold text-slate-400">
-            Sorted by <span className="text-slate-200">Last Activity</span>
+          <div className="h-6 w-px bg-border mx-2"></div>
+          <div className="text-sm font-bold text-muted-foreground">
+            Sorted by <span className="text-foreground">Last Activity</span>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl border border-slate-700/50 transition-all">
+          <button className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground text-sm font-semibold rounded-xl border border-border/50 transition-all">
             <Filter className="w-4 h-4" />
             Filter
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl border border-slate-700/50 transition-all">
+          <button className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground text-sm font-semibold rounded-xl border border-border/50 transition-all">
             <SortAsc className="w-4 h-4" />
             Sort
           </button>
@@ -324,7 +324,7 @@ function Dashboard() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 pb-12">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-64 bg-slate-900/50 border border-slate-800 animate-pulse rounded-2xl"></div>
+            <div key={i} className="h-64 bg-card/50 border border-border animate-pulse rounded-2xl"></div>
           ))}
         </div>
       ) : projects.length > 0 ? (
@@ -338,8 +338,8 @@ function Dashboard() {
           ))}
         </div>
       ) : !error && (
-        <div className="text-center py-20 bg-slate-900/20 border border-dashed border-slate-800 rounded-3xl">
-          <p className="text-slate-500 text-xl font-medium">No projects found. Create your first one!</p>
+        <div className="text-center py-20 bg-card/20 border border-dashed border-border rounded-3xl">
+          <p className="text-muted-foreground text-xl font-medium">No projects found. Create your first one!</p>
         </div>
       )}
 
@@ -388,10 +388,10 @@ function AppContent({ navigate }: { navigate: any }) {
   // Show global loading overlay during initial auth check
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto" />
-          <p className="text-slate-400 mt-4">Checking authentication...</p>
+          <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto" />
+          <p className="text-muted-foreground mt-4">Checking authentication...</p>
         </div>
       </div>
     );

@@ -81,16 +81,16 @@ export function ProductionErrorDashboard() {
   };
   
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 p-8">
+    <div className="min-h-screen bg-background text-foreground p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-slate-100 flex items-center gap-3">
-              <AlertTriangle className="w-8 h-8 text-red-500" />
+            <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+              <AlertTriangle className="w-8 h-8 text-destructive" />
               Production Error Dashboard
             </h1>
-            <p className="text-slate-400 mt-1">
+            <p className="text-muted-foreground mt-1">
               Monitor and manage production errors across all applications
             </p>
           </div>
@@ -109,7 +109,7 @@ export function ProductionErrorDashboard() {
         
         {/* Error List */}
         <section id="error-list" className="space-y-4">
-          <h2 className="text-xl font-semibold text-slate-200">Error List</h2>
+          <h2 className="text-xl font-semibold text-foreground">Error List</h2>
           
           {/* Bulk Actions */}
           {canBulkActions && (
