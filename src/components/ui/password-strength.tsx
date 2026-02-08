@@ -1,5 +1,6 @@
 import { useMemo, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // Type definition for zxcvbn result (will use installed package once npm cache is resolved)
 interface ZXCVBNResult {
@@ -76,8 +77,10 @@ export function PasswordStrength({ password, onScoreChange }: PasswordStrengthPr
                 {[0, 1, 2, 3].map((segment) => (
                     <div
                         key={segment}
-                        className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${segment < score ? strengthColor : 'bg-slate-700'
-                            }`}
+                        className={cn(
+                            "h-1.5 flex-1 rounded-full transition-colors duration-300",
+                            segment < score ? strengthColor : "bg-muted"
+                        )}
                     />
                 ))}
             </div>

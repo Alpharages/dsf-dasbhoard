@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
+import { Checkbox } from '../components/ui/checkbox';
 import { toast } from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
 
@@ -166,12 +167,10 @@ export function LoginPage() {
 
                             {/* Remember Me */}
                             <div className="flex items-center space-x-2">
-                                <input
+                                <Checkbox
                                     id="remember-me"
-                                    type="checkbox"
                                     checked={rememberMe}
-                                    onChange={(e) => setRememberMe(e.target.checked)}
-                                    className="w-4 h-4 rounded border-input bg-background/50 text-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+                                    onCheckedChange={(checked) => setRememberMe(checked)}
                                 />
                                 <Label htmlFor="remember-me" className="text-sm text-muted-foreground cursor-pointer">
                                     Remember me for 30 days
