@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { projectsApi } from '../../api/projectsApi';
 
 export function useProjects() {
-    const token = localStorage.getItem('token') || '';
+    const token = localStorage.getItem('access_token') || '';
 
     return useQuery({
         queryKey: ['projects'],

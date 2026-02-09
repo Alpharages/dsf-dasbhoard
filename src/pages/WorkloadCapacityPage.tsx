@@ -18,7 +18,7 @@ export const WorkloadCapacityPage: React.FC = () => {
     const isManager = userRole === 'MANAGER' || userRole === 'ADMIN';
 
     // Socket for real-time alerts
-    const { socket } = useSocket(localStorage.getItem('token') || '');
+    const { socket } = useSocket(localStorage.getItem('access_token') || '');
 
     React.useEffect(() => {
         if (!socket) return;

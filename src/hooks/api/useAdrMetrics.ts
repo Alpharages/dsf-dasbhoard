@@ -3,7 +3,7 @@ import { architectureReviewApi } from '../../api/architectureReviewApi';
 import type { AdrMetricsFilters } from '../../types/architectureReview';
 
 export function useAdrMetrics(filters: AdrMetricsFilters) {
-    const token = localStorage.getItem('token') || '';
+    const token = localStorage.getItem('access_token') || '';
 
     return useQuery({
         queryKey: ['adrMetrics', filters],
@@ -14,7 +14,7 @@ export function useAdrMetrics(filters: AdrMetricsFilters) {
 }
 
 export function useAdrTrends(filters: AdrMetricsFilters) {
-    const token = localStorage.getItem('token') || '';
+    const token = localStorage.getItem('access_token') || '';
 
     return useQuery({
         queryKey: ['adrTrends', filters],

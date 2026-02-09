@@ -2,11 +2,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../api/client';
 import { useEffect } from 'react';
 import { useSocket } from '../useSocket';
-import type { SystemConfig } from '../../types/config';
+import type { SystemConfig } from '@/types/config.ts';
 
 export const useSystemConfig = () => {
     const queryClient = useQueryClient();
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('access_token');
     const { socket } = useSocket(token);
 
     // Real-time sync

@@ -1,6 +1,6 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '@/contexts';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -228,7 +228,7 @@ export function RegistrationPage() {
     return (
         <div className="flex min-h-screen bg-background">
             {/* Left side - Branding */}
-            <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-purple-600 to-blue-600 items-center justify-center p-12">
+            <div className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-purple-600 to-blue-600 items-center justify-center p-12">
                 <div className="max-w-md text-white">
                     <h1 className="text-5xl font-extrabold mb-6 leading-tight">
                         Join the Team
@@ -316,7 +316,6 @@ export function RegistrationPage() {
                                         placeholder="••••••••"
                                         value={password}
                                         onChange={(e) => handlePasswordChange(e.target.value)}
-                                        onChange={(e) => handlePasswordChange(e.target.value)}
                                         className={errors.password ? 'border-destructive focus-visible:ring-destructive pr-10' : 'pr-10'}
                                     />
                                     <button
@@ -351,7 +350,6 @@ export function RegistrationPage() {
                                         placeholder="••••••••"
                                         value={confirmPassword}
                                         onChange={(e) => handleConfirmPasswordChange(e.target.value)}
-                                        onChange={(e) => handleConfirmPasswordChange(e.target.value)}
                                         className={errors.confirmPassword ? 'border-destructive focus-visible:ring-destructive pr-10' : 'pr-10'}
                                     />
                                     <button
@@ -379,7 +377,7 @@ export function RegistrationPage() {
                             <Button
                                 type="submit"
                                 disabled={isSubmitting || passwordStrength < 2}
-                                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 text-base rounded-xl shadow-lg shadow-primary/20 transition-all hover:translate-y-[-2px] active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 text-base rounded-xl shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                                 title={passwordStrength < 2 ? 'Password too weak' : ''}
                             >
                                 {isSubmitting ? (

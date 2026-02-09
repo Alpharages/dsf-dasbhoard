@@ -90,7 +90,7 @@ function Dashboard() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const token = localStorage.getItem('token') || 'dummy-token';
+  const token = localStorage.getItem('access_token') || sessionStorage.getItem('access_token') || '';
 
   const { socket, connected } = useSocket(token);
   useProjectUpdates(socket, setProjects);

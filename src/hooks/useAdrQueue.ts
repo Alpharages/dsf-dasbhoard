@@ -4,7 +4,7 @@ import type { AdrQueueFilters } from '../types/architectureReview';
 import { toast } from 'react-hot-toast';
 
 export function useAdrQueue(filters: AdrQueueFilters) {
-    const token = localStorage.getItem('token') || '';
+    const token = localStorage.getItem('access_token') || '';
 
     return useQuery({
         queryKey: ['adrQueue', filters],
@@ -16,7 +16,7 @@ export function useAdrQueue(filters: AdrQueueFilters) {
 
 export function useSubmitAdrReview() {
     const queryClient = useQueryClient();
-    const token = localStorage.getItem('token') || '';
+    const token = localStorage.getItem('access_token') || '';
 
     return useMutation({
         mutationFn: ({ adrId, action, notes }: { adrId: string, action: 'APPROVE' | 'REJECT' | 'MODIFY' | 'DEFER', notes?: string }) =>
@@ -33,7 +33,7 @@ export function useSubmitAdrReview() {
 
 export function useProvideGuidance() {
     const queryClient = useQueryClient();
-    const token = localStorage.getItem('token') || '';
+    const token = localStorage.getItem('access_token') || '';
 
     return useMutation({
         mutationFn: ({ adrId, guidance, applyGlobally, updateThresholds }: { adrId: string, guidance: string, applyGlobally: boolean, updateThresholds: boolean }) =>
@@ -50,7 +50,7 @@ export function useProvideGuidance() {
 
 export function useDelegateReview() {
     const queryClient = useQueryClient();
-    const token = localStorage.getItem('token') || '';
+    const token = localStorage.getItem('access_token') || '';
 
     return useMutation({
         mutationFn: ({ adrId, architectId, notes }: { adrId: string, architectId: string, notes?: string }) =>
@@ -66,7 +66,7 @@ export function useDelegateReview() {
 }
 
 export function useEscalationMetrics() {
-    const token = localStorage.getItem('token') || '';
+    const token = localStorage.getItem('access_token') || '';
 
     return useQuery({
         queryKey: ['escalationMetrics'],

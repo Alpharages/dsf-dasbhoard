@@ -7,7 +7,7 @@ import type { CreateLimitationDto, UpdateLimitationDto } from '../types/capabili
  * Hook to fetch capability dashboard data
  */
 export function useCapabilityDashboard() {
-    const token = localStorage.getItem('token') || '';
+    const token = localStorage.getItem('access_token') || '';
 
     return useQuery({
         queryKey: ['capabilityDashboard'],
@@ -22,7 +22,7 @@ export function useCapabilityDashboard() {
  */
 export function useCreateLimitation() {
     const queryClient = useQueryClient();
-    const token = localStorage.getItem('token') || '';
+    const token = localStorage.getItem('access_token') || '';
 
     return useMutation({
         mutationFn: (data: CreateLimitationDto) =>
@@ -42,7 +42,7 @@ export function useCreateLimitation() {
  */
 export function useUpdateLimitation() {
     const queryClient = useQueryClient();
-    const token = localStorage.getItem('token') || '';
+    const token = localStorage.getItem('access_token') || '';
 
     return useMutation({
         mutationFn: ({ taskType, data }: { taskType: string; data: UpdateLimitationDto }) =>
@@ -61,7 +61,7 @@ export function useUpdateLimitation() {
  * Hook to fetch knowledge base markdown
  */
 export function useKnowledgeBase() {
-    const token = localStorage.getItem('token') || '';
+    const token = localStorage.getItem('access_token') || '';
 
     return useQuery({
         queryKey: ['knowledgeBase'],

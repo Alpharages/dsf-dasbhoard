@@ -4,7 +4,7 @@ import type { CreateConstraintDto, UpdateConstraintDto, ArchitectureConstraint }
 import { toast } from 'react-hot-toast';
 
 function getAuthToken(): string {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('access_token');
     if (!token) {
         throw new Error('Authentication required. Please log in.');
     }
