@@ -2,14 +2,13 @@ import * as React from "react"
 import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-interface CheckboxProps {
+interface CheckboxProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     checked?: boolean;
     onCheckedChange?: (checked: boolean) => void;
-    className?: string;
 }
 
 const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
-    ({ checked, onCheckedChange, className }, ref) => {
+    ({ checked, onCheckedChange, className, ...props }, ref) => {
         const isChecked = checked === true;
 
         return (
@@ -24,6 +23,7 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
                     isChecked ? "bg-primary text-primary-foreground" : "bg-transparent",
                     className
                 )}
+                {...props}
             >
                 {isChecked ? (
                     <Check className="h-3 w-3" />

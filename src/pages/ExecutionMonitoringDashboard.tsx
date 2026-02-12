@@ -13,10 +13,11 @@ import {
   SortAsc
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 
 import { useSocketIO, useExecutionEvents } from '@/lib/socket/useSocketIO';
-import { useActiveExecutions } from '@/hooks/queries/useExecutions';
+import { useActiveExecutions, executionKeys } from '@/hooks/queries/useExecutions';
 import { useUserProjects } from '@/hooks/queries/useProjects';
 import { ExecutionCard } from '@/components/execution/ExecutionCard';
 const ExecutionLogsViewer = lazy(() => import('@/components/execution/ExecutionLogsViewer'));
@@ -84,7 +85,7 @@ const statusFilters: StatusFilter[] = [
 ];
 
 export function ExecutionMonitoringDashboard() {
-
+  const queryClient = useQueryClient();
   const [selectedStatus, setSelectedStatus] = useState<ExecutionStatus | 'ALL'>('ALL');
   const [viewingLogsFor, setViewingLogsFor] = useState<string | null>(null);
   
@@ -123,9 +124,25 @@ export function ExecutionMonitoringDashboard() {
       toast.success('New execution started');
       refetch();
     },
-    onProgress: () => {
-      // Debounced refetch - only triggers after 500ms of no new progress events
-      refetch();
+    onProgress: (payload) => {
+      console.log('[Dashboard] Received progress:', payload);
+      // Optimistically update cache for smooth progress
+      queryClient.setQueryData(
+        executionKeys.activeFiltered(undefined),
+        (oldData: any[] | undefined) => {
+          if (!oldData) return oldData;
+          return oldData.map((exec) =>
+            exec.id === payload.executionId
+              ? {
+                  ...exec,
+                  status: payload.status,
+                  currentStep: payload.currentStep || exec.currentStep,
+                  percentComplete: payload.percentComplete ?? exec.percentComplete,
+                }
+              : exec,
+          );
+        },
+      );
     },
     onCompleted: (payload) => {
       toast.success(`Execution ${payload.executionId.slice(0, 8)} completed`);

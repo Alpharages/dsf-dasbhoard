@@ -1,4 +1,4 @@
-import { useState, memo } from 'react';
+import { useState, memo, useEffect } from 'react';
 import { 
   Play,
   Pause, 
@@ -94,8 +94,29 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
   const controlMutation = useControlExecution();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingAction, setPendingAction] = useState<'pause' | 'resume' | 'emergency-stop' | null>(null);
+  const [liveDuration, setLiveDuration] = useState(execution.duration || 0);
 
-  const status = statusConfig[execution.status];
+  // Live duration timer
+  useEffect(() => {
+    if (execution.status === 'IN_PROGRESS' && execution.startTime) {
+      const start = new Date(execution.startTime).getTime();
+      const interval = setInterval(() => {
+        const now = Date.now();
+        const seconds = Math.floor((now - start) / 1000);
+        setLiveDuration(seconds > 0 ? seconds : 0);
+      }, 1000);
+      return () => clearInterval(interval);
+    } else {
+      setLiveDuration(execution.duration || 0);
+    }
+  }, [execution.status, execution.startTime, execution.duration]);
+
+  const status = statusConfig[execution.status] || {
+    label: 'Unknown',
+    color: 'text-slate-500',
+    bgColor: 'bg-slate-500/10',
+    borderColor: 'border-slate-500/20'
+  };
   const canControl = canControlExecution(user, execution);
   const availableControls = getAvailableControls(execution.status);
 
@@ -129,7 +150,8 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
     setShowConfirmDialog(false);
   };
 
-  const formatDuration = (seconds: number) => {
+  const formatDuration = (seconds?: number) => {
+    if (typeof seconds !== 'number' || isNaN(seconds)) return '0s';
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     if (mins > 0) {
@@ -196,7 +218,7 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
           </div>
           <div className="bg-secondary/30 rounded-xl p-3 border border-border/50">
              <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Duration</p>
-             <p className="text-sm font-bold text-foreground">{formatDuration(execution.duration)}</p>
+             <p className="text-sm font-bold text-foreground">{formatDuration(liveDuration)}</p>
           </div>
         </div>
 
