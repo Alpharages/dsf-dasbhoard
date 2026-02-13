@@ -125,12 +125,20 @@ export function ExecutionMonitoringDashboard() {
       refetch();
     },
     onProgress: (payload) => {
-      console.log('[Dashboard] Received progress:', payload);
       // Optimistically update cache for smooth progress
       queryClient.setQueryData(
         executionKeys.activeFiltered(undefined),
         (oldData: any[] | undefined) => {
           if (!oldData) return oldData;
+          
+          const exists = oldData.some(exec => exec.id === payload.executionId);
+          if (!exists) {
+            // If execution is receiving updates but not in list, fetch it!
+            console.log('[Dashboard] New execution detected via socket, refetching...');
+            refetch();
+            return oldData;
+          }
+
           return oldData.map((exec) =>
             exec.id === payload.executionId
               ? {
@@ -138,6 +146,13 @@ export function ExecutionMonitoringDashboard() {
                   status: payload.status,
                   currentStep: payload.currentStep || exec.currentStep,
                   percentComplete: payload.percentComplete ?? exec.percentComplete,
+                  // Update fields required for card metadata
+                  aiProvider: payload.aiProvider || exec.aiProvider,
+                  startTime: payload.startedAt || exec.startTime,
+                  // Recalculate duration if needed, though card handles live duration
+                  duration: payload.startedAt 
+                    ? Math.floor((Date.now() - new Date(payload.startedAt).getTime()) / 1000)
+                    : exec.duration
                 }
               : exec,
           );

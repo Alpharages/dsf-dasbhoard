@@ -74,6 +74,8 @@ export interface ExecutionEventPayload {
   currentStep?: string;
   percentComplete?: number;
   errorMessage?: string;
+  aiProvider?: string;
+  startedAt?: string;
   metadata?: {
     projectName?: string;
     aiProvider?: string;

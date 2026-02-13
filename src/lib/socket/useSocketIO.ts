@@ -147,20 +147,16 @@ export function useSocketIO(options: UseSocketIOOptions = {}) {
   const joinUserRooms = useCallback((socket: Socket, userData: typeof user, projects: string[]) => {
     if (!userData) return;
 
-    // Join role-based room
-    const roleRoom = RoomNames.role(userData.role);
-    socket.emit(RoomEvents.JOIN_ROOM, { room: roleRoom });
-
-    // Join user-specific room
-    const userRoom = RoomNames.user(userData.id);
-    socket.emit(RoomEvents.JOIN_ROOM, { room: userRoom });
+    // User and Role rooms are auto-joined by backend on connection (RealtimeGateway.handleConnection)
+    // No need to emit join events for them manually.
 
     // Join project rooms for user's projects
     if (projects.length > 0) {
       projects.forEach(projectId => {
         const room = RoomNames.project(projectId);
         if (!joinedRoomsRef.current.has(room)) {
-          socket.emit(RoomEvents.JOIN_ROOM, { room });
+          // Fix: Use specific 'joinProject' event with projectId payload
+          socket.emit('joinProject', { projectId });
         }
       });
     }
@@ -232,7 +228,8 @@ export function useSocketIO(options: UseSocketIOOptions = {}) {
     projectIds.forEach(projectId => {
       const room = RoomNames.project(projectId);
       if (!joinedRoomsRef.current.has(room)) {
-        socket.emit(RoomEvents.JOIN_ROOM, { room });
+        // Fix: Use specific 'joinProject' event with projectId payload
+        socket.emit('joinProject', { projectId });
       }
     });
 
@@ -283,69 +280,57 @@ export function useExecutionEvents(
   }
 ) {
   const { progressDebounceMs = 500 } = options || {};
-  const progressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pendingProgressRef = useRef<ExecutionEventPayload | null>(null);
+  
+  // Store handlers in a ref to avoid effect re-runs when handlers change
+  const handlersRef = useRef(handlers);
+  
+  // Update handlers ref on every render
+  useEffect(() => {
+    handlersRef.current = handlers;
+  });
 
   useEffect(() => {
     if (!socket) return;
 
-    const { 
-      onStarted, 
-      onProgress, 
-      onCompleted, 
-      onFailed, 
-      onTimeout, 
-      onCancelled,
-      onPaused,
-      onResumed,
-      onEmergencyStopped
-    } = handlers;
-
-    // Helper to handle debounced progress events
+    // Direct handling without debounce to debug the issue
     const handleProgress = (payload: ExecutionEventPayload) => {
-      pendingProgressRef.current = payload;
-      
-      // Clear existing timeout
-      if (progressTimeoutRef.current) {
-        clearTimeout(progressTimeoutRef.current);
+      // logger.debug('[Socket.IO] Raw progress event:', payload.executionId, payload.percentComplete);
+      if (handlersRef.current.onProgress) {
+        handlersRef.current.onProgress(payload);
       }
-      
-      // Set new timeout for debounced execution
-      progressTimeoutRef.current = setTimeout(() => {
-        if (pendingProgressRef.current && onProgress) {
-          onProgress(pendingProgressRef.current);
-          pendingProgressRef.current = null;
-        }
-      }, progressDebounceMs);
     };
 
-    if (onStarted) socket.on('execution.started', onStarted);
-    if (onProgress) socket.on('execution.progress', handleProgress);
-    if (onCompleted) socket.on('execution.completed', onCompleted);
-    if (onFailed) socket.on('execution.failed', onFailed);
-    if (onTimeout) socket.on('execution.timeout', onTimeout);
-    if (onCancelled) socket.on('execution.cancelled', onCancelled);
-    if (onPaused) socket.on('execution.paused', onPaused);
-    if (onResumed) socket.on('execution.resumed', onResumed);
-    if (onEmergencyStopped) socket.on('execution.emergency_stopped', onEmergencyStopped);
+    const handleStarted = (payload: ExecutionEventPayload) => handlersRef.current.onStarted?.(payload);
+    const handleCompleted = (payload: ExecutionEventPayload) => handlersRef.current.onCompleted?.(payload);
+    const handleFailed = (payload: ExecutionEventPayload) => handlersRef.current.onFailed?.(payload);
+    const handleTimeout = (payload: ExecutionEventPayload) => handlersRef.current.onTimeout?.(payload);
+    const handleCancelled = (payload: ExecutionEventPayload) => handlersRef.current.onCancelled?.(payload);
+    const handlePaused = (payload: ExecutionEventPayload) => handlersRef.current.onPaused?.(payload);
+    const handleResumed = (payload: ExecutionEventPayload) => handlersRef.current.onResumed?.(payload);
+    const handleEmergencyStopped = (payload: ExecutionEventPayload) => handlersRef.current.onEmergencyStopped?.(payload);
+
+    socket.on('execution.started', handleStarted);
+    socket.on('execution.progress', handleProgress);
+    socket.on('execution.completed', handleCompleted);
+    socket.on('execution.failed', handleFailed);
+    socket.on('execution.timeout', handleTimeout);
+    socket.on('execution.cancelled', handleCancelled);
+    socket.on('execution.paused', handlePaused);
+    socket.on('execution.resumed', handleResumed);
+    socket.on('execution.emergency_stopped', handleEmergencyStopped);
 
     return () => {
-      if (onStarted) socket.off('execution.started', onStarted);
-      if (onProgress) socket.off('execution.progress', handleProgress);
-      if (onCompleted) socket.off('execution.completed', onCompleted);
-      if (onFailed) socket.off('execution.failed', onFailed);
-      if (onTimeout) socket.off('execution.timeout', onTimeout);
-      if (onCancelled) socket.off('execution.cancelled', onCancelled);
-      if (onPaused) socket.off('execution.paused', onPaused);
-      if (onResumed) socket.off('execution.resumed', onResumed);
-      if (onEmergencyStopped) socket.off('execution.emergency_stopped', onEmergencyStopped);
-      
-      // Clean up pending debounced calls
-      if (progressTimeoutRef.current) {
-        clearTimeout(progressTimeoutRef.current);
-      }
+      socket.off('execution.started', handleStarted);
+      socket.off('execution.progress', handleProgress);
+      socket.off('execution.completed', handleCompleted);
+      socket.off('execution.failed', handleFailed);
+      socket.off('execution.timeout', handleTimeout);
+      socket.off('execution.cancelled', handleCancelled);
+      socket.off('execution.paused', handlePaused);
+      socket.off('execution.resumed', handleResumed);
+      socket.off('execution.emergency_stopped', handleEmergencyStopped);
     };
-  }, [socket, handlers, progressDebounceMs]);
+  }, [socket, progressDebounceMs]); // handlers removed from dependency array
 }
 
 /**
