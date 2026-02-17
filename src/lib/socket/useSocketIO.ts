@@ -5,8 +5,10 @@ import {
   ConnectionEvents, 
   RoomEvents, 
   RoomNames,
+  ExecutionEvents,
   type ExecutionEventPayload,
   type ExecutionLogPayload,
+  type ContainerActivityPayload,
   type NotificationPayload 
 } from './socketEvents';
 
@@ -348,6 +350,24 @@ export function useLogEvents(
       socket.off('execution.log', onLog);
     };
   }, [socket, onLog]);
+}
+
+/**
+ * Subscribe to container activity events (PM dashboard timeline)
+ * These are human-readable, structured activity updates from inside the container
+ */
+export function useActivityEvents(
+  socket: Socket | null,
+  onActivity: (payload: ContainerActivityPayload) => void
+) {
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on(ExecutionEvents.ACTIVITY, onActivity);
+    return () => {
+      socket.off(ExecutionEvents.ACTIVITY, onActivity);
+    };
+  }, [socket, onActivity]);
 }
 
 /**

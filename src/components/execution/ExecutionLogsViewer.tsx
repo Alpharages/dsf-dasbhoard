@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, lazy, Suspense } from 'react';
 import { 
   X, 
   Download, 
@@ -7,7 +7,8 @@ import {
   ChevronDown,
   ChevronUp,
   AlertCircle,
-  Loader2
+  Loader2,
+  Activity
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useExecutionLogs, useExportExecutionLogs } from '@/hooks/queries/useExecutions';
@@ -25,6 +26,8 @@ import {
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+
+const ContainerActivityTimeline = lazy(() => import('./ContainerActivityTimeline'));
 
 interface ExecutionLogsViewerProps {
   executionId: string;
@@ -59,6 +62,7 @@ export default function ExecutionLogsViewer({
   const [searchQuery, setSearchQuery] = useState('');
   const [autoScroll, setAutoScroll] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
+  const [showActivityPanel, setShowActivityPanel] = useState(true);
   const [realTimeLogs, setRealTimeLogs] = useState<ExecutionLog[]>([]);
   const logsEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -199,6 +203,15 @@ export default function ExecutionLogsViewer({
             <Button
               variant="outline"
               size="sm"
+              onClick={() => setShowActivityPanel(!showActivityPanel)}
+              className={`border-slate-700 ${showActivityPanel ? 'bg-slate-800 text-blue-400' : ''}`}
+            >
+              <Activity className="w-4 h-4 mr-2" />
+              Activity
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setShowFilters(!showFilters)}
               className={`border-slate-700 ${showFilters ? 'bg-slate-800' : ''}`}
             >
@@ -252,12 +265,38 @@ export default function ExecutionLogsViewer({
           </div>
         )}
 
-        {/* Logs Container */}
-        <div 
-          ref={containerRef}
-          onScroll={handleScroll}
-          className="flex-1 overflow-auto p-4 font-mono text-sm bg-slate-950"
-        >
+        {/* Main Content: Activity Panel + Logs */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Activity Panel (collapsible sidebar) */}
+          {showActivityPanel && (
+            <div className="w-80 border-r border-slate-800 bg-slate-900/50 p-4 overflow-auto flex-shrink-0">
+              <div className="flex items-center gap-2 mb-3">
+                <Activity className="w-4 h-4 text-blue-400" />
+                <h3 className="text-sm font-bold text-slate-200">Container Activity</h3>
+              </div>
+              <Suspense fallback={
+                <div className="flex items-center gap-2 py-4 text-xs text-slate-500">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Loading...
+                </div>
+              }>
+                <ContainerActivityTimeline
+                  executionId={executionId}
+                  socket={socket}
+                  maxHeight="calc(100% - 40px)"
+                  collapsible={false}
+                  defaultCollapsed={false}
+                />
+              </Suspense>
+            </div>
+          )}
+
+          {/* Logs Container */}
+          <div 
+            ref={containerRef}
+            onScroll={handleScroll}
+            className="flex-1 overflow-auto p-4 font-mono text-sm bg-slate-950"
+          >
           {isLoading ? (
             <div className="flex items-center justify-center h-full text-slate-500">
               <Loader2 className="w-6 h-6 animate-spin mr-2" />
@@ -298,6 +337,7 @@ export default function ExecutionLogsViewer({
               <div ref={logsEndRef} />
             </div>
           )}
+        </div>
         </div>
 
         {/* Footer Stats */}

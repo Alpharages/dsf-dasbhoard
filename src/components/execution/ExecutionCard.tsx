@@ -7,7 +7,8 @@ import {
   Loader2,
   AlertTriangle,
   MoreVertical,
-  ChevronRight
+  ChevronRight,
+  Activity
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -37,6 +38,7 @@ import {
 interface ExecutionCardProps {
   execution: Execution;
   onViewLogs?: (executionId: string) => void;
+  socket?: ReturnType<typeof import('@/lib/socket/useSocketIO').useSocketIO>['socket'];
 }
 
 const statusConfig: Record<ExecutionStatus, { 
@@ -89,7 +91,11 @@ const statusConfig: Record<ExecutionStatus, {
   },
 };
 
-export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs }: ExecutionCardProps) {
+// Lazy-load the activity timeline to avoid bloating the initial card bundle
+import { lazy, Suspense } from 'react';
+const ContainerActivityTimeline = lazy(() => import('./ContainerActivityTimeline'));
+
+export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs, socket }: ExecutionCardProps) {
   const { user } = useAuth();
   const controlMutation = useControlExecution();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -209,6 +215,33 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
              />
           </div>
         </div>
+
+        {/* Container Activity Timeline (PM-friendly live feed) */}
+        {execution.status === 'IN_PROGRESS' && socket && (
+          <div className="mb-4 bg-secondary/20 rounded-xl border border-border/50 p-3">
+            <div className="flex items-center gap-1.5 mb-2">
+              <Activity className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                Live Activity
+              </span>
+              <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            </div>
+            <Suspense fallback={
+              <div className="flex items-center gap-2 py-2 text-xs text-muted-foreground">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                Loading timeline...
+              </div>
+            }>
+              <ContainerActivityTimeline
+                executionId={execution.id}
+                socket={socket}
+                maxHeight="240px"
+                collapsible={true}
+                defaultCollapsed={true}
+              />
+            </Suspense>
+          </div>
+        )}
 
         {/* Metadata Grid */}
         <div className="grid grid-cols-2 gap-4 mb-4">

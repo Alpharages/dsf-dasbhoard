@@ -23,6 +23,9 @@ export const ExecutionEvents = {
   
   // Log streaming events
   LOG: 'execution.log',
+  
+  // Container activity events (PM dashboard)
+  ACTIVITY: 'execution-activity',
 } as const;
 
 export type ExecutionEventType = typeof ExecutionEvents[keyof typeof ExecutionEvents];
@@ -90,6 +93,31 @@ export interface ExecutionLogPayload {
   logLine: string;
   timestamp: string;
   level: 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
+}
+
+export type ActivityCategory =
+  | 'SETUP'
+  | 'DEPENDENCY'
+  | 'GIT'
+  | 'AI_THINKING'
+  | 'AI_CODING'
+  | 'BUILD'
+  | 'TEST'
+  | 'LINT'
+  | 'FILE_OP'
+  | 'DEPLOY'
+  | 'ERROR'
+  | 'SYSTEM';
+
+export interface ContainerActivityPayload {
+  executionId: string;
+  ticketId: string;
+  timestamp: string;
+  activity: string;
+  detail?: string;
+  category: ActivityCategory;
+  icon: string;
+  suggestedPercent?: number;
 }
 
 export interface NotificationPayload {

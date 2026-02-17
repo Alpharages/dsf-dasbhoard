@@ -343,6 +343,7 @@ export function ExecutionMonitoringDashboard() {
               key={execution.id}
               execution={execution}
               onViewLogs={handleViewLogs}
+              socket={socket}
             />
           ))}
         </div>
