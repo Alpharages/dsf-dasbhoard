@@ -37,6 +37,7 @@ import {
   Activity,
   ChevronDown,
   ChevronUp,
+  Terminal,
 } from 'lucide-react';
 import { useActivityEvents } from '@/lib/socket/useSocketIO';
 import type { ContainerActivityPayload, ActivityCategory } from '@/lib/socket/socketEvents';
@@ -165,6 +166,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   'rocket': Rocket,
   'settings': Settings,
   'alert-triangle': AlertTriangle,
+  'terminal': Terminal,
 };
 
 // ─────────────────────────────────────────────────────────────────
