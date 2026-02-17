@@ -89,6 +89,12 @@ const statusConfig: Record<ExecutionStatus, {
     bgColor: 'bg-slate-500/10',
     borderColor: 'border-slate-500/20'
   },
+  'AWAITING_APPROVAL': {
+    label: 'Awaiting Approval',
+    color: 'text-blue-400',
+    bgColor: 'bg-blue-500/10',
+    borderColor: 'border-blue-500/30'
+  },
 };
 
 // Lazy-load the activity timeline to avoid bloating the initial card bundle

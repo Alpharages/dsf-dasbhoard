@@ -72,13 +72,21 @@ export const RoomEvents = {
 export interface ExecutionEventPayload {
   executionId: string;
   ticketId: string;
-  projectId: string;
-  status: 'QUEUED' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED' | 'FAILED' | 'TIMEOUT' | 'CANCELLED';
+  projectId: string | null;
+  status: 'QUEUED' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED' | 'FAILED' | 'TIMEOUT' | 'CANCELLED' | 'AWAITING_APPROVAL';
   currentStep?: string;
   percentComplete?: number;
   errorMessage?: string;
   aiProvider?: string;
   startedAt?: string;
+  provider?: string;
+  timestamp?: string;
+  lastUpdated?: string;
+  payload?: Record<string, unknown>;
+  progress?: {
+    currentStep: string;
+    percentComplete: number;
+  };
   metadata?: {
     projectName?: string;
     aiProvider?: string;
@@ -89,10 +97,12 @@ export interface ExecutionEventPayload {
 
 export interface ExecutionLogPayload {
   executionId: string;
-  ticketId: string;
-  logLine: string;
+  ticketId: string | null;
+  message: string;
   timestamp: string;
-  level: 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
+  level: 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'STDOUT' | 'STDERR';
+  source?: string;
+  projectId?: string | null;
 }
 
 export type ActivityCategory =

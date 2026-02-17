@@ -10,7 +10,8 @@ import {
   Loader2,
   WifiOff,
   Filter,
-  SortAsc
+  SortAsc,
+  Inbox
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
@@ -75,6 +76,14 @@ const statusFilters: StatusFilter[] = [
     activeBg: 'bg-emerald-600'
   },
   { 
+    label: 'Awaiting Approval', 
+    value: 'AWAITING_APPROVAL', 
+    icon: <Inbox className="w-4 h-4" />,
+    color: 'text-blue-400',
+    activeColor: 'text-white',
+    activeBg: 'bg-blue-500'
+  },
+  { 
     label: 'Failed', 
     value: 'FAILED', 
     icon: <XCircle className="w-4 h-4" />,
@@ -102,13 +111,26 @@ export function ExecutionMonitoringDashboard() {
     projectIds: userProjects.map(p => p.id)
   });
 
-  // Fetch active executions
+  // Fetch active executions (initial load + 30s fallback poll)
   const { 
     data: executions = [], 
     isLoading, 
     error, 
     refetch 
   } = useActiveExecutions();
+
+  // Helper: optimistically update a single execution's status in cache
+  const updateExecutionStatus = useCallback((executionId: string, status: string) => {
+    queryClient.setQueryData(
+      executionKeys.activeFiltered(undefined),
+      (oldData: any[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.map((exec) =>
+          exec.id === executionId ? { ...exec, status } : exec,
+        );
+      },
+    );
+  }, [queryClient]);
 
   // Join project rooms when projects load and socket connects
   useEffect(() => {
@@ -118,14 +140,17 @@ export function ExecutionMonitoringDashboard() {
     }
   }, [connected, userProjects, joinProjectRooms]);
 
-  // Handle execution events with debounced progress updates
+  // Handle execution events — all updates are optimistic via WebSocket payloads.
+  // Only onStarted needs a single refetch (new execution not yet in cache, needs projectName etc.)
   useExecutionEvents(socket, {
-    onStarted: () => {
+    onStarted: (payload) => {
       toast.success('New execution started');
+      // New execution isn't in cache yet and WS payload lacks fields like projectName,
+      // so one refetch is needed to get the full object. This is infrequent (once per execution).
       refetch();
     },
     onProgress: (payload) => {
-      // Optimistically update cache for smooth progress
+      // Optimistically update cache from WebSocket payload — zero HTTP calls
       queryClient.setQueryData(
         executionKeys.activeFiltered(undefined),
         (oldData: any[] | undefined) => {
@@ -133,8 +158,7 @@ export function ExecutionMonitoringDashboard() {
           
           const exists = oldData.some(exec => exec.id === payload.executionId);
           if (!exists) {
-            // If execution is receiving updates but not in list, fetch it!
-            console.log('[Dashboard] New execution detected via socket, refetching...');
+            // Execution not in cache (missed the started event?) — single refetch
             refetch();
             return oldData;
           }
@@ -146,10 +170,8 @@ export function ExecutionMonitoringDashboard() {
                   status: payload.status,
                   currentStep: payload.currentStep || exec.currentStep,
                   percentComplete: payload.percentComplete ?? exec.percentComplete,
-                  // Update fields required for card metadata
                   aiProvider: payload.aiProvider || exec.aiProvider,
                   startTime: payload.startedAt || exec.startTime,
-                  // Recalculate duration if needed, though card handles live duration
                   duration: payload.startedAt 
                     ? Math.floor((Date.now() - new Date(payload.startedAt).getTime()) / 1000)
                     : exec.duration
@@ -161,25 +183,25 @@ export function ExecutionMonitoringDashboard() {
     },
     onCompleted: (payload) => {
       toast.success(`Execution ${payload.executionId.slice(0, 8)} completed`);
-      refetch();
+      updateExecutionStatus(payload.executionId, 'COMPLETED');
     },
     onFailed: (payload) => {
       toast.error(`Execution ${payload.executionId.slice(0, 8)} failed`);
-      refetch();
+      updateExecutionStatus(payload.executionId, 'FAILED');
     },
     onTimeout: (payload) => {
       toast.error(`Execution ${payload.executionId.slice(0, 8)} timed out`);
-      refetch();
+      updateExecutionStatus(payload.executionId, 'TIMEOUT');
     },
     onCancelled: (payload) => {
       toast(`Execution ${payload.executionId.slice(0, 8)} cancelled`);
-      refetch();
+      updateExecutionStatus(payload.executionId, 'CANCELLED');
     },
-    onPaused: () => refetch(),
-    onResumed: () => refetch(),
-    onEmergencyStopped: () => refetch(),
+    onPaused: (payload) => updateExecutionStatus(payload.executionId, 'PAUSED'),
+    onResumed: (payload) => updateExecutionStatus(payload.executionId, 'IN_PROGRESS'),
+    onEmergencyStopped: (payload) => updateExecutionStatus(payload.executionId, 'CANCELLED'),
   }, {
-    progressDebounceMs: 500 // Debounce progress events to prevent API flooding
+    progressDebounceMs: 500
   });
 
   // Filter executions by status

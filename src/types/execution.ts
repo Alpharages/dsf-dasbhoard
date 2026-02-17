@@ -10,9 +10,10 @@ export type ExecutionStatus =
   | 'COMPLETED' 
   | 'FAILED' 
   | 'TIMEOUT' 
-  | 'CANCELLED';
+  | 'CANCELLED'
+  | 'AWAITING_APPROVAL';
 
-export type LogLevel = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
+export type LogLevel = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'STDOUT' | 'STDERR';
 
 export interface Execution {
   id: string;
@@ -88,6 +89,7 @@ export const CONTROL_BUTTON_MATRIX: Record<ExecutionStatus, ControlAction[]> = {
   'QUEUED': ['emergency-stop'],
   'IN_PROGRESS': ['pause', 'emergency-stop'],
   'PAUSED': ['resume', 'emergency-stop'],
+  'AWAITING_APPROVAL': ['emergency-stop'],
   'COMPLETED': [],
   'FAILED': [],
   'TIMEOUT': [],

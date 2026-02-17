@@ -48,6 +48,7 @@ import { LeadQaReviewDashboardPage } from './pages/QaReviewDashboardPage';
 import { ProductionErrorDashboard } from './pages/ProductionErrorDashboard';
 import { ExecutionMonitoringDashboard } from './pages/ExecutionMonitoringDashboard';
 import { NotificationPreferences } from './pages/NotificationPreferences';
+import { PmApprovalDashboardPage } from './pages/PmApprovalDashboardPage';
 
 
 
@@ -551,6 +552,16 @@ function AppContent({ navigate }: { navigate: any }) {
               element={
                 <ProtectedRoute>
                   <ProductionErrorDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* PM Approval Queue - PM, TL, Manager, Admin */}
+            <Route
+              path="/approvals"
+              element={
+                <ProtectedRoute requiredRoles={['PM', 'TL', 'MANAGER', 'ADMIN']}>
+                  <PmApprovalDashboardPage />
                 </ProtectedRoute>
               }
             />

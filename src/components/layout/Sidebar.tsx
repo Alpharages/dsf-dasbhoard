@@ -31,6 +31,7 @@ import {
   Pin,
   PanelLeft,
   BarChart3,
+  Inbox,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -54,6 +55,7 @@ const navigationGroups = [
     items: [
       { icon: Briefcase, label: 'Projects', path: '/projects/sync', shortcut: 'G P' },
       { icon: CheckCircle, label: 'Decisions', path: '/decisions', shortcut: 'G N' },
+      { icon: Inbox, label: 'PM Approvals', path: '/approvals', roles: ['PM', 'TL', 'ADMIN', 'MANAGER'] },
       { icon: ShieldCheck, label: 'QA Review', path: '/qa-review/dashboard', roles: ['QA', 'TL', 'ADMIN', 'MANAGER'] },
     ],
   },

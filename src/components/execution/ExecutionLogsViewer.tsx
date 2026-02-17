@@ -100,8 +100,9 @@ export default function ExecutionLogsViewer({
         id: `${Date.now()}-${Math.random()}`,
         executionId: payload.executionId,
         timestamp: payload.timestamp,
-        level: payload.level,
-        message: payload.logLine,
+        level: payload.level as LogLevel,
+        message: payload.message,
+        source: payload.source,
       };
       setRealTimeLogs(prev => [...prev, newLog]);
     }
