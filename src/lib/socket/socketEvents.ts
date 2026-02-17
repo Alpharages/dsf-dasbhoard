@@ -118,6 +118,7 @@ export interface ContainerActivityPayload {
   category: ActivityCategory;
   icon: string;
   suggestedPercent?: number;
+  projectId?: string | null;
 }
 
 export interface NotificationPayload {
