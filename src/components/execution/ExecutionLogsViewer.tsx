@@ -152,7 +152,7 @@ export default function ExecutionLogsViewer({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl h-[90vh] bg-slate-900 border-slate-800 p-0 flex flex-col">
+      <DialogContent className="max-w-[95vw] w-[95vw] h-[90vh] bg-slate-900 border-slate-800 p-0 flex flex-col">
         <DialogHeader className="px-6 py-4 border-b border-slate-800">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-slate-200 flex items-center gap-2">
@@ -269,7 +269,7 @@ export default function ExecutionLogsViewer({
         <div className="flex-1 flex overflow-hidden">
           {/* Activity Panel (collapsible sidebar) */}
           {showActivityPanel && (
-            <div className="w-80 border-r border-slate-800 bg-slate-900/50 p-4 overflow-auto flex-shrink-0">
+            <div className="w-72 border-r border-slate-800 bg-slate-900/50 p-4 overflow-auto flex-shrink-0">
               <div className="flex items-center gap-2 mb-3">
                 <Activity className="w-4 h-4 text-blue-400" />
                 <h3 className="text-sm font-bold text-slate-200">Container Activity</h3>
@@ -295,7 +295,7 @@ export default function ExecutionLogsViewer({
           <div 
             ref={containerRef}
             onScroll={handleScroll}
-            className="flex-1 overflow-auto p-4 font-mono text-sm bg-slate-950"
+            className="flex-1 min-w-0 overflow-auto p-4 font-mono text-sm bg-slate-950"
           >
           {isLoading ? (
             <div className="flex items-center justify-center h-full text-slate-500">
@@ -329,7 +329,7 @@ export default function ExecutionLogsViewer({
                   >
                     {log.level}
                   </Badge>
-                  <span className="text-slate-300 break-all whitespace-pre-wrap">
+                  <span className="text-slate-300 break-words whitespace-pre-wrap min-w-0">
                     {log.message}
                   </span>
                 </div>
