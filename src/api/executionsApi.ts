@@ -8,8 +8,10 @@ import type {
   Execution, 
   ExecutionFilters, 
   LogFilters,
+  ActivityFilters,
   ActiveExecutionsResponse,
   ExecutionLogsResponse,
+  ExecutionActivitiesResponse,
   ExecutionControlResponse 
 } from '@/types/execution';
 
@@ -81,6 +83,44 @@ export async function getExecutionLogs(
 
   const response = await apiClient.get(
     `${BASE_URL}/${executionId}/logs?${params.toString()}`
+  );
+  return response.data;
+}
+
+/**
+ * Get execution activities (persisted live activity timeline)
+ */
+export async function getExecutionActivities(
+  executionId: string,
+  filters?: ActivityFilters
+): Promise<ExecutionActivitiesResponse> {
+  const params = new URLSearchParams();
+
+  if (filters?.category?.length) {
+    filters.category.forEach(c => params.append('category', c));
+  }
+  if (filters?.page) {
+    params.append('page', String(filters.page));
+  }
+  if (filters?.limit) {
+    params.append('limit', String(filters.limit));
+  }
+
+  const response = await apiClient.get(
+    `${BASE_URL}/${executionId}/activities?${params.toString()}`
+  );
+  return response.data;
+}
+
+/**
+ * Get latest N execution activities (for dashboard widget)
+ */
+export async function getLatestExecutionActivities(
+  executionId: string,
+  limit = 20
+): Promise<{ activities: import('@/types/execution').ExecutionActivity[] }> {
+  const response = await apiClient.get(
+    `${BASE_URL}/${executionId}/activities/latest?limit=${limit}`
   );
   return response.data;
 }

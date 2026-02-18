@@ -34,6 +34,8 @@ interface ExecutionLogsViewerProps {
   isOpen: boolean;
   onClose: () => void;
   socket: ReturnType<typeof import('@/lib/socket/useSocketIO').useSocketIO>['socket'];
+  /** Whether the execution is currently live (enables WebSocket subscription) */
+  isLive?: boolean;
 }
 
 const LOG_LEVEL_COLORS: Record<LogLevel, string> = {
@@ -56,7 +58,8 @@ export default function ExecutionLogsViewer({
   executionId, 
   isOpen, 
   onClose,
-  socket 
+  socket,
+  isLive = true,
 }: ExecutionLogsViewerProps) {
   const [selectedLevels, setSelectedLevels] = useState<LogLevel[]>(['INFO', 'WARN', 'ERROR']);
   const [searchQuery, setSearchQuery] = useState('');
@@ -287,6 +290,7 @@ export default function ExecutionLogsViewer({
                   maxHeight="calc(100% - 40px)"
                   collapsible={false}
                   defaultCollapsed={false}
+                  isLive={isLive}
                 />
               </Suspense>
             </div>

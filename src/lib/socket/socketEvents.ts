@@ -125,6 +125,7 @@ export interface ContainerActivityPayload {
   timestamp: string;
   activity: string;
   detail?: string;
+  rawContent?: string;
   category: ActivityCategory;
   icon: string;
   suggestedPercent?: number;

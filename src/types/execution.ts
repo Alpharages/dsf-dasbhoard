@@ -72,6 +72,33 @@ export interface LogFilters {
   searchQuery?: string;
 }
 
+// Execution activity (persisted live activity event)
+export interface ExecutionActivity {
+  id: string;
+  executionId: string;
+  activity: string;
+  detail?: string | null;
+  rawContent?: string | null;
+  category: string;
+  icon: string;
+  suggestedPercent?: number | null;
+  timestamp: string;
+}
+
+export interface ExecutionActivitiesResponse {
+  activities: ExecutionActivity[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface ActivityFilters {
+  category?: string[];
+  page?: number;
+  limit?: number;
+}
+
 // Control action types
 export type ControlAction = 'pause' | 'resume' | 'emergency-stop';
 

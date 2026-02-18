@@ -222,32 +222,41 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
           </div>
         </div>
 
-        {/* Container Activity Timeline (PM-friendly live feed) */}
-        {execution.status === 'IN_PROGRESS' && socket && (
-          <div className="mb-4 bg-secondary/20 rounded-xl border border-border/50 p-3">
-            <div className="flex items-center gap-1.5 mb-2">
-              <Activity className="w-3.5 h-3.5 text-muted-foreground" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                Live Activity
-              </span>
-              <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            </div>
-            <Suspense fallback={
-              <div className="flex items-center gap-2 py-2 text-xs text-muted-foreground">
-                <Loader2 className="w-3 h-3 animate-spin" />
-                Loading timeline...
+        {/* Container Activity Timeline (PM-friendly live feed / historical review) */}
+        {(() => {
+          const isLive = execution.status === 'IN_PROGRESS' || execution.status === 'PAUSED';
+          const showTimeline = isLive || ['COMPLETED', 'FAILED', 'TIMEOUT', 'CANCELLED'].includes(execution.status);
+          if (!showTimeline) return null;
+
+          return (
+            <div className="mb-4 bg-secondary/20 rounded-xl border border-border/50 p-3">
+              <div className="flex items-center gap-1.5 mb-2">
+                <Activity className="w-3.5 h-3.5 text-muted-foreground" />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  {isLive ? 'Live Activity' : 'Activity History'}
+                </span>
+                {isLive && (
+                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                )}
               </div>
-            }>
-              <ContainerActivityTimeline
-                executionId={execution.id}
-                socket={socket}
-                maxHeight="240px"
-                collapsible={true}
-                defaultCollapsed={true}
-              />
-            </Suspense>
-          </div>
-        )}
+              <Suspense fallback={
+                <div className="flex items-center gap-2 py-2 text-xs text-muted-foreground">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Loading timeline...
+                </div>
+              }>
+                <ContainerActivityTimeline
+                  executionId={execution.id}
+                  socket={socket}
+                  maxHeight="240px"
+                  collapsible={true}
+                  defaultCollapsed={true}
+                  isLive={isLive}
+                />
+              </Suspense>
+            </div>
+          );
+        })()}
 
         {/* Metadata Grid */}
         <div className="grid grid-cols-2 gap-4 mb-4">

@@ -15,7 +15,7 @@
  * - Auto-scroll with manual override
  */
 
-import { useState, useEffect, useRef, useCallback, memo } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import {
   Package,
   GitBranch,
@@ -38,8 +38,12 @@ import {
   ChevronDown,
   ChevronUp,
   Terminal,
+  Eye,
+  EyeOff,
+  Loader2,
 } from 'lucide-react';
 import { useActivityEvents } from '@/lib/socket/useSocketIO';
+import { useExecutionActivities } from '@/hooks/queries/useExecutions';
 import type { ContainerActivityPayload, ActivityCategory } from '@/lib/socket/socketEvents';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -194,6 +198,7 @@ const ActivityItem = memo(function ActivityItem({ activity, isLatest }: Activity
   const config = CATEGORY_CONFIG[activity.category] || CATEGORY_CONFIG.SYSTEM;
   const Icon = ICON_MAP[activity.icon] || Activity;
   const [relTime, setRelTime] = useState(formatRelativeTime(activity.timestamp));
+  const [showRaw, setShowRaw] = useState(false);
 
   // Update relative time every 5 seconds
   useEffect(() => {
@@ -204,50 +209,70 @@ const ActivityItem = memo(function ActivityItem({ activity, isLatest }: Activity
   }, [activity.timestamp]);
 
   return (
-    <div className={`flex gap-3 py-2.5 px-3 rounded-lg transition-all duration-300 ${
+    <div className={`rounded-lg transition-all duration-300 ${
       isLatest ? `${config.bgColor} border ${config.borderColor}` : 'hover:bg-muted/30'
     }`}>
-      {/* Timeline dot + line */}
-      <div className="flex flex-col items-center pt-0.5">
-        <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${config.dotColor} ${
-          isLatest ? 'animate-pulse ring-2 ring-offset-1 ring-offset-background' : ''
-        }`}
-          style={isLatest ? { boxShadow: `0 0 8px ${config.dotColor.replace('bg-', '')}` } : {}}
-        />
-        <div className="w-px flex-1 bg-border/50 mt-1" />
-      </div>
-
-      {/* Icon */}
-      <div className={`p-1.5 rounded-md flex-shrink-0 ${config.bgColor}`}>
-        <Icon className={`w-3.5 h-3.5 ${config.color}`} />
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className={`text-sm font-semibold ${
-            isLatest ? 'text-foreground' : 'text-foreground/80'
-          }`}>
-            {activity.activity}
-          </span>
-          <Badge
-            variant="outline"
-            className={`text-[9px] px-1.5 py-0 h-4 border-transparent ${config.color} ${config.bgColor}`}
-          >
-            {config.label}
-          </Badge>
+      <div className="flex gap-3 py-2.5 px-3">
+        {/* Timeline dot + line */}
+        <div className="flex flex-col items-center pt-0.5">
+          <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${config.dotColor} ${
+            isLatest ? 'animate-pulse ring-2 ring-offset-1 ring-offset-background' : ''
+          }`}
+            style={isLatest ? { boxShadow: `0 0 8px ${config.dotColor.replace('bg-', '')}` } : {}}
+          />
+          <div className="w-px flex-1 bg-border/50 mt-1" />
         </div>
-        {activity.detail && (
-          <p className="text-xs text-muted-foreground mt-0.5 truncate" title={activity.detail}>
-            {activity.detail}
-          </p>
-        )}
+
+        {/* Icon */}
+        <div className={`p-1.5 rounded-md flex-shrink-0 ${config.bgColor}`}>
+          <Icon className={`w-3.5 h-3.5 ${config.color}`} />
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className={`text-sm font-semibold ${
+              isLatest ? 'text-foreground' : 'text-foreground/80'
+            }`}>
+              {activity.activity}
+            </span>
+            <Badge
+              variant="outline"
+              className={`text-[9px] px-1.5 py-0 h-4 border-transparent ${config.color} ${config.bgColor}`}
+            >
+              {config.label}
+            </Badge>
+            {activity.rawContent && (
+              <button
+                onClick={() => setShowRaw(!showRaw)}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                title={showRaw ? 'Hide raw output' : 'Show raw output'}
+              >
+                {showRaw ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+              </button>
+            )}
+          </div>
+          {activity.detail && (
+            <p className="text-xs text-muted-foreground mt-0.5 truncate" title={activity.detail}>
+              {activity.detail}
+            </p>
+          )}
+        </div>
+
+        {/* Timestamp */}
+        <span className="text-[10px] text-muted-foreground flex-shrink-0 pt-0.5">
+          {relTime}
+        </span>
       </div>
 
-      {/* Timestamp */}
-      <span className="text-[10px] text-muted-foreground flex-shrink-0 pt-0.5">
-        {relTime}
-      </span>
+      {/* Expandable raw content */}
+      {showRaw && activity.rawContent && (
+        <div className="mx-3 mb-2 p-2 rounded bg-slate-950/60 border border-border/30">
+          <pre className="text-[10px] text-muted-foreground font-mono whitespace-pre-wrap break-all max-h-32 overflow-auto">
+            {activity.rawContent}
+          </pre>
+        </div>
+      )}
     </div>
   );
 });
@@ -265,6 +290,8 @@ interface ContainerActivityTimelineProps {
   collapsible?: boolean;
   /** Default collapsed state */
   defaultCollapsed?: boolean;
+  /** Whether the execution is currently live (enables WebSocket subscription) */
+  isLive?: boolean;
 }
 
 export default function ContainerActivityTimeline({
@@ -273,22 +300,66 @@ export default function ContainerActivityTimeline({
   maxHeight = '320px',
   collapsible = true,
   defaultCollapsed = true,
+  isLive = true,
 }: ContainerActivityTimelineProps) {
-  const [activities, setActivities] = useState<ContainerActivityPayload[]>([]);
+  const [realtimeActivities, setRealtimeActivities] = useState<ContainerActivityPayload[]>([]);
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
   const scrollRef = useRef<HTMLDivElement>(null);
+  // Track IDs of persisted activities to deduplicate against WebSocket events
+  const persistedTimestampsRef = useRef<Set<string>>(new Set());
 
-  // Handle incoming activity events
+  // Fetch persisted activities from database
+  const { data: persistedActivities = [], isLoading } = useExecutionActivities(
+    executionId,
+    { limit: 500 },
+    { enabled: !!executionId },
+  );
+
+  // Build dedupe set when persisted data loads
+  useEffect(() => {
+    const set = new Set<string>();
+    for (const a of persistedActivities) {
+      set.add(a.timestamp);
+    }
+    persistedTimestampsRef.current = set;
+  }, [persistedActivities]);
+
+  // Convert persisted activities to ContainerActivityPayload shape
+  const initialActivities: ContainerActivityPayload[] = useMemo(
+    () =>
+      persistedActivities.map((a) => ({
+        executionId: a.executionId,
+        ticketId: '',  // ticketId lives on the Execution record, not on activities
+        timestamp: a.timestamp,
+        activity: a.activity,
+        detail: a.detail ?? undefined,
+        rawContent: a.rawContent ?? undefined,
+        category: a.category as ActivityCategory,
+        icon: a.icon,
+        suggestedPercent: a.suggestedPercent ?? undefined,
+      })),
+    [persistedActivities],
+  );
+
+  // Handle incoming real-time activity events (only when live)
   useActivityEvents(
-    socket,
+    isLive ? socket : null,
     useCallback(
       (payload: ContainerActivityPayload) => {
         if (payload.executionId === executionId) {
-          setActivities((prev) => [...prev, payload]);
+          // Deduplicate: skip if this timestamp already exists in persisted data
+          if (persistedTimestampsRef.current.has(payload.timestamp)) return;
+          setRealtimeActivities((prev) => [...prev, payload]);
         }
       },
       [executionId],
     ),
+  );
+
+  // Merge persisted + real-time activities
+  const activities = useMemo(
+    () => [...initialActivities, ...realtimeActivities],
+    [initialActivities, realtimeActivities],
   );
 
   // Auto-scroll to bottom when new activities arrive
@@ -301,11 +372,29 @@ export default function ContainerActivityTimeline({
 
   const latestActivity = activities[activities.length - 1];
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-2 py-2 px-3 text-xs text-muted-foreground">
+        <Loader2 className="w-3 h-3 animate-spin" />
+        Loading activity timeline...
+      </div>
+    );
+  }
+
   if (activities.length === 0) {
     return (
       <div className="flex items-center gap-2 py-2 px-3 text-xs text-muted-foreground">
-        <div className="w-2 h-2 rounded-full bg-muted-foreground/30 animate-pulse" />
-        Waiting for container activity...
+        {isLive ? (
+          <>
+            <div className="w-2 h-2 rounded-full bg-muted-foreground/30 animate-pulse" />
+            Waiting for container activity...
+          </>
+        ) : (
+          <>
+            <Activity className="w-3 h-3" />
+            No activity recorded
+          </>
+        )}
       </div>
     );
   }
@@ -356,7 +445,12 @@ export default function ContainerActivityTimeline({
       <div className="flex items-center justify-between px-3 pt-1 text-[10px] text-muted-foreground border-t border-border/50">
         <span>{activities.length} activities</span>
         <span>
-          {latestActivity.category !== 'ERROR' ? (
+          {!isLive ? (
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+              Historical
+            </span>
+          ) : latestActivity.category !== 'ERROR' ? (
             <span className="flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Active

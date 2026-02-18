@@ -14,6 +14,8 @@ import {
   getActiveExecutions,
   getExecution,
   getExecutionLogs,
+  getExecutionActivities,
+  getLatestExecutionActivities,
   pauseExecution,
   resumeExecution,
   emergencyStopExecution,
@@ -22,8 +24,10 @@ import {
 } from '@/api/executionsApi';
 import type { 
   Execution, 
+  ExecutionActivity,
   ExecutionLog,
   ExecutionFilters, 
+  ActivityFilters,
   LogFilters,
   ExecutionControlResponse 
 } from '@/types/execution';
@@ -38,6 +42,9 @@ export const executionKeys = {
   logs: (id: string) => [...executionKeys.all, 'logs', id] as const,
   logsFiltered: (id: string, filters: LogFilters | undefined) => 
     [...executionKeys.logs(id), { filters }] as const,
+  activities: (id: string) => [...executionKeys.all, 'activities', id] as const,
+  activitiesFiltered: (id: string, filters: ActivityFilters | undefined) =>
+    [...executionKeys.activities(id), { filters }] as const,
 };
 
 // ============================================================================
@@ -89,6 +96,40 @@ export function useExecutionLogs(
     queryFn: () => getExecutionLogs(executionId, filters).then(r => r.logs),
     enabled: !!executionId,
     staleTime: 60 * 1000, // 1 minute
+    ...options,
+  });
+}
+
+/**
+ * Hook to fetch persisted execution activities (live activity timeline)
+ */
+export function useExecutionActivities(
+  executionId: string,
+  filters?: ActivityFilters,
+  options?: Omit<UseQueryOptions<ExecutionActivity[], Error>, 'queryKey' | 'queryFn'>
+) {
+  return useQuery({
+    queryKey: executionKeys.activitiesFiltered(executionId, filters),
+    queryFn: () => getExecutionActivities(executionId, filters).then(r => r.activities),
+    enabled: !!executionId,
+    staleTime: 60 * 1000, // 1 minute
+    ...options,
+  });
+}
+
+/**
+ * Hook to fetch latest N execution activities (for dashboard widget)
+ */
+export function useLatestExecutionActivities(
+  executionId: string,
+  limit = 20,
+  options?: Omit<UseQueryOptions<ExecutionActivity[], Error>, 'queryKey' | 'queryFn'>
+) {
+  return useQuery({
+    queryKey: [...executionKeys.activities(executionId), 'latest', limit] as const,
+    queryFn: () => getLatestExecutionActivities(executionId, limit).then(r => r.activities),
+    enabled: !!executionId,
+    staleTime: 60 * 1000,
     ...options,
   });
 }
