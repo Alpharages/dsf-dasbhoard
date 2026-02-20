@@ -89,6 +89,7 @@ const navigationGroups = [
     items: [
       { icon: ShieldAlert, label: 'Audit Logs', path: '/audit-logs', roles: ['QA', 'TL', 'ADMIN', 'MANAGER'] },
       { icon: Lock, label: 'Resource Manager', path: '/resource-manager', roles: ['TL', 'ADMIN', 'MANAGER'] },
+      { icon: Activity, label: 'Observability', path: '/observability', roles: ['PM', 'TL', 'QA', 'MANAGER', 'ADMIN', 'OPERATOR'] },
       { icon: AlertTriangle, label: 'Production Errors', path: '/production-errors' },
       { icon: MessageSquare, label: 'Conversations', path: '/conversations' },
     ],

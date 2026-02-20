@@ -51,6 +51,7 @@ import { NotificationPreferences } from './pages/NotificationPreferences';
 import { PmApprovalDashboardPage } from './pages/PmApprovalDashboardPage';
 import { AuditLogsDashboard } from './pages/AuditLogsDashboard';
 import { ResourceManagerPage } from './features/resource-manager';
+import { ObservabilityPage } from './pages/observability';
 
 
 
@@ -587,6 +588,16 @@ function AppContent({ navigate }: { navigate: any }) {
               element={
                 <ProtectedRoute requiredRoles={['PM', 'TL', 'MANAGER', 'ADMIN']}>
                   <ExecutionMonitoringDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Observability Control Panel - PM, TL, QA, Manager, Admin, Operator */}
+            <Route
+              path="/observability"
+              element={
+                <ProtectedRoute requiredRoles={['PM', 'TL', 'QA', 'MANAGER', 'ADMIN', 'OPERATOR']}>
+                  <ObservabilityPage />
                 </ProtectedRoute>
               }
             />
