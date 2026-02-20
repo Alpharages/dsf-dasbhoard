@@ -28,3 +28,29 @@ export async function getGithubLoginUrl(): Promise<{ url: string }> {
     const { data } = await api.get('/github/auth/login');
     return data;
 }
+
+export interface GitHubRepo {
+  id: number;
+  fullName: string;
+  private: boolean;
+  htmlUrl: string;
+}
+
+/**
+ * Fetches repositories for a connected GitHub account
+ */
+export async function getGithubRepos(accountId: string): Promise<GitHubRepo[]> {
+  const { data } = await api.get(`/github/accounts/${accountId}/repos`);
+  return data;
+}
+
+/**
+ * Saves a selected GitHub repository to a project
+ */
+export async function saveProjectGithubRepo(
+  projectId: string,
+  payload: { githubAccountId: string; repositoryFullName: string }
+): Promise<any> {
+  const { data } = await api.patch(`/projects/${projectId}/github-repo`, payload);
+  return data;
+}

@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Switch } from '../ui/switch';
-import { ChevronDown, ChevronUp, Cloud, Database, RefreshCw, Trash2, Edit2, Save, X, Loader2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Cloud, Database, RefreshCw, Trash2, Loader2 } from 'lucide-react';
 import apiClient from '../../api/client';
 import { toast } from 'react-hot-toast';
+import { GithubRepoSelector } from '../../features/projects/components/GithubRepoSelector';
 
 export interface ProjectRowData {
     id: string;
     name: string;
     provider?: 'CLICKUP' | 'JIRA' | 'ASANA';
     monitor_tasks?: boolean;
+    github_account_id?: string | null;
     github_repository_url: string;
     status: string;
     is_active?: boolean; // New field
@@ -25,8 +27,6 @@ interface ProjectsTableProps {
 export function ProjectsTable({ projects, onProjectUpdated }: ProjectsTableProps) {
     const [expandedRow, setExpandedRow] = useState<string | null>(null);
     const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
-    const [editingRepo, setEditingRepo] = useState<string | null>(null);
-    const [repoUrlInput, setRepoUrlInput] = useState('');
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
     const handleToggleMonitoring = async (projectId: string, currentValue: boolean) => {
@@ -87,17 +87,6 @@ export function ProjectsTable({ projects, onProjectUpdated }: ProjectsTableProps
             handleError(error, 'Failed to delete project');
         } finally {
             setIsDeleting(null);
-        }
-    };
-
-    const handleSaveRepo = async (projectId: string) => {
-        try {
-            await apiClient.patch(`/projects/${projectId}/repository`, { repositoryUrl: repoUrlInput });
-            toast.success('Repository updated successfully');
-            setEditingRepo(null);
-            onProjectUpdated?.();
-        } catch (error) {
-            handleError(error, 'Failed to update repository');
         }
     };
 
@@ -195,30 +184,8 @@ export function ProjectsTable({ projects, onProjectUpdated }: ProjectsTableProps
                                                 <span className="text-muted-foreground font-semibold block mb-1">Project ID</span>
                                                 <span className="text-foreground font-mono">{project.id}</span>
                                             </div>
-                                            <div>
-                                                <span className="text-muted-foreground font-semibold block mb-1">GitHub Repository</span>
-                                                {editingRepo === project.id ? (
-                                                    <div className="flex items-center gap-2">
-                                                        <input
-                                                            value={repoUrlInput}
-                                                            onChange={(e) => setRepoUrlInput(e.target.value)}
-                                                            className="bg-background border border-input rounded px-2 py-1 text-foreground text-sm focus:outline-none focus:border-primary w-full"
-                                                            placeholder="https://github.com/owner/repo"
-                                                        />
-                                                        <button onClick={() => handleSaveRepo(project.id)} className="p-1.5 bg-primary text-primary-foreground rounded hover:bg-primary/90"><Save className="w-3 h-3" /></button>
-                                                        <button onClick={() => setEditingRepo(null)} className="p-1.5 bg-secondary text-secondary-foreground rounded hover:bg-secondary/80"><X className="w-3 h-3" /></button>
-                                                    </div>
-                                                ) : (
-                                                    <div className="flex items-center gap-2 group">
-                                                        <a href={project.github_repository_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate max-w-[200px]">{project.github_repository_url}</a>
-                                                        <button
-                                                            onClick={() => { setEditingRepo(project.id); setRepoUrlInput(project.github_repository_url); }}
-                                                            className="opacity-0 group-hover:opacity-100 p-1 hover:bg-muted rounded text-muted-foreground"
-                                                        >
-                                                            <Edit2 className="w-3 h-3" />
-                                                        </button>
-                                                    </div>
-                                                )}
+                                            <div className="col-span-2 mt-4">
+                                                <GithubRepoSelector project={project} />
                                             </div>
                                             <div className="col-span-2 pt-2 border-t border-border mt-2 flex justify-end">
                                                 <button

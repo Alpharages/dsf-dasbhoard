@@ -6,6 +6,7 @@ export interface Project {
   id: string;
   name: string;
   clickup_list_id?: string;
+  github_account_id?: string | null;
   github_repository_url?: string;
   default_branch?: string;
   pm_id?: string;
