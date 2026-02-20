@@ -43,10 +43,10 @@ interface ErrorListTableProps {
 }
 
 const severityColors: Record<ErrorSeverity, string> = {
-  CRITICAL: 'bg-red-500/20 text-red-400 border-red-500/50',
-  HIGH: 'bg-orange-500/20 text-orange-400 border-orange-500/50',
-  MEDIUM: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50',
-  LOW: 'bg-blue-500/20 text-blue-400 border-blue-500/50',
+  CRITICAL: 'bg-red-500/10 text-red-500 border-red-500/30',
+  HIGH: 'bg-orange-500/10 text-orange-500 border-orange-500/30',
+  MEDIUM: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/30',
+  LOW: 'bg-blue-500/10 text-blue-500 border-blue-500/30',
 };
 
 const severityOrder: ErrorSeverity[] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
@@ -110,21 +110,21 @@ function ErrorListTableComponent({
         accessorKey: 'application',
         header: 'Application',
         cell: ({ row }: { row: { original: ErrorListItem } }) => (
-          <span className="font-medium text-slate-300">{row.original.application}</span>
+          <span className="font-medium text-foreground">{row.original.application}</span>
         ),
       },
       {
         accessorKey: 'error_type',
         header: 'Error Type',
         cell: ({ row }: { row: { original: ErrorListItem } }) => (
-          <span className="text-slate-300">{row.original.error_type}</span>
+          <span className="text-foreground">{row.original.error_type}</span>
         ),
       },
       {
         accessorKey: 'error_message',
         header: 'Message',
         cell: ({ row }: { row: { original: ErrorListItem } }) => (
-          <span className="text-slate-400 truncate max-w-[300px] block">
+          <span className="text-muted-foreground truncate max-w-[300px] block">
             {row.original.error_message}
           </span>
         ),
@@ -148,7 +148,7 @@ function ErrorListTableComponent({
         accessorKey: 'occurred_at',
         header: 'Occurred At',
         cell: ({ row }: { row: { original: ErrorListItem } }) => (
-          <span className="text-slate-400 text-sm">
+          <span className="text-muted-foreground text-sm">
             {format(new Date(row.original.occurred_at), 'MMM dd, HH:mm')}
           </span>
         ),
@@ -157,7 +157,7 @@ function ErrorListTableComponent({
         accessorKey: 'affected_users',
         header: 'Affected Users',
         cell: ({ row }: { row: { original: ErrorListItem } }) => (
-          <span className="text-slate-400">{row.original.affected_users}</span>
+          <span className="text-muted-foreground">{row.original.affected_users}</span>
         ),
       },
       {
@@ -166,15 +166,15 @@ function ErrorListTableComponent({
         cell: ({ row }: { row: { original: ErrorListItem } }) => {
           const error = row.original;
           if (error.resolved) {
-            return <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400">Resolved</Badge>;
+            return <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500">Resolved</Badge>;
           }
           if (error.fix_ticket_id) {
-            return <Badge variant="outline" className="bg-blue-500/10 text-blue-400">Ticket Created</Badge>;
+            return <Badge variant="outline" className="bg-blue-500/10 text-blue-500">Ticket Created</Badge>;
           }
           if (error.acknowledged_at) {
-            return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-400">Acknowledged</Badge>;
+            return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600">Acknowledged</Badge>;
           }
-          return <Badge variant="outline" className="bg-red-500/10 text-red-400">Active</Badge>;
+          return <Badge variant="outline" className="bg-red-500/10 text-red-500">Active</Badge>;
         },
       },
     ],
@@ -194,7 +194,7 @@ function ErrorListTableComponent({
 
   if (isLoading) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+      <div className="bg-card border border-border rounded-xl p-6">
         <Skeleton className="h-6 w-48 mb-4" />
         <div className="space-y-2">
           {[...Array(5)].map((_, i) => (
@@ -206,12 +206,12 @@ function ErrorListTableComponent({
   }
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+    <div className="bg-card border border-border rounded-xl p-6">
       {/* Filters */}
       <div className="flex flex-wrap gap-4 mb-6">
         <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-slate-400" />
-          <span className="text-sm text-slate-400">Filters:</span>
+          <Filter className="w-4 h-4 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground">Filters:</span>
         </div>
 
         {/* Severity Filter */}
@@ -224,10 +224,10 @@ function ErrorListTableComponent({
             });
           }}
         >
-          <SelectTrigger className="w-40 bg-slate-800 border-slate-700">
+          <SelectTrigger className="w-40 bg-background border-input">
             <SelectValue placeholder="Severity" />
           </SelectTrigger>
-          <SelectContent className="bg-slate-800 border-slate-700">
+          <SelectContent className="bg-popover border-border">
             <SelectItem value="all">All Severities</SelectItem>
             <SelectItem value="CRITICAL">Critical</SelectItem>
             <SelectItem value="HIGH">High</SelectItem>
@@ -246,10 +246,10 @@ function ErrorListTableComponent({
             });
           }}
         >
-          <SelectTrigger className="w-40 bg-slate-800 border-slate-700">
+          <SelectTrigger className="w-40 bg-background border-input">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
-          <SelectContent className="bg-slate-800 border-slate-700">
+          <SelectContent className="bg-popover border-border">
             <SelectItem value="all">All Statuses</SelectItem>
             <SelectItem value="active">Active</SelectItem>
             <SelectItem value="ticket_created">Ticket Created</SelectItem>
@@ -267,10 +267,10 @@ function ErrorListTableComponent({
             });
           }}
         >
-          <SelectTrigger className="w-48 bg-slate-800 border-slate-700">
+          <SelectTrigger className="w-48 bg-background border-input">
             <SelectValue placeholder="Application" />
           </SelectTrigger>
-          <SelectContent className="bg-slate-800 border-slate-700">
+          <SelectContent className="bg-popover border-border">
             <SelectItem value="all">All Applications</SelectItem>
             {applications?.map((app) => (
               <SelectItem key={app} value={app}>{app}</SelectItem>
@@ -296,11 +296,11 @@ function ErrorListTableComponent({
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="border-b border-slate-800">
+              <tr key={headerGroup.id} className="border-b border-border">
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="text-left py-3 px-4 text-sm font-medium text-slate-400 cursor-pointer hover:text-slate-300"
+                    className="text-left py-3 px-4 text-sm font-medium text-muted-foreground cursor-pointer hover:text-foreground"
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     <div className="flex items-center gap-1">
@@ -317,7 +317,7 @@ function ErrorListTableComponent({
             {table.getRowModel().rows.map((row) => (
               <tr
                 key={row.id}
-                className="border-b border-slate-800/50 hover:bg-slate-800/30 cursor-pointer transition-colors"
+                className="border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors"
                 onClick={() => onErrorClick(row.original)}
               >
                 {row.getVisibleCells().map((cell) => (
@@ -329,7 +329,7 @@ function ErrorListTableComponent({
             ))}
             {errors.length === 0 && (
               <tr>
-                <td colSpan={columns.length} className="py-8 text-center text-slate-500">
+                <td colSpan={columns.length} className="py-8 text-center text-muted-foreground">
                   No errors found matching the current filters
                 </td>
               </tr>
@@ -339,8 +339,8 @@ function ErrorListTableComponent({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-800">
-        <div className="text-sm text-slate-400">
+      <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
+        <div className="text-sm text-muted-foreground">
           Showing {(filters.page || 1) * (filters.limit || 20) - (filters.limit || 20) + 1} to{' '}
           {Math.min((filters.page || 1) * (filters.limit || 20), totalCount)} of {totalCount} errors
         </div>

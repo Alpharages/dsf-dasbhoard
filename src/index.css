@@ -174,3 +174,53 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Layout Consistency - Global alignment system */
+@layer components {
+  /* Page container - consistent max-width and padding */
+  .page-container {
+    @apply w-full max-w-[1600px] mx-auto;
+  }
+  
+  /* Page header - consistent title spacing */
+  .page-header {
+    @apply mb-6;
+  }
+  
+  .page-header h1 {
+    @apply text-2xl sm:text-3xl font-bold text-foreground tracking-tight;
+  }
+  
+  .page-header p {
+    @apply text-muted-foreground mt-1;
+  }
+  
+  /* Content sections - consistent vertical spacing */
+  .content-section {
+    @apply mb-6;
+  }
+  
+  /* Card grid - consistent gap spacing */
+  .card-grid {
+    @apply grid gap-4 sm:gap-6;
+  }
+}
+
+/* Scrollbar styling for consistent look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.3);
+}

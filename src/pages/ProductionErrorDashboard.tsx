@@ -81,66 +81,64 @@ export function ProductionErrorDashboard() {
   };
   
   return (
-    <div className="min-h-screen bg-background text-foreground p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
-              <AlertTriangle className="w-8 h-8 text-destructive" />
-              Production Error Dashboard
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              Monitor and manage production errors across all applications
-            </p>
-          </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/10">
+          <AlertTriangle className="h-5 w-5 text-destructive" />
         </div>
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground">
+            Production Error Dashboard
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Monitor and manage production errors across all applications
+          </p>
+        </div>
+      </div>
+      
+      {/* Overview Widget */}
+      <ErrorOverviewWidget />
+      
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ErrorTrendChart />
+        <ApplicationHealthHeatmap onSelectApplication={handleApplicationSelect} />
+      </div>
+      
+      {/* Error List */}
+      <div id="error-list" className="space-y-4">
+        <h2 className="text-lg font-medium text-foreground">Error List</h2>
         
-        {/* Overview Widget */}
-        <section>
-          <ErrorOverviewWidget />
-        </section>
-        
-        {/* Charts Row */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <ErrorTrendChart />
-          <ApplicationHealthHeatmap onSelectApplication={handleApplicationSelect} />
-        </section>
-        
-        {/* Error List */}
-        <section id="error-list" className="space-y-4">
-          <h2 className="text-xl font-semibold text-foreground">Error List</h2>
-          
-          {/* Bulk Actions */}
-          {canBulkActions && (
-            <BulkActionsToolbar
-              selectedErrors={selectedErrors}
-              onClearSelection={() => setSelectedErrors([])}
-            />
-          )}
-          
-          {/* Table */}
-          <ErrorListTable
-            filters={filters}
-            onFilterChange={setFilters}
+        {/* Bulk Actions */}
+        {canBulkActions && (
+          <BulkActionsToolbar
             selectedErrors={selectedErrors}
-            onSelectionChange={setSelectedErrors}
-            onErrorClick={handleErrorClick}
+            onClearSelection={() => setSelectedErrors([])}
           />
-        </section>
+        )}
         
-        {/* Detail Modal */}
-        <ErrorDetailModal
-          error={selectedError}
-          isOpen={isDetailOpen}
-          onClose={() => {
-            setIsDetailOpen(false);
-            setSelectedError(null);
-          }}
-          onCreateTicket={canCreateTickets ? handleCreateTicket : undefined}
-          canCreateTicket={canCreateTickets}
+        {/* Table */}
+        <ErrorListTable
+          filters={filters}
+          onFilterChange={setFilters}
+          selectedErrors={selectedErrors}
+          onSelectionChange={setSelectedErrors}
+          onErrorClick={handleErrorClick}
         />
       </div>
+      
+      {/* Detail Modal */}
+      <ErrorDetailModal
+        error={selectedError}
+        isOpen={isDetailOpen}
+        onClose={() => {
+          setIsDetailOpen(false);
+          setSelectedError(null);
+        }}
+        onCreateTicket={canCreateTickets ? handleCreateTicket : undefined}
+        canCreateTicket={canCreateTickets}
+      />
     </div>
   );
 }

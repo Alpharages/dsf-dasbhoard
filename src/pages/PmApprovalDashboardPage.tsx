@@ -319,7 +319,7 @@ export const PmApprovalDashboardPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-black text-foreground tracking-tight mb-2 flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-foreground tracking-tight mb-2 flex items-center gap-3">
             <Inbox className="w-10 h-10 text-primary" />
             PM Approval Queue
           </h1>

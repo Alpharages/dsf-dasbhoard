@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { DollarSign, Share2 } from 'lucide-react';
+import { Share2 } from 'lucide-react';
 import { CostSectionContainer } from '../components/financial/page/CostSectionContainer';
 import { RoiSectionContainer } from '../components/financial/page/RoiSectionContainer';
 import { BudgetSectionContainer } from '../components/financial/page/BudgetSectionContainer';
@@ -26,49 +26,42 @@ export function FinancialMetricsPage() {
 
     return (
         <div className="min-h-screen">
-            {/* Header */}
-            <div className="mb-8">
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                    <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="w-12 h-12 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-center">
-                                <DollarSign className="w-6 h-6 text-primary" />
-                            </div>
-                            <h1 className="text-4xl font-extrabold text-foreground tracking-tight">
-                                Financial Metrics Dashboard
-                            </h1>
-                        </div>
-                        <p className="text-muted-foreground font-medium">
-                            Comprehensive financial analysis, ROI tracking, and cost optimization insights
-                        </p>
-                    </div>
+            {/* Page Header */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
+                <div>
+                    <h1 className="text-3xl font-bold text-foreground tracking-tight">
+                        Financial Metrics
+                    </h1>
+                    <p className="text-muted-foreground mt-1">
+                        Comprehensive financial analysis, ROI tracking, and cost optimization insights
+                    </p>
+                </div>
 
-                    <div className="flex flex-wrap items-center gap-3">
-                        <ProjectSelector
-                            selectedProjectId={selectedProjectId}
-                            onProjectChange={setSelectedProjectId}
-                        />
+                <div className="flex flex-wrap items-center gap-3">
+                    <ProjectSelector
+                        selectedProjectId={selectedProjectId}
+                        onProjectChange={setSelectedProjectId}
+                    />
 
-                        <DateRangePicker
-                            startDate={dateRange.startDate}
-                            endDate={dateRange.endDate}
-                            onChange={setDateRange}
-                        />
+                    <DateRangePicker
+                        startDate={dateRange.startDate}
+                        endDate={dateRange.endDate}
+                        onChange={setDateRange}
+                    />
 
-                        <button
-                            onClick={() => setIsShareModalOpen(true)}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-card border border-border text-muted-foreground hover:text-foreground hover:border-foreground/20 rounded-xl font-medium transition-all"
-                        >
-                            <Share2 className="w-4 h-4" />
-                            Share
-                        </button>
+                    <button
+                        onClick={() => setIsShareModalOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-card border border-border text-muted-foreground hover:text-foreground hover:border-foreground/20 rounded-xl font-medium transition-all"
+                    >
+                        <Share2 className="w-4 h-4" />
+                        Share
+                    </button>
 
-                        <ExportMenu
-                            projectId={selectedProjectId}
-                            startDate={dateRange.startDate.toISOString()}
-                            endDate={dateRange.endDate.toISOString()}
-                        />
-                    </div>
+                    <ExportMenu
+                        projectId={selectedProjectId}
+                        startDate={dateRange.startDate.toISOString()}
+                        endDate={dateRange.endDate.toISOString()}
+                    />
                 </div>
             </div>
 

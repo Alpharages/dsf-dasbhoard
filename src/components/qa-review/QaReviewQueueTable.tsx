@@ -24,8 +24,8 @@ export const QaReviewQueueTable: React.FC<QaReviewQueueTableProps> = ({ data, on
       header: 'Ticket',
       cell: (info) => (
         <div className="flex flex-col">
-          <span className="font-bold text-slate-100">{info.getValue()}</span>
-          <span className="text-xs text-slate-500 truncate max-w-[200px]">
+          <span className="font-bold text-foreground">{info.getValue()}</span>
+          <span className="text-xs text-muted-foreground truncate max-w-[200px]">
             {info.row.original.ticket_title || 'No Title'}
           </span>
         </div>
@@ -33,7 +33,7 @@ export const QaReviewQueueTable: React.FC<QaReviewQueueTableProps> = ({ data, on
     }),
     columnHelper.accessor('project_name', {
       header: 'Project',
-      cell: (info) => <span className="text-slate-300">{info.getValue() || 'N/A'}</span>,
+      cell: (info) => <span className="text-muted-foreground">{info.getValue() || 'N/A'}</span>,
     }),
     columnHelper.accessor('risk_level', {
       header: 'Risk',
@@ -59,10 +59,10 @@ export const QaReviewQueueTable: React.FC<QaReviewQueueTableProps> = ({ data, on
           REJECTED: <AlertCircle className="w-3 h-3 mr-1" />,
         };
         const variants: Record<string, string> = {
-          PENDING: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
-          IN_REVIEW: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-          APPROVED: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-          REJECTED: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+          PENDING: 'bg-muted text-muted-foreground border-border',
+          IN_REVIEW: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+          APPROVED: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+          REJECTED: 'bg-rose-500/10 text-rose-500 border-rose-500/20',
         };
         return (
           <Badge className={`flex items-center ${variants[status]}`}>
@@ -83,7 +83,7 @@ export const QaReviewQueueTable: React.FC<QaReviewQueueTableProps> = ({ data, on
     columnHelper.accessor('created_at', {
       header: 'Received',
       cell: (info) => (
-        <span className="text-slate-500 text-sm">
+        <span className="text-muted-foreground text-sm">
           {format(new Date(info.getValue()), 'MMM d, HH:mm')}
         </span>
       ),
@@ -95,7 +95,7 @@ export const QaReviewQueueTable: React.FC<QaReviewQueueTableProps> = ({ data, on
         <Button
           size="sm"
           variant="outline"
-          className="bg-slate-800 border-slate-700 hover:bg-slate-700 hover:text-white rounded-lg px-3 py-1 transition-all h-auto"
+          className="bg-card border-border hover:bg-accent hover:text-accent-foreground rounded-lg px-3 py-1 transition-all h-auto"
           onClick={() => onReview(info.row.original)}
         >
           {info.row.original.status === 'PENDING' ? 'Start Review' : 'View Detail'}
@@ -114,42 +114,42 @@ export const QaReviewQueueTable: React.FC<QaReviewQueueTableProps> = ({ data, on
     return (
       <div className="space-y-4">
         {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="h-16 bg-slate-900/50 border border-slate-800 rounded-xl animate-pulse"></div>
+          <div key={i} className="h-16 bg-muted/50 border border-border rounded-xl animate-pulse"></div>
         ))}
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-900/50 border border-slate-800 rounded-2xl overflow-hidden">
+    <div className="bg-card border border-border rounded-2xl overflow-hidden">
       <table className="w-full text-left border-collapse">
-        <thead className="bg-slate-900/80 border-b border-slate-800">
+        <thead className="bg-muted/50 border-b border-border">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id} className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">
+                <th key={header.id} className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
               ))}
             </tr>
           ))}
         </thead>
-        <tbody className="divide-y divide-slate-800/50">
+        <tbody className="divide-y divide-border/50">
           {table.getRowModel().rows.length > 0 ? (
             table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="hover:bg-slate-800/30 transition-colors group">
+              <tr key={row.id} className="hover:bg-muted/30 transition-colors group">
                 {row.getVisibleCells().map((cell) => (
-                  <th key={cell.id} className="px-6 py-4 font-normal">
+                  <td key={cell.id} className="px-6 py-4 font-normal">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </th>
+                  </td>
                 ))}
               </tr>
             ))
           ) : (
             <tr>
-              <th colSpan={columns.length} className="px-6 py-12 text-center text-slate-500 font-medium">
+              <td colSpan={columns.length} className="px-6 py-12 text-center text-muted-foreground font-medium">
                 No review samples currently in the queue.
-              </th>
+              </td>
             </tr>
           )}
         </tbody>

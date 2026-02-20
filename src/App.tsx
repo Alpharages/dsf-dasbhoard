@@ -56,15 +56,18 @@ import { PmApprovalDashboardPage } from './pages/PmApprovalDashboardPage';
 function DashboardLayout() {
   return (
     <div className="flex min-h-screen bg-background text-foreground transition-colors duration-200">
-      {/* Desktop Sidebar - hidden on mobile */}
-      <div className="hidden lg:block">
+      {/* Desktop Sidebar - fixed position */}
+      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-[280px] z-40">
         <Sidebar />
-      </div>
+      </aside>
       
-      {/* Main Content - responsive margin */}
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 lg:ml-64 relative">
+      {/* Main Content - margin to account for sidebar */}
+      <main className="flex-1 lg:ml-[280px] min-h-screen flex flex-col">
+        {/* Header - full width within main content */}
         <Header />
-        <div className="max-w-7xl mx-auto pt-4 sm:pt-6 lg:pt-8">
+        
+        {/* Page Content - consistent padding */}
+        <div className="flex-1 px-6 py-6">
           <Outlet />
         </div>
       </main>
@@ -244,10 +247,10 @@ function Dashboard() {
 
   return (
     <>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-4 mb-2">
-            <h1 className="text-4xl font-extrabold text-foreground tracking-tight leading-none">
+            <h1 className="text-3xl font-bold text-foreground tracking-tight">
               PM Dashboard
             </h1>
             <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${connected ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-destructive/10 text-destructive border-destructive/20 '

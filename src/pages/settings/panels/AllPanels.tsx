@@ -26,7 +26,7 @@ export const CleanupPanel = () => {
         <div>
             <div className="flex items-center gap-3 mb-8">
                 <div className="p-3 bg-rose-500/10 rounded-xl text-rose-500"><Trash2 className="w-6 h-6" /></div>
-                <div><h1 className="text-2xl font-bold text-white">Cleanup Settings</h1><p className="text-slate-500">Manage data retention policies.</p></div>
+                <div><h1 className="text-2xl font-bold text-foreground">Cleanup Settings</h1><p className="text-muted-foreground">Manage data retention policies.</p></div>
             </div>
             <div className="space-y-6">
                 <ConfigInput
@@ -64,7 +64,7 @@ export const SelfHealingPanel = () => {
         <div>
             <div className="flex items-center gap-3 mb-8">
                 <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-500"><Activity className="w-6 h-6" /></div>
-                <div><h1 className="text-2xl font-bold text-white">Self-Healing Settings</h1><p className="text-slate-500">Configure auto-recovery behavior.</p></div>
+                <div><h1 className="text-2xl font-bold text-foreground">Self-Healing Settings</h1><p className="text-muted-foreground">Configure auto-recovery behavior.</p></div>
             </div>
             <div className="space-y-6">
                 <ConfigInput
@@ -94,7 +94,7 @@ export const DependencyPanel = () => {
         <div>
             <div className="flex items-center gap-3 mb-8">
                 <div className="p-3 bg-blue-500/10 rounded-xl text-blue-500"><Share2 className="w-6 h-6" /></div>
-                <div><h1 className="text-2xl font-bold text-white">Dependency Management</h1><p className="text-slate-500">Circular dependency and locking settings.</p></div>
+                <div><h1 className="text-2xl font-bold text-foreground">Dependency Management</h1><p className="text-muted-foreground">Circular dependency and locking settings.</p></div>
             </div>
             <div className="space-y-6">
                 <ConfigInput
@@ -124,7 +124,7 @@ export const AutoMergePanel = () => {
         <div>
             <div className="flex items-center gap-3 mb-8">
                 <div className="p-3 bg-purple-500/10 rounded-xl text-purple-500"><GitMerge className="w-6 h-6" /></div>
-                <div><h1 className="text-2xl font-bold text-white">Auto-Merge & PRs</h1><p className="text-slate-500">Pull request automation policies.</p></div>
+                <div><h1 className="text-2xl font-bold text-foreground">Auto-Merge & PRs</h1><p className="text-muted-foreground">Pull request automation policies.</p></div>
             </div>
             <div className="space-y-6">
                 <ConfigInput
@@ -153,7 +153,7 @@ export const CostPanel = () => {
         <div>
             <div className="flex items-center gap-3 mb-8">
                 <div className="p-3 bg-yellow-500/10 rounded-xl text-yellow-500"><DollarSign className="w-6 h-6" /></div>
-                <div><h1 className="text-2xl font-bold text-white">Cost & AI Models</h1><p className="text-slate-500">Budget caps and model selection.</p></div>
+                <div><h1 className="text-2xl font-bold text-foreground">Cost & AI Models</h1><p className="text-muted-foreground">Budget caps and model selection.</p></div>
             </div>
             <div className="space-y-6">
                 <ConfigInput
@@ -182,7 +182,7 @@ export const AuditPanel = () => {
         <div>
             <div className="flex items-center gap-3 mb-8">
                 <div className="p-3 bg-amber-500/10 rounded-xl text-amber-500"><ShieldAlert className="w-6 h-6" /></div>
-                <div><h1 className="text-2xl font-bold text-white">Audit & Safety</h1><p className="text-slate-500">Compliance and safety thresholds.</p></div>
+                <div><h1 className="text-2xl font-bold text-foreground">Audit & Safety</h1><p className="text-muted-foreground">Compliance and safety thresholds.</p></div>
             </div>
             <div className="space-y-6">
                 <ConfigInput
@@ -212,7 +212,7 @@ export const HealthPanel = () => {
         <div>
             <div className="flex items-center gap-3 mb-8">
                 <div className="p-3 bg-red-500/10 rounded-xl text-red-500"><HeartPulse className="w-6 h-6" /></div>
-                <div><h1 className="text-2xl font-bold text-white">Health & Rollback</h1><p className="text-slate-500">Deployment health monitoring.</p></div>
+                <div><h1 className="text-2xl font-bold text-foreground">Health & Rollback</h1><p className="text-muted-foreground">Deployment health monitoring.</p></div>
             </div>
             <div className="space-y-6">
                 <ConfigInput

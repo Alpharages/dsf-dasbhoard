@@ -138,7 +138,7 @@ export const LeadQaReviewDashboardPage: React.FC = () => {
     <div className="space-y-10 animate-in fade-in duration-700">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-black text-foreground tracking-tight mb-2 flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-foreground tracking-tight mb-2 flex items-center gap-3">
             <ShieldCheck className="w-10 h-10 text-primary" />
             Lead QA Review
           </h1>

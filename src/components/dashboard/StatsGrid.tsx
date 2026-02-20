@@ -70,7 +70,7 @@ export const StatsGrid: React.FC<StatsGridProps> = ({ summary, loading = false }
                 {[1, 2, 3, 4].map((i) => (
                     <div
                         key={i}
-                        className="h-32 rounded-2xl border border-slate-800 bg-slate-900/50 animate-pulse"
+                        className="h-32 rounded-2xl border border-border bg-card animate-pulse"
                     />
                 ))}
             </div>
@@ -125,7 +125,7 @@ export const StatsGrid: React.FC<StatsGridProps> = ({ summary, loading = false }
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
                         whileHover={{ y: -2 }}
-                        className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 p-6 transition-all hover:border-slate-700 hover:shadow-lg"
+                        className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 transition-all hover:border-border/80 hover:shadow-lg"
                     >
                         {/* Sparkline Background */}
                         <div className="absolute bottom-0 left-0 right-0 h-16 opacity-20">
@@ -161,10 +161,10 @@ export const StatsGrid: React.FC<StatsGridProps> = ({ summary, loading = false }
                             {/* Header */}
                             <div className="flex items-start justify-between">
                                 <div>
-                                    <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                                    <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                                         {stat.label}
                                     </p>
-                                    <h4 className="mt-1 text-3xl font-black tracking-tight text-slate-100">
+                                    <h4 className="mt-1 text-3xl font-black tracking-tight text-foreground">
                                         {stat.value}
                                     </h4>
                                 </div>
@@ -183,7 +183,7 @@ export const StatsGrid: React.FC<StatsGridProps> = ({ summary, loading = false }
                                     <TrendIcon className="h-3 w-3" />
                                     {Math.abs(stat.change.value)}%
                                 </div>
-                                <span className="text-xs text-slate-500">vs last week</span>
+                                <span className="text-xs text-muted-foreground">vs last week</span>
                             </div>
                         </div>
 

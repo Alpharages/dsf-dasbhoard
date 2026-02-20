@@ -25,9 +25,9 @@ export const AdrReviewQueueTable: React.FC<AdrReviewQueueTableProps> = ({
 }) => {
     if (isLoading) {
         return (
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 animate-pulse space-y-4">
+            <div className="bg-card border border-border rounded-2xl p-6 animate-pulse space-y-4">
                 {[1, 2, 3, 4, 5].map(i => (
-                    <div key={i} className="h-16 bg-slate-800/50 rounded-xl"></div>
+                    <div key={i} className="h-16 bg-muted/50 rounded-xl"></div>
                 ))}
             </div>
         );
@@ -35,19 +35,19 @@ export const AdrReviewQueueTable: React.FC<AdrReviewQueueTableProps> = ({
 
     if (items.length === 0) {
         return (
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-12 text-center">
-                <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="bg-card border border-border rounded-2xl p-12 text-center">
+                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                     <span className="text-2xl">🎉</span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Queue Empty</h3>
-                <p className="text-slate-400">No architecture decisions pending review.</p>
+                <h3 className="text-xl font-bold text-foreground mb-2">Queue Empty</h3>
+                <p className="text-muted-foreground">No architecture decisions pending review.</p>
             </div>
         );
     }
 
     const SortIcon = ({ column }: { column: string }) => {
         if (sortBy !== column) return null;
-        return <span className="ml-1 text-slate-500">{sortOrder === 'asc' ? '↑' : '↓'}</span>;
+        return <span className="ml-1 text-muted-foreground">{sortOrder === 'asc' ? '↑' : '↓'}</span>;
     };
 
     // Sort items to put escalated ones on top if not otherwise sorted? 
@@ -60,35 +60,35 @@ export const AdrReviewQueueTable: React.FC<AdrReviewQueueTableProps> = ({
 
     return (
         <TooltipProvider>
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl overflow-hidden">
+            <div className="bg-card border border-border rounded-2xl overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="border-b border-slate-800 bg-slate-900/50">
-                                <th className="text-left py-4 px-6 text-slate-400 font-semibold w-1/3">Decision Title</th>
+                            <tr className="border-b border-border bg-muted/50">
+                                <th className="text-left py-4 px-6 text-muted-foreground font-semibold w-1/3">Decision Title</th>
                                 <th
-                                    className="text-left py-4 px-6 text-slate-400 font-semibold cursor-pointer hover:text-white"
+                                    className="text-left py-4 px-6 text-muted-foreground font-semibold cursor-pointer hover:text-foreground transition-colors"
                                     onClick={() => onSort('risk_level')}
                                 >
                                     Risk Level <SortIcon column="risk_level" />
                                 </th>
                                 <th
-                                    className="text-left py-4 px-6 text-slate-400 font-semibold cursor-pointer hover:text-white"
+                                    className="text-left py-4 px-6 text-muted-foreground font-semibold cursor-pointer hover:text-foreground transition-colors"
                                     onClick={() => onSort('confidence')}
                                 >
                                     Confidence <SortIcon column="confidence" />
                                 </th>
                                 <th
-                                    className="text-left py-4 px-6 text-slate-400 font-semibold cursor-pointer hover:text-white"
+                                    className="text-left py-4 px-6 text-muted-foreground font-semibold cursor-pointer hover:text-foreground transition-colors"
                                     onClick={() => onSort('created_at')}
                                 >
                                     Age <SortIcon column="created_at" />
                                 </th>
-                                <th className="text-left py-4 px-6 text-slate-400 font-semibold">Est. Time</th>
-                                <th className="text-right py-4 px-6 text-slate-400 font-semibold">Action</th>
+                                <th className="text-left py-4 px-6 text-muted-foreground font-semibold">Est. Time</th>
+                                <th className="text-right py-4 px-6 text-muted-foreground font-semibold">Action</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-800">
+                        <tbody className="divide-y divide-border">
                             {items.map((item) => {
                                 const isEscalated = item.confidence < 0.7; // Hardcoded threshold for now or passed from prop?
                                 // Actually check if we have escalation reason in the type? 
@@ -102,12 +102,12 @@ export const AdrReviewQueueTable: React.FC<AdrReviewQueueTableProps> = ({
                                 return (
                                     <tr
                                         key={item.id}
-                                        className={`hover:bg-slate-800/30 transition-colors group ${isEscalated ? 'bg-red-500/5' : ''}`}
+                                        className={`hover:bg-muted/30 transition-colors group ${isEscalated ? 'bg-destructive/5' : ''}`}
                                     >
                                         <td className="py-4 px-6">
                                             <div>
                                                 <div className="flex items-center gap-2 mb-1">
-                                                    <h4 className="font-semibold text-white group-hover:text-blue-400 transition-colors">
+                                                    <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
                                                         {item.title}
                                                     </h4>
                                                     {isEscalated && (
@@ -123,13 +123,13 @@ export const AdrReviewQueueTable: React.FC<AdrReviewQueueTableProps> = ({
                                                     )}
                                                 </div>
 
-                                                <div className="flex items-center gap-2 text-xs text-slate-500">
-                                                    <span className="bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">
+                                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                    <span className="bg-muted px-1.5 py-0.5 rounded text-muted-foreground">
                                                         {item.ticket.clickup_task_id}
                                                     </span>
                                                     <span>{item.ticket.title}</span>
                                                     <a href={`https://app.clickup.com/t/${item.ticket.clickup_task_id}`} target="_blank" rel="noreferrer" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <ExternalLink className="w-3 h-3 text-slate-500 hover:text-blue-400" />
+                                                        <ExternalLink className="w-3 h-3 text-muted-foreground hover:text-primary" />
                                                     </a>
                                                 </div>
                                             </div>
@@ -138,11 +138,8 @@ export const AdrReviewQueueTable: React.FC<AdrReviewQueueTableProps> = ({
                                             <RiskBadge level={item.risk_level} riskFactors={item.risk_factors} />
                                         </td>
                                         <td className="py-4 px-6">
-                                            {/* Use new Gauge component but scale it down? Or just show the badge logic here.
-                                               The Gauge is big (size 24 width). Table cell might be small. 
-                                               Maybe simplify for table view. */}
                                             <div className="flex items-center gap-2">
-                                                <div className="flex-1 w-16 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                                <div className="flex-1 w-16 h-1.5 bg-muted rounded-full overflow-hidden">
                                                     <div
                                                         className={`h-full rounded-full ${item.confidence > 0.8 ? 'bg-emerald-500' :
                                                             item.confidence > 0.6 ? 'bg-amber-500' : 'bg-rose-500'
@@ -150,16 +147,16 @@ export const AdrReviewQueueTable: React.FC<AdrReviewQueueTableProps> = ({
                                                         style={{ width: `${item.confidence * 100}%` }}
                                                     ></div>
                                                 </div>
-                                                <span className={`text-xs font-bold ${item.confidence < 0.7 ? 'text-rose-400' : 'text-slate-300'}`}>
+                                                <span className={`text-xs font-bold ${item.confidence < 0.7 ? 'text-rose-500' : 'text-muted-foreground'}`}>
                                                     {Math.round(item.confidence * 100)}%
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="py-4 px-6 text-slate-400">
+                                        <td className="py-4 px-6 text-muted-foreground">
                                             {formatDistanceToNow(new Date(item.created_at), { addSuffix: true })}
                                         </td>
                                         <td className="py-4 px-6">
-                                            <div className="flex items-center gap-1.5 text-slate-400 text-xs">
+                                            <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
                                                 <Clock className="w-3.5 h-3.5" />
                                                 <span>{item.estimated_review_time_minutes} min</span>
                                             </div>

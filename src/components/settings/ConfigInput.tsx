@@ -45,21 +45,21 @@ export const ConfigInput = ({
     };
 
     return (
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition-colors">
+        <div className="bg-card border border-border rounded-xl p-5 hover:border-border/80 transition-colors">
             <div className="flex justify-between items-start mb-3">
                 <div>
-                    <label className="block text-sm font-semibold text-slate-200 mb-1">
+                    <label className="block text-sm font-semibold text-foreground mb-1">
                         {label}
                     </label>
                     {description && (
-                        <p className="text-xs text-slate-500 max-w-md">{description}</p>
+                        <p className="text-xs text-muted-foreground max-w-md">{description}</p>
                     )}
                 </div>
                 {isDirty && onSave && (
                     <button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-all"
+                        className="flex items-center gap-2 px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-lg transition-all"
                     >
                         <Save className="w-3 h-3" />
                         {isSaving ? 'Saving...' : 'Save Changes'}
@@ -71,11 +71,11 @@ export const ConfigInput = ({
                 {type === 'toggle' ? (
                     <button
                         onClick={() => handleChange(localValue === 'true' ? 'false' : 'true')}
-                        className={`w-12 h-6 rounded-full p-1 transition-colors ${localValue === 'true' ? 'bg-blue-600' : 'bg-slate-700'
+                        className={`w-12 h-6 rounded-full p-1 transition-colors ${localValue === 'true' ? 'bg-primary' : 'bg-muted'
                             }`}
                     >
                         <div
-                            className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${localValue === 'true' ? 'translate-x-6' : 'translate-x-0'
+                            className={`w-4 h-4 bg-background rounded-full shadow-md transform transition-transform ${localValue === 'true' ? 'translate-x-6' : 'translate-x-0'
                                 }`}
                         />
                     </button>
@@ -85,13 +85,13 @@ export const ConfigInput = ({
                             type={isSecret && !showSecret ? 'password' : type}
                             value={localValue}
                             onChange={(e) => handleChange(e.target.value)}
-                            className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 disabled:opacity-50"
+                            className="w-full bg-background border border-input rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50"
                             disabled={isSaving}
                         />
                         {isSecret && (
                             <button
                                 onClick={() => setShowSecret(!showSecret)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                             >
                                 {showSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                             </button>

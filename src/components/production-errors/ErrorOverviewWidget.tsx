@@ -25,7 +25,7 @@ interface StatCardProps {
 function StatCard({ title, value, subtitle, icon, colorClass, isLoading }: StatCardProps) {
   if (isLoading) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+      <div className="bg-card border border-border rounded-xl p-6">
         <Skeleton className="h-4 w-24 mb-2" />
         <Skeleton className="h-8 w-16 mb-1" />
         <Skeleton className="h-3 w-32" />
@@ -34,14 +34,14 @@ function StatCard({ title, value, subtitle, icon, colorClass, isLoading }: StatC
   }
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-slate-700 transition-colors">
+    <div className="bg-card border border-border rounded-xl p-6 hover:border-border/80 transition-colors">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-medium text-slate-400">{title}</p>
+          <p className="text-sm font-medium text-muted-foreground">{title}</p>
           <p className={`text-3xl font-bold mt-2 ${colorClass}`}>{value}</p>
-          {subtitle && <p className="text-xs text-slate-500 mt-1">{subtitle}</p>}
+          {subtitle && <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>}
         </div>
-        <div className={`p-3 rounded-lg bg-slate-800 ${colorClass}`}>
+        <div className={`p-3 rounded-lg bg-muted ${colorClass}`}>
           {icon}
         </div>
       </div>
@@ -60,7 +60,7 @@ function ErrorOverviewWidgetComponent() {
         value={overview?.totalActiveErrors ?? '-'}
         subtitle="Errors awaiting resolution"
         icon={<Activity className="w-5 h-5" />}
-        colorClass="text-blue-400"
+        colorClass="text-blue-500"
         isLoading={isLoading}
       />
 
@@ -70,7 +70,7 @@ function ErrorOverviewWidgetComponent() {
         value={overview?.newErrors24h ?? '-'}
         subtitle="Recently detected"
         icon={<TrendingUp className="w-5 h-5" />}
-        colorClass="text-purple-400"
+        colorClass="text-purple-500"
         isLoading={isLoading}
       />
 
@@ -80,7 +80,7 @@ function ErrorOverviewWidgetComponent() {
         value={isLoading ? '-' : `${overview?.criticalErrors || 0} / ${overview?.highErrors || 0}`}
         subtitle="Critical / High severity"
         icon={<AlertTriangle className="w-5 h-5" />}
-        colorClass="text-red-400"
+        colorClass="text-red-500"
         isLoading={isLoading}
       />
 
@@ -90,7 +90,7 @@ function ErrorOverviewWidgetComponent() {
         value={overview?.mttrHours ? `${overview.mttrHours.toFixed(1)}h` : 'N/A'}
         subtitle="Mean time to resolve"
         icon={<Clock className="w-5 h-5" />}
-        colorClass="text-emerald-400"
+        colorClass="text-emerald-500"
         isLoading={isLoading}
       />
     </div>

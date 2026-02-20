@@ -235,7 +235,7 @@ export function ExecutionMonitoringDashboard() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-4 mb-2">
-            <h1 className="text-4xl font-extrabold text-foreground tracking-tight leading-none">Active Executions</h1>
+            <h1 className="text-3xl font-bold text-foreground tracking-tight">Active Executions</h1>
             <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
               connected 
                 ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' 
