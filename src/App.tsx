@@ -49,6 +49,7 @@ import { ProductionErrorDashboard } from './pages/ProductionErrorDashboard';
 import { ExecutionMonitoringDashboard } from './pages/ExecutionMonitoringDashboard';
 import { NotificationPreferences } from './pages/NotificationPreferences';
 import { PmApprovalDashboardPage } from './pages/PmApprovalDashboardPage';
+import { AuditLogsDashboard } from './pages/AuditLogsDashboard';
 
 
 
@@ -451,6 +452,11 @@ function AppContent({ navigate }: { navigate: any }) {
             <Route path="/decisions" element={
               <ProtectedRoute>
                 <DecisionDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/audit-logs" element={
+              <ProtectedRoute requiredRoles={['QA', 'TL', 'ADMIN', 'MANAGER']}>
+                <AuditLogsDashboard />
               </ProtectedRoute>
             } />
             <Route

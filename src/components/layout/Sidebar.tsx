@@ -21,6 +21,7 @@ import {
   UserPlus,
   Users,
   ShieldCheck,
+  ShieldAlert,
   AlertTriangle,
   Activity,
   Bell,
@@ -85,6 +86,7 @@ const navigationGroups = [
     label: 'Operations',
     icon: AlertTriangle,
     items: [
+      { icon: ShieldAlert, label: 'Audit Logs', path: '/audit-logs', roles: ['QA', 'TL', 'ADMIN', 'MANAGER'] },
       { icon: AlertTriangle, label: 'Production Errors', path: '/production-errors' },
       { icon: MessageSquare, label: 'Conversations', path: '/conversations' },
     ],
