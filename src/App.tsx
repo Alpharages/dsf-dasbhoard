@@ -50,6 +50,7 @@ import { ExecutionMonitoringDashboard } from './pages/ExecutionMonitoringDashboa
 import { NotificationPreferences } from './pages/NotificationPreferences';
 import { PmApprovalDashboardPage } from './pages/PmApprovalDashboardPage';
 import { AuditLogsDashboard } from './pages/AuditLogsDashboard';
+import { ResourceManagerPage } from './features/resource-manager';
 
 
 
@@ -457,6 +458,11 @@ function AppContent({ navigate }: { navigate: any }) {
             <Route path="/audit-logs" element={
               <ProtectedRoute requiredRoles={['QA', 'TL', 'ADMIN', 'MANAGER']}>
                 <AuditLogsDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/resource-manager" element={
+              <ProtectedRoute requiredRoles={['TL', 'ADMIN', 'MANAGER']}>
+                <ResourceManagerPage />
               </ProtectedRoute>
             } />
             <Route

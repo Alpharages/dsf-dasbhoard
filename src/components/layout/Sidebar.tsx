@@ -33,6 +33,7 @@ import {
   PanelLeft,
   BarChart3,
   Inbox,
+  Lock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -87,6 +88,7 @@ const navigationGroups = [
     icon: AlertTriangle,
     items: [
       { icon: ShieldAlert, label: 'Audit Logs', path: '/audit-logs', roles: ['QA', 'TL', 'ADMIN', 'MANAGER'] },
+      { icon: Lock, label: 'Resource Manager', path: '/resource-manager', roles: ['TL', 'ADMIN', 'MANAGER'] },
       { icon: AlertTriangle, label: 'Production Errors', path: '/production-errors' },
       { icon: MessageSquare, label: 'Conversations', path: '/conversations' },
     ],

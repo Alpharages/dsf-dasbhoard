@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-export const useSocket = (token: string | null) => {
+export const useSocket = (token: string | null, namespace: string = '/dashboard') => {
     const socketRef = useRef<Socket | null>(null);
     const [connected, setConnected] = useState(false);
 
@@ -9,7 +9,7 @@ export const useSocket = (token: string | null) => {
         if (!token) return;
 
         const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:3000';
-        const socket = io(`${WS_URL}/dashboard`, {
+        const socket = io(`${WS_URL}${namespace}`, {
             auth: { token },
             reconnection: true,
             reconnectionAttempts: 5,
