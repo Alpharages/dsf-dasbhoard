@@ -1,10 +1,32 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ChangePasswordForm } from '@/components/profile/ChangePasswordForm';
-import { LogOut, Mail, Shield, User } from 'lucide-react';
+import { LogOut, Mail, Shield, User, Github } from 'lucide-react';
+import { ConnectGithubButton } from '@/components/profile/ConnectGithubButton';
+import { GithubAccountsList } from '@/components/profile/GithubAccountsList';
+import { useSearchParams } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 export const ProfilePage: React.FC = () => {
     const { user, logout } = useAuth();
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    useEffect(() => {
+        const success = searchParams.get('success');
+        const error = searchParams.get('error');
+
+        if (success === 'true') {
+            toast.success('Your GitHub account has been successfully linked.');
+            // Clean up params
+            searchParams.delete('success');
+            setSearchParams(searchParams);
+        } else if (error) {
+            toast.error(decodeURIComponent(error));
+            // Clean up params
+            searchParams.delete('error');
+            setSearchParams(searchParams);
+        }
+    }, [searchParams, setSearchParams, toast]);
 
     if (!user) return null;
 
@@ -66,10 +88,41 @@ export const ProfilePage: React.FC = () => {
                             </button>
                         </div>
                     </div>
+                    
+                    {/* GitHub Connection Card */}
+                    <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-2 bg-slate-900 rounded-lg">
+                                <Github className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <h3 className="text-md font-bold text-foreground">GitHub Integration</h3>
+                                <p className="text-xs text-muted-foreground">Link your accounts for AI features</p>
+                            </div>
+                        </div>
+                        <ConnectGithubButton />
+                    </div>
                 </div>
 
                 {/* Right Column: Settings */}
                 <div className="lg:col-span-2 space-y-6">
+                    {/* GitHub Accounts List */}
+                    <div className="bg-card border border-border rounded-2xl p-8 shadow-sm">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-2 bg-primary/10 rounded-lg">
+                                <Github className="w-6 h-6 text-primary" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-foreground">Connected Accounts</h3>
+                                <p className="text-sm text-muted-foreground">Manage your linked GitHub accounts and organizations</p>
+                            </div>
+                        </div>
+
+                        <div className="border-t border-border pt-6">
+                            <GithubAccountsList />
+                        </div>
+                    </div>
+
                     {/* Security Settings */}
                     <div className="bg-card border border-border rounded-2xl p-8 shadow-sm">
                         <div className="flex items-center gap-3 mb-6">
@@ -91,3 +144,4 @@ export const ProfilePage: React.FC = () => {
         </div>
     );
 };
+
