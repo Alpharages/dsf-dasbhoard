@@ -43,6 +43,8 @@ const LOG_LEVEL_COLORS: Record<LogLevel, string> = {
   'INFO': 'text-blue-400',
   'WARN': 'text-yellow-400',
   'ERROR': 'text-rose-400',
+  'STDOUT': 'text-green-400',
+  'STDERR': 'text-orange-400',
 };
 
 const LOG_LEVEL_BG: Record<LogLevel, string> = {
@@ -50,6 +52,8 @@ const LOG_LEVEL_BG: Record<LogLevel, string> = {
   'INFO': 'bg-blue-500/10',
   'WARN': 'bg-yellow-500/10',
   'ERROR': 'bg-rose-500/10',
+  'STDOUT': 'bg-green-500/10',
+  'STDERR': 'bg-orange-500/10',
 };
 
 const MAX_LOG_LINES = 10000;

@@ -143,7 +143,7 @@ export function ExecutionMonitoringDashboard() {
   // Handle execution events — all updates are optimistic via WebSocket payloads.
   // Only onStarted needs a single refetch (new execution not yet in cache, needs projectName etc.)
   useExecutionEvents(socket, {
-    onStarted: (payload) => {
+    onStarted: (_payload) => {
       toast.success('New execution started');
       // New execution isn't in cache yet and WS payload lacks fields like projectName,
       // so one refetch is needed to get the full object. This is infrequent (once per execution).

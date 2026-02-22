@@ -247,7 +247,7 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
               }>
                 <ContainerActivityTimeline
                   executionId={execution.id}
-                  socket={socket}
+                  socket={socket ?? null}
                   maxHeight="240px"
                   collapsible={true}
                   defaultCollapsed={true}

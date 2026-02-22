@@ -10,7 +10,7 @@ import { toast } from 'react-hot-toast';
 import { useGithubAccounts, useGithubRepos } from '@/hooks/queries/useGithubAccounts';
 import { saveProjectGithubRepo } from '@/api/githubApi';
 import { projectKeys } from '@/hooks/queries/useProjects';
-import { AlertCircle, Lock, Check, ExternalLink, Plus } from 'lucide-react';
+import { AlertCircle, Lock, Check, ExternalLink, Plus, Github } from 'lucide-react';
 
 interface GithubRepoSelectorProps {
   project: {
@@ -82,7 +82,7 @@ export function GithubRepoSelector({ project }: GithubRepoSelectorProps) {
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
           <div className="p-1.5 rounded-md bg-primary/10">
-            <GithubIcon className="h-4 w-4 text-primary" />
+            <Github className="h-4 w-4 text-primary" />
           </div>
           GitHub Repository
         </CardTitle>
@@ -221,7 +221,7 @@ export function GithubRepoSelector({ project }: GithubRepoSelectorProps) {
                                 {repo.private ? (
                                   <Lock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                                 ) : (
-                                  <GithubIcon className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                                  <Github className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                                 )}
                                 <span className="text-sm font-medium truncate">{repo.fullName}</span>
                               </div>
