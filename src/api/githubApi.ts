@@ -1,9 +1,4 @@
-import axios from 'axios';
-
-const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || '/api/v1',
-    withCredentials: true,
-});
+import api from './client';
 
 export interface GitHubAccount {
     id: string;
@@ -18,7 +13,7 @@ export interface GitHubAccount {
  */
 export async function getGithubAccounts(): Promise<GitHubAccount[]> {
     const { data } = await api.get('/github/accounts');
-    return data;
+    return Array.isArray(data) ? data : (data?.data || []);
 }
 
 /**
@@ -26,6 +21,14 @@ export async function getGithubAccounts(): Promise<GitHubAccount[]> {
  */
 export async function getGithubLoginUrl(): Promise<{ url: string }> {
     const { data } = await api.get('/github/auth/login');
+    return data;
+}
+
+/**
+ * Sends the GitHub OAuth callback code to the backend
+ */
+export async function saveGithubCallback(payload: { code?: string; error?: string; error_description?: string }): Promise<{ success: boolean; error?: string }> {
+    const { data } = await api.post('/github/auth/callback', payload);
     return data;
 }
 
@@ -41,7 +44,7 @@ export interface GitHubRepo {
  */
 export async function getGithubRepos(accountId: string): Promise<GitHubRepo[]> {
   const { data } = await api.get(`/github/accounts/${accountId}/repos`);
-  return data;
+  return Array.isArray(data) ? data : (data?.data || []);
 }
 
 /**

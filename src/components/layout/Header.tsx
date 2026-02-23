@@ -4,6 +4,7 @@
  */
 
 import { Search, User, LogOut, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 import { ThemeToggleCompact } from '@/components/improved/ThemeToggle';
 import { MobileSidebar } from './MobileSidebar';
@@ -19,6 +20,7 @@ import { motion } from 'framer-motion';
 
 export const Header: React.FC = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <motion.header 
@@ -71,7 +73,7 @@ export const Header: React.FC = () => {
               </div>
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 border-border bg-card">
+          <DropdownMenuContent align="end" sideOffset={8} className="w-56 border-border bg-card">
             <div className="px-2 py-1.5 text-sm font-semibold text-foreground">
               {user?.fullName}
             </div>
@@ -79,13 +81,23 @@ export const Header: React.FC = () => {
               {user?.email}
             </div>
             <DropdownMenuSeparator className="bg-border" />
-            <DropdownMenuItem className="text-foreground focus:bg-muted focus:text-foreground">
+            <DropdownMenuItem 
+              onClick={() => navigate('/profile')}
+              className="text-foreground focus:bg-muted focus:text-foreground cursor-pointer"
+            >
+              <User className="mr-2 h-4 w-4" />
+              Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => navigate('/settings')}
+              className="text-foreground focus:bg-muted focus:text-foreground cursor-pointer"
+            >
               <Settings className="mr-2 h-4 w-4" />
               Settings
             </DropdownMenuItem>
             <DropdownMenuItem 
               onClick={logout}
-              className="text-rose-400 focus:bg-rose-500/10 focus:text-rose-400"
+              className="text-destructive focus:bg-destructive/10 focus:text-destructive"
             >
               <LogOut className="mr-2 h-4 w-4" />
               Log out

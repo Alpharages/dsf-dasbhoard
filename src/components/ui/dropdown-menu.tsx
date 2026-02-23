@@ -1,4 +1,5 @@
 import * as React from "react"
+import { createPortal } from "react-dom"
 import { cn } from "@/lib/utils"
 
 // Simple Dropdown Menu implementation without Radix UI
@@ -12,15 +13,17 @@ interface DropdownMenuProps {
 const DropdownMenuContext = React.createContext<{
   open: boolean
   setOpen: (open: boolean) => void
-}>({ open: false, setOpen: () => {} })
+  triggerRef: React.RefObject<HTMLElement | null>
+}>({ open: false, setOpen: () => {}, triggerRef: { current: null } })
 
 function DropdownMenu({ children, open: controlledOpen, onOpenChange }: DropdownMenuProps) {
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false)
   const open = controlledOpen !== undefined ? controlledOpen : uncontrolledOpen
   const setOpen = onOpenChange || setUncontrolledOpen
+  const triggerRef = React.useRef<HTMLElement | null>(null)
 
   return (
-    <DropdownMenuContext.Provider value={{ open, setOpen }}>
+    <DropdownMenuContext.Provider value={{ open, setOpen, triggerRef }}>
       {children}
     </DropdownMenuContext.Provider>
   )
@@ -32,20 +35,38 @@ interface DropdownMenuTriggerProps {
 }
 
 function DropdownMenuTrigger({ children, asChild }: DropdownMenuTriggerProps) {
-  const { open, setOpen } = React.useContext(DropdownMenuContext)
+  const { open, setOpen, triggerRef } = React.useContext(DropdownMenuContext)
+  const localRef = React.useRef<HTMLButtonElement>(null)
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     setOpen(!open)
   }
 
+  const setRefs = (el: HTMLButtonElement | null) => {
+    localRef.current = el
+    triggerRef.current = el
+  }
+
   if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children as React.ReactElement<{ onClick?: (e: React.MouseEvent) => void }>, {
+    const child = children as React.ReactElement<{ 
+      onClick?: (e: React.MouseEvent) => void
+      ref?: React.Ref<HTMLElement>
+    }>
+    return React.cloneElement(child, {
       onClick: handleClick,
+      ref: (el: HTMLElement | null) => {
+        triggerRef.current = el
+      },
     })
   }
 
-  return <button onClick={handleClick}>{children}</button>
+  return (
+    <button ref={setRefs} onClick={handleClick} data-dropdown-trigger="true">
+      {children}
+    </button>
+  )
 }
 
 interface DropdownMenuContentProps {
@@ -61,13 +82,39 @@ function DropdownMenuContent({
   align = "center",
   sideOffset = 4 
 }: DropdownMenuContentProps) {
-  const { open, setOpen } = React.useContext(DropdownMenuContext)
+  const { open, setOpen, triggerRef } = React.useContext(DropdownMenuContext)
+  const [position, setPosition] = React.useState({ top: 0, left: 0, right: 'auto' })
   const ref = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    if (open && triggerRef.current) {
+      const trigger = triggerRef.current
+      const rect = trigger.getBoundingClientRect()
+      
+      let left = rect.left
+      let right: number | 'auto' = 'auto'
+      
+      if (align === 'center') {
+        left = rect.left + rect.width / 2
+      } else if (align === 'end') {
+        right = window.innerWidth - rect.right
+        left = 'auto' as const
+      }
+      
+      setPosition({
+        top: rect.bottom + sideOffset,
+        left: left === 'auto' ? 'auto' as const : left,
+        right: right
+      })
+    }
+  }, [open, align, sideOffset, triggerRef])
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) {
-        setOpen(false)
+        if (triggerRef.current && !triggerRef.current.contains(event.target as Node)) {
+          setOpen(false)
+        }
       }
     }
 
@@ -78,30 +125,30 @@ function DropdownMenuContent({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
-  }, [open, setOpen])
+  }, [open, setOpen, triggerRef])
 
   if (!open) return null
 
-  const alignClass = {
-    start: "left-0",
-    center: "left-1/2 -translate-x-1/2",
-    end: "right-0",
-  }[align]
-
-  return (
+  const dropdownContent = (
     <div
       ref={ref}
       className={cn(
-        "absolute z-50 min-w-[8rem] overflow-hidden rounded-md border border-slate-800 bg-slate-900 p-1 shadow-md",
+        "fixed z-50 min-w-[8rem] overflow-hidden rounded-md border border-border bg-popover p-1 shadow-md",
         "animate-in fade-in-0 zoom-in-95",
-        alignClass,
         className
       )}
-      style={{ marginTop: sideOffset }}
+      style={{ 
+        top: position.top, 
+        left: position.left === 'auto' ? 'auto' : position.left,
+        right: position.right === 'auto' ? 'auto' : position.right,
+        transform: align === 'center' ? 'translateX(-50%)' : undefined
+      }}
     >
       {children}
     </div>
   )
+
+  return createPortal(dropdownContent, document.body)
 }
 
 interface DropdownMenuItemProps {
@@ -123,7 +170,7 @@ function DropdownMenuItem({ children, className, onClick }: DropdownMenuItemProp
       onClick={handleClick}
       className={cn(
         "relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors",
-        "hover:bg-slate-800 focus:bg-slate-800",
+        "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
         className
       )}
     >
@@ -138,7 +185,7 @@ interface DropdownMenuSeparatorProps {
 
 function DropdownMenuSeparator({ className }: DropdownMenuSeparatorProps) {
   return (
-    <div className={cn("-mx-1 my-1 h-px bg-slate-800", className)} />
+    <div className={cn("-mx-1 my-1 h-px bg-border", className)} />
   )
 }
 

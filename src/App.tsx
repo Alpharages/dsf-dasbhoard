@@ -27,6 +27,7 @@ import {
   AuditPanel,
   HealthPanel
 } from './pages/settings/panels/AllPanels';
+import { GithubCallback } from './pages/settings/GithubCallback';
 import { DecisionDashboard } from './pages/DecisionDashboard';
 import { FinancialMetricsPage } from './pages/FinancialMetricsPage';
 import { WorkloadCapacityPage } from './pages/WorkloadCapacityPage';
@@ -559,6 +560,7 @@ function AppContent({ navigate }: { navigate: any }) {
               <Route path="cost" element={<CostPanel />} />
               <Route path="audit" element={<AuditPanel />} />
               <Route path="health" element={<HealthPanel />} />
+              <Route path="github/callback" element={<GithubCallback />} />
               <Route index element={<CleanupPanel />} /> {/* Default to cleanup */}
             </Route>
 

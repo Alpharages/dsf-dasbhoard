@@ -67,51 +67,51 @@ export const ChangePasswordForm: React.FC = () => {
             <div className="space-y-4">
                 {/* Current Password */}
                 <div className="space-y-2">
-                    <label htmlFor="currentPassword" className="text-sm font-medium text-slate-300">Current Password</label>
+                    <label htmlFor="currentPassword" className="text-sm font-medium text-muted-foreground">Current Password</label>
                     <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <input
                             id="currentPassword"
                             type={showCurrentPassword ? 'text' : 'password'}
                             {...register('currentPassword')}
-                            className="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 pl-10 pr-10 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-600"
+                            className="w-full bg-background border border-input rounded-lg py-2.5 pl-10 pr-10 text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all placeholder:text-muted-foreground/60"
                             placeholder="Enter current password"
                         />
                         <button
                             type="button"
                             onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 focus:outline-none"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none"
                         >
                             {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                     </div>
                     {errors.currentPassword && (
-                        <p className="text-sm text-red-500">{errors.currentPassword.message}</p>
+                        <p className="text-sm text-destructive">{errors.currentPassword.message}</p>
                     )}
                 </div>
 
                 {/* New Password */}
                 <div className="space-y-2">
-                    <label htmlFor="newPassword" className="text-sm font-medium text-slate-300">New Password</label>
+                    <label htmlFor="newPassword" className="text-sm font-medium text-muted-foreground">New Password</label>
                     <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <input
                             id="newPassword"
                             type={showNewPassword ? 'text' : 'password'}
                             {...register('newPassword')}
-                            className="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 pl-10 pr-10 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-600"
+                            className="w-full bg-background border border-input rounded-lg py-2.5 pl-10 pr-10 text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all placeholder:text-muted-foreground/60"
                             placeholder="Enter new password"
                         />
                         <button
                             type="button"
                             onClick={() => setShowNewPassword(!showNewPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 focus:outline-none"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none"
                         >
                             {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                     </div>
                     {errors.newPassword && (
-                        <p className="text-sm text-red-500">{errors.newPassword.message}</p>
+                        <p className="text-sm text-destructive">{errors.newPassword.message}</p>
                     )}
 
                     {/* Password Strength Indicator */}
@@ -127,26 +127,26 @@ export const ChangePasswordForm: React.FC = () => {
 
                 {/* Confirm Password */}
                 <div className="space-y-2">
-                    <label htmlFor="confirmPassword" className="text-sm font-medium text-slate-300">Confirm New Password</label>
+                    <label htmlFor="confirmPassword" className="text-sm font-medium text-muted-foreground">Confirm New Password</label>
                     <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <input
                             id="confirmPassword"
                             type={showConfirmPassword ? 'text' : 'password'}
                             {...register('confirmPassword')}
-                            className="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 pl-10 pr-10 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-600"
+                            className="w-full bg-background border border-input rounded-lg py-2.5 pl-10 pr-10 text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all placeholder:text-muted-foreground/60"
                             placeholder="Confirm new password"
                         />
                         <button
                             type="button"
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 focus:outline-none"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none"
                         >
                             {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                     </div>
                     {errors.confirmPassword && (
-                        <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
+                        <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
                     )}
                 </div>
             </div>
@@ -154,7 +154,7 @@ export const ChangePasswordForm: React.FC = () => {
             <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-2.5 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
                 {isLoading ? (
                     <>
