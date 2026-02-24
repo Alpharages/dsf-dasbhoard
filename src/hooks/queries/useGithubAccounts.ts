@@ -1,5 +1,13 @@
-import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
-import { getGithubAccounts, getGithubRepos, type GitHubAccount, type GitHubRepo } from '@/api/githubApi';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
+import {
+    getGithubAccounts,
+    getGithubRepos,
+    deleteGithubAccount,
+    type GitHubAccount,
+    type GitHubRepo,
+    type DisconnectAccountResponse,
+} from '@/api/githubApi';
 
 export const githubKeys = {
     all: ['github'] as const,
@@ -18,6 +26,16 @@ export function useGithubAccounts(
         queryFn: getGithubAccounts,
         staleTime: 60 * 1000, // 1 minute
         ...options,
+    });
+}
+
+export function useDeleteGithubAccount() {
+    const queryClient = useQueryClient();
+    return useMutation<DisconnectAccountResponse, AxiosError<{ message: string }>, string>({
+        mutationFn: deleteGithubAccount,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: githubKeys.accounts() });
+        },
     });
 }
 

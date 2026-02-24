@@ -116,7 +116,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
             const response = await apiClient.get('/auth/me');
             return response.data;
-        } catch (error) {
+        } catch (error: any) {
+            // On rate limiting (429), wait briefly and retry once before giving up.
+            // This prevents a transient throttle burst from incorrectly clearing the
+            // session — the user's token is still valid, the server is just busy.
+            if (error?.response?.status === 429) {
+                await new Promise(resolve => setTimeout(resolve, 800));
+                try {
+                    const retryResponse = await apiClient.get('/auth/me');
+                    return retryResponse.data;
+                } catch (retryError) {
+                    console.error('Failed to fetch user after rate-limit retry:', retryError);
+                    return null;
+                }
+            }
             console.error('Failed to fetch user:', error);
             return null;
         }

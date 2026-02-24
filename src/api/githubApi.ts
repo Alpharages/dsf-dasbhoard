@@ -47,6 +47,19 @@ export async function getGithubRepos(accountId: string): Promise<GitHubRepo[]> {
   return Array.isArray(data) ? data : (data?.data || []);
 }
 
+export interface DisconnectAccountResponse {
+    message: string;
+    affectedProjects: number;
+}
+
+/**
+ * Disconnects (deletes) a connected GitHub account for the current user.
+ */
+export async function deleteGithubAccount(accountId: string): Promise<DisconnectAccountResponse> {
+    const { data } = await api.delete(`/github/accounts/${accountId}`);
+    return data;
+}
+
 /**
  * Saves a selected GitHub repository to a project
  */
