@@ -37,7 +37,7 @@ export function FinancialMetricsPage() {
                     </p>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-2">
                     <ProjectSelector
                         selectedProjectId={selectedProjectId}
                         onProjectChange={setSelectedProjectId}
@@ -51,10 +51,10 @@ export function FinancialMetricsPage() {
 
                     <button
                         onClick={() => setIsShareModalOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-card border border-border text-muted-foreground hover:text-foreground hover:border-foreground/20 rounded-xl font-medium transition-all"
+                        className="flex items-center gap-2 px-3 py-2 h-10 bg-card border border-border text-muted-foreground hover:text-foreground hover:border-foreground/20 rounded-lg font-medium transition-all text-sm whitespace-nowrap"
                     >
                         <Share2 className="w-4 h-4" />
-                        Share
+                        <span>Share</span>
                     </button>
 
                     <ExportMenu

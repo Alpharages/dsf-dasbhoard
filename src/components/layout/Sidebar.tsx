@@ -3,7 +3,7 @@
  * Features: Collapsible groups, favorites, recent items, icon-only mode
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts';
 import { canAccess } from '@/utils/roleHelpers';
@@ -119,6 +119,32 @@ export function Sidebar({ className }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<string[]>(['overview', 'projects']);
   const [favorites, setFavorites] = useState<string[]>(['/']);
+
+  // Auto-expand group when child route is active
+  useEffect(() => {
+    const currentPath = location.pathname;
+    
+    // Find all groups that should be expanded based on current path
+    const groupsToExpand = navigationGroups
+      .filter(group => 
+        group.items.some(item => {
+          if (item.path === '/') {
+            return currentPath === '/';
+          }
+          return currentPath.startsWith(item.path);
+        })
+      )
+      .map(group => group.id);
+    
+    // Only update if there are new groups to expand
+    setExpandedGroups(prev => {
+      const newGroups = groupsToExpand.filter(id => !prev.includes(id));
+      if (newGroups.length > 0) {
+        return [...prev, ...newGroups];
+      }
+      return prev;
+    });
+  }, [location.pathname]);
 
   // Toggle group expansion
   const toggleGroup = (groupId: string) => {

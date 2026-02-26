@@ -35,19 +35,19 @@ export function RoiSectionContainer({ projectId }: RoiSectionContainerProps) {
 
     if (!projectId) {
         return (
-            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-8 text-center">
-                <TrendingUp className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-                <p className="text-slate-500 font-medium">Select a project to view ROI metrics</p>
+            <div className="bg-card border border-border rounded-2xl p-8 text-center">
+                <TrendingUp className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                <p className="text-muted-foreground font-medium">Select a project to view ROI metrics</p>
             </div>
         );
     }
 
     if (isLoading) {
         return (
-            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-8">
+            <div className="bg-card border border-border rounded-2xl p-8">
                 <div className="animate-pulse space-y-4">
-                    <div className="h-8 bg-slate-800 rounded w-1/3"></div>
-                    <div className="h-64 bg-slate-800 rounded"></div>
+                    <div className="h-8 bg-muted rounded w-1/3"></div>
+                    <div className="h-64 bg-muted rounded"></div>
                 </div>
             </div>
         );
@@ -87,13 +87,13 @@ export function RoiSectionContainer({ projectId }: RoiSectionContainerProps) {
             {/* Section Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                        <div className="w-10 h-10 bg-emerald-600/10 border border-emerald-600/20 rounded-xl flex items-center justify-center">
+                    <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
+                        <div className="w-10 h-10 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center">
                             <TrendingUp className="w-5 h-5 text-emerald-500" />
                         </div>
                         ROI Tracking
                     </h2>
-                    <p className="text-slate-400 text-sm mt-1">Return on investment analysis and trends</p>
+                    <p className="text-muted-foreground text-sm mt-1">Return on investment analysis and trends</p>
                 </div>
 
                 {/* Period Selector */}
@@ -103,8 +103,8 @@ export function RoiSectionContainer({ projectId }: RoiSectionContainerProps) {
                             key={period}
                             onClick={() => setSelectedPeriod(period)}
                             className={`px-4 py-2 rounded-xl font-medium text-sm transition-all ${selectedPeriod === period
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-card border border-border text-muted-foreground hover:text-foreground hover:border-foreground/20'
                                 }`}
                         >
                             {period.charAt(0).toUpperCase() + period.slice(1)}
@@ -114,25 +114,25 @@ export function RoiSectionContainer({ projectId }: RoiSectionContainerProps) {
             </div>
 
             {/* ROI Gauge - Reuse existing component */}
-            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Current ROI</h3>
+            <div className="bg-card border border-border rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">Current ROI</h3>
                 <RoiGaugeWidget projectId={projectId} period={selectedPeriod} />
             </div>
 
             {/* ROI Trend Chart */}
-            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">ROI Trend Over Time</h3>
+            <div className="bg-card border border-border rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">ROI Trend Over Time</h3>
                 <ResponsiveContainer width="100%" height={300}>
                     <LineChart data={trendData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                        <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} />
-                        <YAxis stroke="#94a3b8" fontSize={12} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                        <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
                         <Tooltip
                             contentStyle={{
-                                backgroundColor: '#1e293b',
-                                border: '1px solid #334155',
+                                backgroundColor: 'hsl(var(--card))',
+                                border: '1px solid hsl(var(--border))',
                                 borderRadius: '8px',
-                                color: '#e2e8f0',
+                                color: 'hsl(var(--card-foreground))',
                             }}
                         />
                         <Legend />
@@ -142,19 +142,19 @@ export function RoiSectionContainer({ projectId }: RoiSectionContainerProps) {
             </div>
 
             {/* Cost vs Value Comparison */}
-            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Cost vs Value Comparison</h3>
+            <div className="bg-card border border-border rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">Cost vs Value Comparison</h3>
                 <ResponsiveContainer width="100%" height={300}>
                     <AreaChart data={trendData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                        <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} />
-                        <YAxis stroke="#94a3b8" fontSize={12} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                        <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
                         <Tooltip
                             contentStyle={{
-                                backgroundColor: '#1e293b',
-                                border: '1px solid #334155',
+                                backgroundColor: 'hsl(var(--card))',
+                                border: '1px solid hsl(var(--border))',
                                 borderRadius: '8px',
-                                color: '#e2e8f0',
+                                color: 'hsl(var(--card-foreground))',
                             }}
                         />
                         <Legend />
@@ -167,20 +167,20 @@ export function RoiSectionContainer({ projectId }: RoiSectionContainerProps) {
             {/* ROI Forecast */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {forecasts.map((forecast) => (
-                    <div key={forecast.period} className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
+                    <div key={forecast.period} className="bg-card border border-border rounded-2xl p-6">
                         <div className="flex items-center gap-2 mb-3">
-                            <Calendar className="w-4 h-4 text-slate-400" />
-                            <span className="text-sm font-semibold text-slate-400 uppercase">{forecast.period} Forecast</span>
+                            <Calendar className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm font-semibold text-muted-foreground uppercase">{forecast.period} Forecast</span>
                         </div>
-                        <div className="text-3xl font-bold text-white mb-2">{forecast.roi}%</div>
+                        <div className="text-3xl font-bold text-foreground mb-2">{forecast.roi}%</div>
                         <div className="flex items-center gap-2">
-                            <div className="flex-1 bg-slate-800 rounded-full h-2">
+                            <div className="flex-1 bg-muted rounded-full h-2">
                                 <div
-                                    className="bg-blue-500 h-2 rounded-full"
+                                    className="bg-primary h-2 rounded-full"
                                     style={{ width: `${forecast.confidence}%` }}
                                 />
                             </div>
-                            <span className="text-xs text-slate-500">{forecast.confidence}% confidence</span>
+                            <span className="text-xs text-muted-foreground">{forecast.confidence}% confidence</span>
                         </div>
                     </div>
                 ))}

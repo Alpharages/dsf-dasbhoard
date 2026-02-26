@@ -19,7 +19,7 @@ export const ModelEfficiencyTable: React.FC<ModelEfficiencyTableProps> = ({ proj
 
     if (isLoading) {
         return (
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 animate-pulse">
+            <div className="bg-muted/50 border border-border rounded-2xl p-6 animate-pulse">
                 <div className="h-64"></div>
             </div>
         );
@@ -27,8 +27,8 @@ export const ModelEfficiencyTable: React.FC<ModelEfficiencyTableProps> = ({ proj
 
     if (error || !data) {
         return (
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
-                <p className="text-slate-500 text-center">Failed to load model efficiency data</p>
+            <div className="bg-muted/50 border border-border rounded-2xl p-6">
+                <p className="text-muted-foreground text-center">Failed to load model efficiency data</p>
             </div>
         );
     }
@@ -60,10 +60,10 @@ export const ModelEfficiencyTable: React.FC<ModelEfficiencyTableProps> = ({ proj
     const mostEfficient = data.recommendation.mostEfficient;
 
     return (
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
+        <div className="bg-card border border-border rounded-2xl p-6">
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                    <Zap className="w-5 h-5 text-yellow-400" />
+                <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-amber-500" />
                     Model Efficiency Analysis
                 </h3>
             </div>
@@ -72,13 +72,13 @@ export const ModelEfficiencyTable: React.FC<ModelEfficiencyTableProps> = ({ proj
             {data.recommendation && (
                 <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-4">
                     <div className="flex items-start gap-3">
-                        <TrendingUp className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+                        <TrendingUp className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
                         <div>
-                            <p className="text-sm font-semibold text-blue-300">Optimization Opportunity</p>
-                            <p className="text-xs text-slate-300 mt-1">
+                            <p className="text-sm font-semibold text-blue-500">Optimization Opportunity</p>
+                            <p className="text-xs text-muted-foreground mt-1">
                                 {data.recommendation.reason}
                             </p>
-                            <p className="text-xs text-emerald-400 mt-2 font-semibold">
+                            <p className="text-xs text-emerald-500 mt-2 font-semibold">
                                 💰 Potential Savings: {data.recommendation.potentialSavings}
                             </p>
                         </div>
@@ -90,28 +90,28 @@ export const ModelEfficiencyTable: React.FC<ModelEfficiencyTableProps> = ({ proj
             <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                     <thead>
-                        <tr className="border-b border-slate-800">
-                            <th className="text-left py-3 px-4 text-slate-400 font-semibold">Model</th>
-                            <th className="text-left py-3 px-4 text-slate-400 font-semibold">Provider</th>
+                        <tr className="border-b border-border">
+                            <th className="text-left py-3 px-4 text-muted-foreground font-semibold">Model</th>
+                            <th className="text-left py-3 px-4 text-muted-foreground font-semibold">Provider</th>
                             <th
-                                className="text-right py-3 px-4 text-slate-400 font-semibold cursor-pointer hover:text-white"
+                                className="text-right py-3 px-4 text-muted-foreground font-semibold cursor-pointer hover:text-foreground"
                                 onClick={() => handleSort('cost')}
                             >
                                 Cost/Exec {sortBy === 'cost' && (sortDir === 'asc' ? '↑' : '↓')}
                             </th>
                             <th
-                                className="text-right py-3 px-4 text-slate-400 font-semibold cursor-pointer hover:text-white"
+                                className="text-right py-3 px-4 text-muted-foreground font-semibold cursor-pointer hover:text-foreground"
                                 onClick={() => handleSort('success')}
                             >
                                 Success {sortBy === 'success' && (sortDir === 'asc' ? '↑' : '↓')}
                             </th>
                             <th
-                                className="text-right py-3 px-4 text-slate-400 font-semibold cursor-pointer hover:text-white"
+                                className="text-right py-3 px-4 text-muted-foreground font-semibold cursor-pointer hover:text-foreground"
                                 onClick={() => handleSort('time')}
                             >
                                 Avg Time {sortBy === 'time' && (sortDir === 'asc' ? '↑' : '↓')}
                             </th>
-                            <th className="text-right py-3 px-4 text-slate-400 font-semibold">Self-Heal</th>
+                            <th className="text-right py-3 px-4 text-muted-foreground font-semibold">Self-Heal</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -120,39 +120,39 @@ export const ModelEfficiencyTable: React.FC<ModelEfficiencyTableProps> = ({ proj
                             return (
                                 <tr
                                     key={`${model.provider}-${model.modelName}`}
-                                    className={`border-b border-slate-800/50 ${isRecommended ? 'bg-emerald-500/5' : 'hover:bg-slate-800/30'
+                                    className={`border-b border-border/50 ${isRecommended ? 'bg-emerald-500/5' : 'hover:bg-muted/50'
                                         }`}
                                 >
                                     <td className="py-3 px-4">
                                         <div className="flex items-center gap-2">
-                                            <span className={`font-mono text-xs ${isRecommended ? 'text-emerald-400 font-semibold' : 'text-white'}`}>
+                                            <span className={`font-mono text-xs ${isRecommended ? 'text-emerald-500 font-semibold' : 'text-foreground'}`}>
                                                 {model.modelName}
                                             </span>
                                             {isRecommended && (
-                                                <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-bold">
+                                                <span className="text-[10px] bg-emerald-500/20 text-emerald-500 px-2 py-0.5 rounded-full font-bold">
                                                     BEST
                                                 </span>
                                             )}
                                         </div>
                                     </td>
                                     <td className="py-3 px-4">
-                                        <span className="text-xs text-slate-400">{model.provider}</span>
+                                        <span className="text-xs text-muted-foreground">{model.provider}</span>
                                     </td>
                                     <td className="py-3 px-4 text-right">
-                                        <span className="text-white font-semibold">${model.costPerExecution}</span>
+                                        <span className="text-foreground font-semibold">${model.costPerExecution}</span>
                                     </td>
                                     <td className="py-3 px-4 text-right">
-                                        <span className={`font-semibold ${model.successRate > 90 ? 'text-emerald-400' :
-                                            model.successRate > 80 ? 'text-yellow-400' : 'text-rose-400'
+                                        <span className={`font-semibold ${model.successRate > 90 ? 'text-emerald-500' :
+                                            model.successRate > 80 ? 'text-yellow-500' : 'text-rose-500'
                                             }`}>
                                             {model.successRate.toFixed(1)}%
                                         </span>
                                     </td>
                                     <td className="py-3 px-4 text-right">
-                                        <span className="text-slate-300">{model.avgExecutionTimeSec}s</span>
+                                        <span className="text-muted-foreground">{model.avgExecutionTimeSec}s</span>
                                     </td>
                                     <td className="py-3 px-4 text-right">
-                                        <span className="text-slate-400">{model.selfHealingRate.toFixed(1)}%</span>
+                                        <span className="text-muted-foreground">{model.selfHealingRate.toFixed(1)}%</span>
                                     </td>
                                 </tr>
                             );
@@ -162,8 +162,8 @@ export const ModelEfficiencyTable: React.FC<ModelEfficiencyTableProps> = ({ proj
             </div>
 
             {/* Footer stats */}
-            <div className="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between text-xs">
-                <span className="text-slate-500">
+            <div className="mt-4 pt-4 border-t border-border flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">
                     {data.models.length} models analyzed • {data.models.reduce((sum, m) => sum + m.executionCount, 0)} total executions
                 </span>
             </div>

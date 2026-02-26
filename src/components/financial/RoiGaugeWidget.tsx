@@ -17,7 +17,7 @@ export const RoiGaugeWidget: React.FC<RoiGaugeWidgetProps> = ({ projectId, perio
 
     if (isLoading) {
         return (
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 animate-pulse">
+            <div className="bg-muted/50 border border-border rounded-2xl p-6 animate-pulse">
                 <div className="h-48"></div>
             </div>
         );
@@ -25,8 +25,8 @@ export const RoiGaugeWidget: React.FC<RoiGaugeWidgetProps> = ({ projectId, perio
 
     if (error || !data) {
         return (
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
-                <p className="text-slate-500 text-center">Failed to load ROI data</p>
+            <div className="bg-muted/50 border border-border rounded-2xl p-6">
+                <p className="text-muted-foreground text-center">Failed to load ROI data</p>
             </div>
         );
     }
@@ -35,7 +35,7 @@ export const RoiGaugeWidget: React.FC<RoiGaugeWidgetProps> = ({ projectId, perio
     const getTrendIcon = () => {
         if (data.trend.direction === 'improving') return <TrendingUp className="w-5 h-5 text-emerald-500" />;
         if (data.trend.direction === 'declining') return <TrendingDown className="w-5 h-5 text-rose-500" />;
-        return <Minus className="w-5 h-5 text-slate-500" />;
+        return <Minus className="w-5 h-5 text-muted-foreground" />;
     };
 
     const getColor = () => {
@@ -49,13 +49,13 @@ export const RoiGaugeWidget: React.FC<RoiGaugeWidgetProps> = ({ projectId, perio
     const fillPercentage = (displayRoi / 300) * 100;
 
     return (
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
+        <div className="bg-card border border-border rounded-2xl p-6">
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                    <DollarSign className="w-5 h-5 text-blue-400" />
+                <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                    <DollarSign className="w-5 h-5 text-blue-500" />
                     ROI Analysis
                 </h3>
-                <div className="text-xs text-slate-500 bg-slate-800 px-2 py-1 rounded">
+                <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
                     {period.toUpperCase()}
                 </div>
             </div>
@@ -69,7 +69,7 @@ export const RoiGaugeWidget: React.FC<RoiGaugeWidgetProps> = ({ projectId, perio
                         cy="100"
                         r="80"
                         fill="none"
-                        stroke="#1e293b"
+                        stroke="hsl(var(--muted))"
                         strokeWidth="20"
                     />
                     {/* Foreground arc */}
@@ -90,18 +90,18 @@ export const RoiGaugeWidget: React.FC<RoiGaugeWidgetProps> = ({ projectId, perio
                     <span className={`text-4xl font-bold ${getColor()}`}>
                         {roi.toFixed(0)}%
                     </span>
-                    <span className="text-xs text-slate-500 mt-1">ROI</span>
+                    <span className="text-xs text-muted-foreground mt-1">ROI</span>
                 </div>
             </div>
 
             {/* Stats */}
             <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-400">Trend</span>
+                    <span className="text-sm text-muted-foreground">Trend</span>
                     <div className="flex items-center gap-2">
                         {getTrendIcon()}
                         <span className={`text-sm font-semibold ${data.trend.direction === 'improving' ? 'text-emerald-500' :
-                            data.trend.direction === 'declining' ? 'text-rose-500' : 'text-slate-500'
+                            data.trend.direction === 'declining' ? 'text-rose-500' : 'text-muted-foreground'
                             }`}>
                             {data.trend.change}
                         </span>
@@ -109,29 +109,29 @@ export const RoiGaugeWidget: React.FC<RoiGaugeWidgetProps> = ({ projectId, perio
                 </div>
 
                 <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-400">Cost/Story Point</span>
-                    <span className="text-sm font-semibold text-white">
+                    <span className="text-sm text-muted-foreground">Cost/Story Point</span>
+                    <span className="text-sm font-semibold text-foreground">
                         ${data.metrics.costPerStoryPoint}
                     </span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-400">Break-even</span>
-                    <span className="text-sm font-semibold text-white">
+                    <span className="text-sm text-muted-foreground">Break-even</span>
+                    <span className="text-sm font-semibold text-foreground">
                         {data.metrics.breakEvenPoint}
                     </span>
                 </div>
 
-                <div className="flex items-center justify-between pt-3 border-t border-slate-800">
-                    <span className="text-xs text-slate-500">Total Value</span>
-                    <span className="text-xs font-semibold text-emerald-400">
+                <div className="flex items-center justify-between pt-3 border-t border-border">
+                    <span className="text-xs text-muted-foreground">Total Value</span>
+                    <span className="text-xs font-semibold text-emerald-500">
                         ${parseFloat(data.metrics.totalValueUsd).toLocaleString()}
                     </span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                    <span className="text-xs text-slate-500">Total Cost</span>
-                    <span className="text-xs font-semibold text-slate-300">
+                    <span className="text-xs text-muted-foreground">Total Cost</span>
+                    <span className="text-xs font-semibold text-foreground">
                         ${parseFloat(data.metrics.totalCostUsd).toLocaleString()}
                     </span>
                 </div>

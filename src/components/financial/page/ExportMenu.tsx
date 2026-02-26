@@ -196,7 +196,7 @@ export function ExportMenu({ projectId, startDate, endDate }: ExportMenuProps) {
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 disabled={loading}
-                className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/20"
+                className="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/20"
             >
                 <Download className="w-4 h-4" />
                 Export
@@ -208,17 +208,17 @@ export function ExportMenu({ projectId, startDate, endDate }: ExportMenuProps) {
                         className="fixed inset-0 z-10"
                         onClick={() => setIsOpen(false)}
                     />
-                    <div className="absolute top-full mt-2 right-0 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl overflow-hidden z-20 min-w-[320px]">
+                    <div className="absolute top-full mt-2 right-0 bg-card border border-border rounded-xl shadow-2xl overflow-hidden z-20 min-w-[320px]">
                         {exportOptions.map((option, index) => (
                             <button
                                 key={index}
                                 onClick={option.onClick}
-                                className="w-full text-left px-4 py-3 hover:bg-slate-800 transition-colors flex items-start gap-3 border-b border-slate-800 last:border-0"
+                                className="w-full text-left px-4 py-3 hover:bg-muted transition-colors flex items-start gap-3 border-b border-border last:border-0"
                             >
-                                <option.icon className="w-5 h-5 text-slate-400 mt-0.5 flex-shrink-0" />
+                                <option.icon className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
                                 <div>
-                                    <div className="text-slate-200 font-medium text-sm">{option.label}</div>
-                                    <div className="text-slate-500 text-xs mt-0.5">{option.description}</div>
+                                    <div className="text-foreground font-medium text-sm">{option.label}</div>
+                                    <div className="text-muted-foreground text-xs mt-0.5">{option.description}</div>
                                 </div>
                             </button>
                         ))}

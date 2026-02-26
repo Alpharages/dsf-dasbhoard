@@ -35,7 +35,7 @@ export const BudgetTrendChart: React.FC<BudgetTrendChartProps> = ({ projectId })
 
     if (isLoading) {
         return (
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 animate-pulse">
+            <div className="bg-muted/50 border border-border rounded-2xl p-6 animate-pulse">
                 <div className="h-96"></div>
             </div>
         );
@@ -43,8 +43,8 @@ export const BudgetTrendChart: React.FC<BudgetTrendChartProps> = ({ projectId })
 
     if (error || !data) {
         return (
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
-                <p className="text-slate-500 text-center">Failed to load budget trends</p>
+            <div className="bg-muted/50 border border-border rounded-2xl p-6">
+                <p className="text-muted-foreground text-center">Failed to load budget trends</p>
             </div>
         );
     }
@@ -59,11 +59,11 @@ export const BudgetTrendChart: React.FC<BudgetTrendChartProps> = ({ projectId })
     const statusColor = data.trends.status === 'healthy' ? 'emerald' : data.trends.status === 'warning' ? 'yellow' : 'rose';
 
     return (
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
+        <div className="bg-card border border-border rounded-2xl p-6">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-4">
-                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-blue-400" />
+                    <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-blue-500" />
                         Budget Utilization Trends
                     </h3>
 
@@ -72,19 +72,19 @@ export const BudgetTrendChart: React.FC<BudgetTrendChartProps> = ({ projectId })
                         <select
                             value={period}
                             onChange={(e) => setPeriod(e.target.value as typeof period)}
-                            className="appearance-none bg-slate-800 border border-slate-700 text-sm text-slate-300 rounded-lg px-3 py-1.5 pr-8 cursor-pointer hover:bg-slate-750 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="appearance-none bg-muted border border-border text-sm text-foreground rounded-lg px-3 py-1.5 pr-8 cursor-pointer hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-primary"
                         >
                             <option value="week">Week</option>
                             <option value="month">Month</option>
                             <option value="quarter">Quarter</option>
                         </select>
-                        <ChevronDown className="w-4 h-4 text-slate-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
                     </div>
                 </div>
 
                 <button
                     onClick={handleDownloadCsv}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm rounded-lg border border-slate-700 transition-colors"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-muted hover:bg-muted/80 text-foreground text-sm rounded-lg border border-border transition-colors"
                 >
                     <Download className="w-4 h-4" />
                     CSV
@@ -93,31 +93,31 @@ export const BudgetTrendChart: React.FC<BudgetTrendChartProps> = ({ projectId })
 
             {/* Budget summary */}
             <div className="grid grid-cols-4 gap-4 mb-6">
-                <div className="bg-slate-800/50 rounded-xl p-4">
-                    <p className="text-xs text-slate-500 mb-1">Total Budget</p>
-                    <p className="text-xl font-bold text-white">
+                <div className="bg-muted/50 rounded-xl p-4">
+                    <p className="text-xs text-muted-foreground mb-1">Total Budget</p>
+                    <p className="text-xl font-bold text-foreground">
                         ${parseFloat(data.budget.totalBudgetUsd).toLocaleString()}
                     </p>
                 </div>
-                <div className="bg-slate-800/50 rounded-xl p-4">
-                    <p className="text-xs text-slate-500 mb-1">Spent</p>
-                    <p className="text-xl font-bold text-rose-400">
+                <div className="bg-muted/50 rounded-xl p-4">
+                    <p className="text-xs text-muted-foreground mb-1">Spent</p>
+                    <p className="text-xl font-bold text-rose-500">
                         ${parseFloat(data.budget.spentUsd).toLocaleString()}
                     </p>
                 </div>
-                <div className="bg-slate-800/50 rounded-xl p-4">
-                    <p className="text-xs text-slate-500 mb-1">Remaining</p>
-                    <p className="text-xl font-bold text-emerald-400">
+                <div className="bg-muted/50 rounded-xl p-4">
+                    <p className="text-xs text-muted-foreground mb-1">Remaining</p>
+                    <p className="text-xl font-bold text-emerald-500">
                         ${parseFloat(data.budget.remainingUsd).toLocaleString()}
                     </p>
                 </div>
-                <div className="bg-slate-800/50 rounded-xl p-4">
-                    <p className="text-xs text-slate-500 mb-1">Utilization</p>
+                <div className="bg-muted/50 rounded-xl p-4">
+                    <p className="text-xs text-muted-foreground mb-1">Utilization</p>
                     <div className="flex items-center gap-2">
-                        <p className={`text-xl font-bold text-${statusColor}-400`}>
+                        <p className={`text-xl font-bold text-${statusColor}-500`}>
                             {data.budget.utilizationPercentage.toFixed(0)}%
                         </p>
-                        <span className={`text-[10px] bg-${statusColor}-500/20 text-${statusColor}-400 px-2 py-0.5 rounded-full font-bold uppercase`}>
+                        <span className={`text-[10px] bg-${statusColor}-500/20 text-${statusColor}-500 px-2 py-0.5 rounded-full font-bold uppercase`}>
                             {data.trends.status}
                         </span>
                     </div>
@@ -134,25 +134,25 @@ export const BudgetTrendChart: React.FC<BudgetTrendChartProps> = ({ projectId })
                                 <stop offset="100%" stopColor="#6366f1" stopOpacity={0.05} />
                             </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                         <XAxis
                             dataKey="date"
-                            stroke="#64748b"
-                            tick={{ fill: '#64748b', fontSize: 11 }}
+                            stroke="hsl(var(--muted-foreground))"
+                            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
                         />
                         <YAxis
-                            stroke="#64748b"
-                            tick={{ fill: '#64748b', fontSize: 11 }}
+                            stroke="hsl(var(--muted-foreground))"
+                            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
                             tickFormatter={(value: number) => `$${value}`}
                         />
                         <Tooltip
                             contentStyle={{
-                                backgroundColor: '#0f172a',
-                                border: '1px solid #1e293b',
+                                backgroundColor: 'hsl(var(--card))',
+                                border: '1px solid hsl(var(--border))',
                                 borderRadius: '8px',
                                 padding: '12px',
                             }}
-                            labelStyle={{ color: '#cbd5e1', fontWeight: 600, marginBottom: '8px' }}
+                            labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600, marginBottom: '8px' }}
                             formatter={(value?: number) => {
                                 if (value === undefined) return ['', undefined];
                                 return [`$${value.toFixed(2)}`, undefined];
@@ -189,20 +189,20 @@ export const BudgetTrendChart: React.FC<BudgetTrendChartProps> = ({ projectId })
             </div>
 
             {/* Forecast summary */}
-            <div className="bg-slate-800/30 rounded-xl p-4 border border-slate-700/50">
-                <p className="text-sm font-semibold text-slate-300 mb-2">Forecast Analysis</p>
-                <div className="flex items-center gap-6 text-xs text-slate-400">
+            <div className="bg-muted/30 rounded-xl p-4 border border-border/50">
+                <p className="text-sm font-semibold text-foreground mb-2">Forecast Analysis</p>
+                <div className="flex items-center gap-6 text-xs text-muted-foreground">
                     <div>
-                        <span className="text-slate-500">Burn Rate:</span>{' '}
-                        <span className="font-semibold text-white">${parseFloat(data.trends.burnRatePerDay).toFixed(2)}/day</span>
+                        <span className="text-muted-foreground">Burn Rate:</span>{' '}
+                        <span className="font-semibold text-foreground">${parseFloat(data.trends.burnRatePerDay).toFixed(2)}/day</span>
                     </div>
                     <div>
-                        <span className="text-slate-500">Days Remaining:</span>{' '}
-                        <span className="font-semibold text-white">{data.trends.forecastDaysRemaining} days</span>
+                        <span className="text-muted-foreground">Days Remaining:</span>{' '}
+                        <span className="font-semibold text-foreground">{data.trends.forecastDaysRemaining} days</span>
                     </div>
                     <div>
-                        <span className="text-slate-500">Est. Exhaustion:</span>{' '}
-                        <span className="font-semibold text-white">
+                        <span className="text-muted-foreground">Est. Exhaustion:</span>{' '}
+                        <span className="font-semibold text-foreground">
                             {new Date(data.trends.forecastExhaustionDate).toLocaleDateString('en-US', {
                                 month: 'short',
                                 day: 'numeric',
@@ -215,17 +215,17 @@ export const BudgetTrendChart: React.FC<BudgetTrendChartProps> = ({ projectId })
 
             {/* Anomalies */}
             {data.anomalies.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-slate-800">
-                    <p className="text-sm font-semibold text-slate-400 mb-3 flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                <div className="mt-4 pt-4 border-t border-border">
+                    <p className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
+                        <AlertTriangle className="w-4 h-4 text-amber-500" />
                         Spending Anomalies
                     </p>
                     <div className="space-y-2">
                         {data.anomalies.slice(0, 3).map((anomaly, idx) => (
-                            <div key={idx} className="flex items-center justify-between text-xs bg-yellow-500/5 border border-yellow-500/20 rounded-lg p-2">
-                                <span className="text-slate-400">{anomaly.date}</span>
-                                <span className="text-yellow-400 font-semibold">{anomaly.spike} spike</span>
-                                <span className="text-slate-500">${parseFloat(anomaly.cost).toFixed(2)}</span>
+                            <div key={idx} className="flex items-center justify-between text-xs bg-amber-500/5 border border-amber-500/20 rounded-lg p-2">
+                                <span className="text-muted-foreground">{anomaly.date}</span>
+                                <span className="text-amber-500 font-semibold">{anomaly.spike} spike</span>
+                                <span className="text-muted-foreground">${parseFloat(anomaly.cost).toFixed(2)}</span>
                             </div>
                         ))}
                     </div>

@@ -36,19 +36,19 @@ export function CostSectionContainer({ projectId, startDate, endDate }: CostSect
 
     if (!projectId) {
         return (
-            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-8 text-center">
-                <DollarSign className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-                <p className="text-slate-500 font-medium">Select a project to view cost analysis</p>
+            <div className="bg-card border border-border rounded-2xl p-8 text-center">
+                <DollarSign className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                <p className="text-muted-foreground font-medium">Select a project to view cost analysis</p>
             </div>
         );
     }
 
     if (isLoading) {
         return (
-            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-8">
+            <div className="bg-card border border-border rounded-2xl p-8">
                 <div className="animate-pulse space-y-4">
-                    <div className="h-8 bg-slate-800 rounded w-1/3"></div>
-                    <div className="h-64 bg-slate-800 rounded"></div>
+                    <div className="h-8 bg-muted rounded w-1/3"></div>
+                    <div className="h-64 bg-muted rounded"></div>
                 </div>
             </div>
         );
@@ -62,40 +62,40 @@ export function CostSectionContainer({ projectId, startDate, endDate }: CostSect
             {/* Section Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                        <div className="w-10 h-10 bg-blue-600/10 border border-blue-600/20 rounded-xl flex items-center justify-center">
+                    <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
+                        <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center">
                             <TrendingUp className="w-5 h-5 text-blue-500" />
                         </div>
                         Cost Analysis
                     </h2>
-                    <p className="text-slate-400 text-sm mt-1">Epic comparison and provider breakdown</p>
+                    <p className="text-muted-foreground text-sm mt-1">Epic comparison and provider breakdown</p>
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2 bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 rounded-xl font-medium transition-all text-sm">
+                <button className="flex items-center gap-2 px-4 py-2 bg-card border border-border text-muted-foreground hover:text-foreground hover:border-foreground/20 rounded-xl font-medium transition-all text-sm">
                     <Download className="w-4 h-4" />
                     Export
                 </button>
             </div>
 
             {/* Reuse existing CostPerFeatureChart */}
-            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Cost Per Feature</h3>
+            <div className="bg-card border border-border rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">Cost Per Feature</h3>
                 <CostPerFeatureChart projectId={projectId} />
             </div>
 
             {/* Epic Comparison Chart */}
-            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Epic Comparison</h3>
+            <div className="bg-card border border-border rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">Epic Comparison</h3>
                 <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={epics.slice(0, 5)}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                        <XAxis dataKey="epicTitle" stroke="#94a3b8" fontSize={12} />
-                        <YAxis stroke="#94a3b8" fontSize={12} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                        <XAxis dataKey="epicTitle" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
                         <Tooltip
                             contentStyle={{
-                                backgroundColor: '#1e293b',
-                                border: '1px solid #334155',
+                                backgroundColor: 'hsl(var(--card))',
+                                border: '1px solid hsl(var(--border))',
                                 borderRadius: '8px',
-                                color: '#e2e8f0',
+                                color: 'hsl(var(--card-foreground))',
                             }}
                         />
                         <Legend />
@@ -106,8 +106,8 @@ export function CostSectionContainer({ projectId, startDate, endDate }: CostSect
 
             {/* Provider Distribution */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
-                    <h3 className="text-lg font-semibold text-white mb-4">Provider Distribution</h3>
+                <div className="bg-card border border-border rounded-2xl p-6">
+                    <h3 className="text-lg font-semibold text-foreground mb-4">Provider Distribution</h3>
                     <ResponsiveContainer width="100%" height={250}>
                         <PieChart>
                             <Pie
@@ -125,9 +125,10 @@ export function CostSectionContainer({ projectId, startDate, endDate }: CostSect
                             </Pie>
                             <Tooltip
                                 contentStyle={{
-                                    backgroundColor: '#1e293b',
-                                    border: '1px solid #334155',
+                                    backgroundColor: 'hsl(var(--card))',
+                                    border: '1px solid hsl(var(--border))',
                                     borderRadius: '8px',
+                                    color: 'hsl(var(--card-foreground))',
                                 }}
                             />
                         </PieChart>
@@ -135,26 +136,26 @@ export function CostSectionContainer({ projectId, startDate, endDate }: CostSect
                 </div>
 
                 {/* Top Expensive Epics */}
-                <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
-                    <h3 className="text-lg font-semibold text-white mb-4">Top 5 Expensive Epics</h3>
+                <div className="bg-card border border-border rounded-2xl p-6">
+                    <h3 className="text-lg font-semibold text-foreground mb-4">Top 5 Expensive Epics</h3>
                     <div className="space-y-3">
                         {epics.slice(0, 5).map((epic, index) => (
                             <div
                                 key={epic.epicId}
-                                className="flex items-center justify-between p-3 bg-slate-950 border border-slate-800 rounded-xl hover:border-slate-700 transition-colors"
+                                className="flex items-center justify-between p-3 bg-muted/50 border border-border rounded-xl hover:border-foreground/20 transition-colors"
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 bg-blue-600/10 border border-blue-600/20 rounded-lg flex items-center justify-center">
+                                    <div className="w-8 h-8 bg-blue-500/10 border border-blue-500/20 rounded-lg flex items-center justify-center">
                                         <span className="text-sm font-bold text-blue-500">#{index + 1}</span>
                                     </div>
                                     <div>
-                                        <div className="text-sm font-semibold text-white">{epic.epicTitle}</div>
-                                        <div className="text-xs text-slate-500">{epic.storyCount} stories</div>
+                                        <div className="text-sm font-semibold text-foreground">{epic.epicTitle}</div>
+                                        <div className="text-xs text-muted-foreground">{epic.storyCount} stories</div>
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <div className="text-lg font-bold text-white">${epic.totalCostUsd}</div>
-                                    <div className="text-xs text-slate-500">${epic.avgCostPerStory}/story</div>
+                                    <div className="text-lg font-bold text-foreground">${epic.totalCostUsd}</div>
+                                    <div className="text-xs text-muted-foreground">${epic.avgCostPerStory}/story</div>
                                 </div>
                             </div>
                         ))}

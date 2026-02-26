@@ -62,11 +62,13 @@ export function ProjectSelector({ selectedProjectId, onProjectChange }: ProjectS
         <div className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 rounded-xl font-medium transition-all min-w-[200px]"
+                className="flex items-center gap-2 px-3 py-2 h-10 bg-card border border-border text-foreground hover:border-foreground/20 rounded-lg font-medium transition-all w-[160px]"
             >
-                <Briefcase className="w-4 h-4" />
-                {loading ? 'Loading...' : selectedProject?.name || 'Select Project'}
-                <ChevronDown className={`w-4 h-4 ml-auto transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                <Briefcase className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
+                <span className="truncate text-sm">
+                    {loading ? 'Loading...' : selectedProject?.name || 'Select Project'}
+                </span>
+                <ChevronDown className={`w-4 h-4 flex-shrink-0 ml-auto text-muted-foreground transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {isOpen && (
@@ -75,22 +77,23 @@ export function ProjectSelector({ selectedProjectId, onProjectChange }: ProjectS
                         className="fixed inset-0 z-10"
                         onClick={() => setIsOpen(false)}
                     />
-                    <div className="absolute top-full mt-2 left-0 right-0 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl overflow-hidden z-20">
-                        <div className="max-h-64 overflow-y-auto">
+                    <div className="absolute top-full mt-1 left-0 bg-card border border-border rounded-lg shadow-lg overflow-hidden z-20 w-[220px]">
+                        <div className="max-h-60 overflow-y-auto">
                             {projects.map((project) => (
                                 <button
                                     key={project.id}
                                     onClick={() => handleProjectSelect(project.id)}
-                                    className={`w-full text-left px-4 py-3 hover:bg-slate-800 transition-colors ${project.id === selectedProjectId
-                                        ? 'bg-blue-600/10 text-blue-400 font-semibold'
-                                        : 'text-slate-300'
+                                    className={`w-full text-left px-3 py-2.5 hover:bg-muted transition-colors text-sm truncate ${project.id === selectedProjectId
+                                        ? 'bg-primary/10 text-primary font-semibold'
+                                        : 'text-foreground'
                                         }`}
+                                    title={project.name}
                                 >
                                     {project.name}
                                 </button>
                             ))}
                             {projects.length === 0 && !loading && (
-                                <div className="px-4 py-3 text-slate-500 text-sm">No projects available</div>
+                                <div className="px-3 py-2 text-muted-foreground text-sm">No projects available</div>
                             )}
                         </div>
                     </div>
