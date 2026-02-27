@@ -153,6 +153,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const rememberMe = localStorage.getItem('refresh_token') !== null;
             const storage = getStorageType(rememberMe);
             storage.setItem('access_token', accessToken);
+            // H-3: Notify SocketContext (same-tab) to reconnect with the rotated token
+            window.dispatchEvent(new CustomEvent('tokenRefreshed'));
 
             // Setup next auto-refresh
             setupAutoRefresh(accessToken);

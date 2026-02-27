@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSocketContext } from '@/contexts/SocketContext';
 import { 
-  ConnectionEvents, 
   RoomEvents, 
   RoomNames,
   ExecutionEvents,
@@ -24,8 +24,11 @@ const logger = {
 export interface SocketState {
   socket: Socket | null;
   connected: boolean;
+  /** @deprecated Connection lifecycle moved to SocketContext; always false */
   connecting: boolean;
+  /** @deprecated Connection lifecycle moved to SocketContext; always null */
   error: Error | null;
+  /** @deprecated Connection lifecycle moved to SocketContext; always 0 */
   reconnectAttempts: number;
 }
 
@@ -42,108 +45,51 @@ export interface UseSocketIOOptions {
  */
 export function useSocketIO(options: UseSocketIOOptions = {}) {
   const { 
-    autoConnect = true, 
-    reconnectionAttempts = 5, 
-    reconnectionDelay = 1000,
     projectIds: initialProjectIds = []
   } = options;
   
-  const { user, isAuthenticated } = useAuth();
-  const socketRef = useRef<Socket | null>(null);
+  const { user } = useAuth();
+  const { socket: sharedSocket, connected: sharedConnected } = useSocketContext();
   const joinedRoomsRef = useRef<Set<string>>(new Set());
   
   const [state, setState] = useState<SocketState>({
-    socket: null,
-    connected: false,
+    socket: sharedSocket,
+    connected: sharedConnected,
     connecting: false,
     error: null,
     reconnectAttempts: 0,
   });
 
-  // Initialize socket connection
+  // Sync state with shared socket
   useEffect(() => {
-    if (!autoConnect || !isAuthenticated || !user) {
+    setState(prev => ({
+      ...prev,
+      socket: sharedSocket,
+      connected: sharedConnected
+    }));
+  }, [sharedSocket, sharedConnected]);
+
+  // Room management for project rooms
+  useEffect(() => {
+    if (!sharedSocket || !sharedConnected || !user) {
       return;
     }
 
-    const token = localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
-    if (!token) {
-      setState(prev => ({ ...prev, error: new Error('No authentication token found') }));
-      return;
+    // Join rooms based on user role and projects
+    joinUserRooms(sharedSocket as Socket, user, initialProjectIds);
+
+    // Initial project join
+    if (initialProjectIds.length > 0) {
+      initialProjectIds.forEach(projectId => {
+        const room = RoomNames.project(projectId);
+        if (!joinedRoomsRef.current.has(room)) {
+          sharedSocket.emit('joinProject', { projectId });
+          joinedRoomsRef.current.add(room); // M-1: track to prevent duplicate emits
+        }
+      });
     }
 
-    setState(prev => ({ ...prev, connecting: true, error: null }));
-
-    const WS_URL = import.meta.env.VITE_WS_URL || import.meta.env.VITE_API_URL || 'http://localhost:3000';
-    
-    const socket = io(`${WS_URL}`, {
-      auth: { token },
-      reconnection: true,
-      reconnectionAttempts,
-      reconnectionDelay,
-      transports: ['websocket', 'polling'], // Fallback to polling if websocket fails
-    });
-
-    socketRef.current = socket;
-
-    // Connection event handlers
-    socket.on(ConnectionEvents.CONNECT, () => {
-      logger.log('[Socket.IO] Connected to server');
-      setState(prev => ({ 
-        ...prev, 
-        connected: true, 
-        connecting: false, 
-        error: null,
-        reconnectAttempts: 0 
-      }));
-      
-      // Join rooms based on user role and projects
-      joinUserRooms(socket, user, initialProjectIds);
-    });
-
-    socket.on(ConnectionEvents.DISCONNECT, (reason) => {
-      logger.log(`[Socket.IO] Disconnected: ${reason}`);
-      setState(prev => ({ ...prev, connected: false }));
-      joinedRoomsRef.current.clear();
-    });
-
-    socket.on(ConnectionEvents.CONNECT_ERROR, (error) => {
-      logger.error('[Socket.IO] Connection error:', error);
-      setState(prev => ({ 
-        ...prev, 
-        connected: false, 
-        connecting: false, 
-        error 
-      }));
-    });
-
-    socket.on(ConnectionEvents.RECONNECT_ATTEMPT, (attemptNumber) => {
-      logger.log(`[Socket.IO] Reconnection attempt ${attemptNumber}`);
-      setState(prev => ({ ...prev, reconnectAttempts: attemptNumber }));
-    });
-
-    socket.on(ConnectionEvents.RECONNECT, (attemptNumber) => {
-      logger.log(`[Socket.IO] Reconnected after ${attemptNumber} attempts`);
-      setState(prev => ({ ...prev, reconnectAttempts: 0 }));
-    });
-
-    // Room event handlers
-    socket.on(RoomEvents.ROOM_JOINED, ({ room }: { room: string }) => {
-      logger.log(`[Socket.IO] Joined room: ${room}`);
-      joinedRoomsRef.current.add(room);
-    });
-
-    socket.on(RoomEvents.ROOM_LEFT, ({ room }: { room: string }) => {
-      logger.log(`[Socket.IO] Left room: ${room}`);
-      joinedRoomsRef.current.delete(room);
-    });
-
-    return () => {
-      socket.disconnect();
-      socketRef.current = null;
-      joinedRoomsRef.current.clear();
-    };
-  }, [autoConnect, isAuthenticated, user, reconnectionAttempts, reconnectionDelay]);
+  }, [sharedSocket, sharedConnected, user, initialProjectIds]);
 
   // Join rooms based on user role and projects
   const joinUserRooms = useCallback((socket: Socket, userData: typeof user, projects: string[]) => {
@@ -157,8 +103,8 @@ export function useSocketIO(options: UseSocketIOOptions = {}) {
       projects.forEach(projectId => {
         const room = RoomNames.project(projectId);
         if (!joinedRoomsRef.current.has(room)) {
-          // Fix: Use specific 'joinProject' event with projectId payload
           socket.emit('joinProject', { projectId });
+          joinedRoomsRef.current.add(room); // M-1: track to prevent duplicate emits
         }
       });
     }
@@ -169,18 +115,18 @@ export function useSocketIO(options: UseSocketIOOptions = {}) {
     event: string,
     callback: (data: T) => void
   ) => {
-    const socket = socketRef.current;
+    const socket = sharedSocket;
     if (!socket) {
       logger.warn(`[Socket.IO] Cannot subscribe to ${event}: socket not connected`);
       return () => {}; // Return no-op unsubscribe
     }
 
     socket.on(event, callback);
-    
+
     return () => {
       socket.off(event, callback);
     };
-  }, []);
+  }, [sharedSocket]); // H-2: include sharedSocket so stale null is not captured
 
   // Subscribe to multiple events at once
   const subscribeToEvents = useCallback(<T = unknown>(
@@ -200,43 +146,45 @@ export function useSocketIO(options: UseSocketIOOptions = {}) {
 
   // Join a specific room
   const joinRoom = useCallback((room: string) => {
-    const socket = socketRef.current;
-    if (!socket || !socket.connected) {
+    const socket = sharedSocket;
+    if (!socket || !sharedConnected) {
       logger.warn(`[Socket.IO] Cannot join room ${room}: socket not connected`);
       return false;
     }
 
     socket.emit(RoomEvents.JOIN_ROOM, { room });
+    joinedRoomsRef.current.add(room); // M-1: track joined room
     return true;
-  }, []);
+  }, [sharedSocket, sharedConnected]); // H-2: include live socket/connected state
 
   // Leave a specific room
   const leaveRoom = useCallback((room: string) => {
-    const socket = socketRef.current;
-    if (!socket || !socket.connected) {
+    const socket = sharedSocket;
+    if (!socket || !sharedConnected) {
       logger.warn(`[Socket.IO] Cannot leave room ${room}: socket not connected`);
       return false;
     }
 
     socket.emit(RoomEvents.LEAVE_ROOM, { room });
+    joinedRoomsRef.current.delete(room); // M-1: untrack on leave
     return true;
-  }, []);
+  }, [sharedSocket, sharedConnected]); // H-2: include live socket/connected state
 
   // Join project rooms (call this after fetching user's projects)
   const joinProjectRooms = useCallback((projectIds: string[]) => {
-    const socket = socketRef.current;
-    if (!socket || !socket.connected) return false;
+    const socket = sharedSocket;
+    if (!socket || !sharedConnected) return false;
 
     projectIds.forEach(projectId => {
       const room = RoomNames.project(projectId);
       if (!joinedRoomsRef.current.has(room)) {
-        // Fix: Use specific 'joinProject' event with projectId payload
         socket.emit('joinProject', { projectId });
+        joinedRoomsRef.current.add(room); // M-1: track to prevent duplicate emits
       }
     });
 
     return true;
-  }, []);
+  }, [sharedSocket, sharedConnected]); // H-2: include live socket/connected state
 
   // Check if connected to a specific room
   const isInRoom = useCallback((room: string): boolean => {
@@ -245,7 +193,7 @@ export function useSocketIO(options: UseSocketIOOptions = {}) {
 
   return {
     ...state,
-    socket: socketRef.current,
+    socket: sharedSocket,
     subscribe,
     subscribeToEvents,
     joinRoom,

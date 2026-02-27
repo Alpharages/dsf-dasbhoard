@@ -36,6 +36,7 @@ import { Toaster, toast } from 'react-hot-toast';
 import { FinancialMetricsSection } from './components/financial/FinancialMetricsSection';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { AuthProvider, useAuth } from './contexts';
+import { SocketProvider } from './contexts/SocketContext';
 import { ForbiddenPage } from './pages/ForbiddenPage';
 import { Loader2 } from 'lucide-react';
 
@@ -99,9 +100,7 @@ function Dashboard() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const token = localStorage.getItem('access_token') || sessionStorage.getItem('access_token') || '';
-
-  const { socket, connected } = useSocket(token);
+  const { socket, connected } = useSocket();
   useProjectUpdates(socket, setProjects);
 
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
@@ -248,7 +247,7 @@ function Dashboard() {
 
   useEffect(() => {
     fetchData();
-  }, [token]);
+  }, []);
 
   return (
     <>
@@ -378,14 +377,23 @@ import { LoginPage } from './pages/LoginPage';
 import { RegistrationPage } from './pages/RegistrationPage';
 import { ProfilePage } from './pages/ProfilePage';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000, // 60 seconds (AC#1)
+      gcTime: 300 * 1000,   // 5 minutes (AC#1)
+    },
+  },
+});
 
 function App() {
   const navigate = useNavigate();
 
   return (
     <AuthProvider>
-      <AppContent navigate={navigate} />
+      <SocketProvider>
+        <AppContent navigate={navigate} />
+      </SocketProvider>
     </AuthProvider>
   );
 }

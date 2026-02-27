@@ -35,7 +35,7 @@ export const useApprovals = () => {
         });
         return (data.executions || data.data || data) as ApprovalExecution[];
       },
-      refetchInterval: 15000, // Poll every 15 seconds
+      refetchInterval: 30000, // Poll every 30 seconds (AC#3, was 15s)
     });
   };
 
