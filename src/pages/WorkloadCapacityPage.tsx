@@ -1,4 +1,5 @@
 import React from 'react';
+import { Navigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { workloadApi } from '../api/workloadApi';
 import { UtilizationGauge } from '../components/workload/UtilizationGauge';
@@ -9,21 +10,22 @@ import { CapacitySettingsModal } from '../components/workload/CapacitySettingsMo
 import { LayoutGrid, AlertTriangle, Settings2, RefreshCw } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useSocket } from '../hooks/useSocket';
+import { useAuth, useHasRole, getAccessToken } from '../contexts/AuthContext';
 
 export const WorkloadCapacityPage: React.FC = () => {
     const queryClient = useQueryClient();
-    // Use real user ID from localStorage, fallback to a safe default or handle redirection
-    const pmId = localStorage.getItem('userId') || 'usr-1';
-    const userRole = localStorage.getItem('userRole') || 'USER';
-    const isManager = userRole === 'MANAGER' || userRole === 'ADMIN';
+    const { user, isLoading: authLoading } = useAuth();
+    const pmId = user?.id || '';
+    const isManager = useHasRole('MANAGER');
 
     // Socket for real-time alerts
-    const { socket } = useSocket(localStorage.getItem('access_token') || '');
+    const token = getAccessToken() || '';
+    const { socket } = useSocket(token);
 
     React.useEffect(() => {
         if (!socket) return;
 
-        socket.on('burnout-alert', (payload: any) => {
+        socket.on('burnout-alert', (payload: { pmName: string }) => {
             toast.error(`🔥 Burnout Alert: ${payload.pmName} crossed 80% utilization!`, {
                 duration: 6000,
                 icon: '⚠️'
@@ -45,20 +47,22 @@ export const WorkloadCapacityPage: React.FC = () => {
     const { data: pmWorkload, isLoading: pmLoading } = useQuery({
         queryKey: ['workload', 'pm', pmId],
         queryFn: () => workloadApi.getPmWorkload(pmId),
+        enabled: !!pmId,
         staleTime: 5 * 60 * 1000,
         retry: 1
     });
 
     const { data: teamWorkload, isLoading: teamLoading } = useQuery({
-        queryKey: ['workload', 'team'],
+        queryKey: ['workload', 'team', pmId],
         queryFn: () => workloadApi.getTeamWorkload(),
-        enabled: isManager,
+        enabled: isManager && !!pmId,
         staleTime: 5 * 60 * 1000
     });
 
     const { data: trends, isLoading: trendsLoading } = useQuery({
         queryKey: ['workload', 'trends', pmId],
         queryFn: () => workloadApi.getWorkloadTrends(pmId),
+        enabled: !!pmId,
         staleTime: 5 * 60 * 1000
     });
 
@@ -87,14 +91,26 @@ export const WorkloadCapacityPage: React.FC = () => {
     const [selectedProject, setSelectedProject] = React.useState<{ id: string, name: string } | null>(null);
 
     // Mock project selection for now - ideally this comes from a "Select Project" flow or context
-    // This allows the "Quick Reassign" flow to at least open the modal with a placeholder
     const handleQuickReassign = () => {
-        // In a real app, we'd open a "Select Project" modal first.
-        // For compliance with AC#4 (Reassign button), we're providing the mechanism.
-        // We'll select a dummy project to demonstrate the flow if no project is selected.
         setSelectedProject({ id: 'proj-select', name: 'Select Project...' });
         setIsReassignOpen(true);
     };
+
+    if (authLoading) {
+        return (
+            <div className="space-y-8 animate-pulse">
+                <div className="h-10 w-64 bg-muted rounded-xl"></div>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="h-[400px] bg-card/50 rounded-2xl border border-border"></div>
+                    <div className="lg:col-span-2 h-[400px] bg-card/50 rounded-2xl border border-border"></div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!user) {
+        return <Navigate to="/login" replace />;
+    }
 
     if (pmLoading || trendsLoading || (isManager && teamLoading)) {
         return (
@@ -181,7 +197,6 @@ export const WorkloadCapacityPage: React.FC = () => {
                         data={teamWorkload.data}
                         onPmClick={(clickedPmId) => {
                             toast(`Drilling down into PM: ${clickedPmId}`, { icon: '🔍' });
-                            // Future: navigate to PM details view
                         }}
                     />
 
@@ -209,7 +224,7 @@ export const WorkloadCapacityPage: React.FC = () => {
                 onClose={() => setIsReassignOpen(false)}
                 projectId={selectedProject?.id || ''}
                 projectName={selectedProject?.name || ''}
-                currentPmName={pmWorkload?.utilization !== undefined ? "Current PM" : ""}
+                currentPmName={pmWorkload?.utilization !== undefined ? (user?.fullName || "Current PM") : ""}
                 onReassign={async (projectId, newPmId, reason) => {
                     await reassignMutation.mutateAsync({ projectId, newPmId, reason });
                 }}

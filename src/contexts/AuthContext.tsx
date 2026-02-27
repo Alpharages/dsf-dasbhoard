@@ -31,7 +31,7 @@ const getStorageType = (rememberMe: boolean): Storage => {
     return rememberMe ? localStorage : sessionStorage;
 };
 
-const getAccessToken = (): string | null => {
+export const getAccessToken = (): string | null => {
     return localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
 };
 
