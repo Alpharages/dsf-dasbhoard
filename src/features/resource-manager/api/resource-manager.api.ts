@@ -27,8 +27,8 @@ apiClient.interceptors.request.use((config) => {
 });
 
 export const getActiveLocks = async (): Promise<FileLock[]> => {
-  const response = await apiClient.get<FileLock[]>('/locks/active');
-  return response.data;
+  const response = await apiClient.get<{locks: FileLock[], total: number}>('/file-locks');
+  return response.data.locks;
 };
 
 export const getDependencyGraph = async (): Promise<DependencyGraph> => {
