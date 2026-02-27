@@ -32,11 +32,13 @@ export interface UpdateUserRequest {
 }
 
 export interface UsersResponse {
-    data: User[];
-    meta: {
+    users: User[];
+    pagination: {
         total: number;
         page: number;
         limit: number;
         totalPages: number;
+        hasNext: boolean;
+        hasPrevious: boolean;
     };
 }

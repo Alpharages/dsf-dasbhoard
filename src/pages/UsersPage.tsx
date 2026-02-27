@@ -61,11 +61,10 @@ export default function UsersPage() {
                 role: roleFilter !== 'all' ? (roleFilter as Role) : undefined,
                 isActive: statusFilter === 'all' ? undefined : statusFilter === 'active',
             });
-            setUsers(response.data);
-            setMeta(response.meta);
+            setUsers(response.users);
+            setMeta(response.pagination || { total: 0, page: 1, limit: 10, totalPages: 1 });
         } catch (error) {
             console.error('Failed to load users:', error);
-            // toast.error('Failed to load users'); // Avoid spamming if it's just a connection blip, or show generic error
             toast.error('Failed to load users');
         } finally {
             setIsLoading(false);

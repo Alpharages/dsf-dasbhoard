@@ -53,6 +53,7 @@ import { PmApprovalDashboardPage } from './pages/PmApprovalDashboardPage';
 import { AuditLogsDashboard } from './pages/AuditLogsDashboard';
 import { ResourceManagerPage } from './features/resource-manager';
 import { ObservabilityPage } from './pages/observability';
+import CostAnalysisPage from './pages/CostAnalysisPage';
 
 
 
@@ -472,6 +473,14 @@ function AppContent({ navigate }: { navigate: any }) {
               element={
                 <ProtectedRoute requiredRole="MANAGER">
                   <FinancialMetricsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cost"
+              element={
+                <ProtectedRoute>
+                  <CostAnalysisPage />
                 </ProtectedRoute>
               }
             />

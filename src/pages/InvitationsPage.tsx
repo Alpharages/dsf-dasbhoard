@@ -19,7 +19,7 @@ export const InvitationsPage: React.FC = () => {
         setIsLoading(true);
         try {
             const data = await fetchInvitations();
-            setInvitations(data);
+            setInvitations(data || []);
         } catch (error) {
             console.error('Failed to load invitations:', error);
             toast.error('Failed to load invitations');
@@ -102,7 +102,7 @@ export const InvitationsPage: React.FC = () => {
             </div>
 
             <InvitationsTable
-                invitations={invitations}
+                invitations={invitations ?? []}
                 isLoading={isLoading}
                 onCopyLink={handleCopyLink}
                 onRevoke={setRevokeTarget}

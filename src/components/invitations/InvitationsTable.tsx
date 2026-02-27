@@ -143,7 +143,7 @@ export function InvitationsTable({
     ];
 
     const table = useReactTable({
-        data: invitations,
+        data: invitations ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -154,8 +154,6 @@ export function InvitationsTable({
         state: {
             sorting,
             pagination,
-            globalFilter: statusFilter === 'all' ? undefined : statusFilter, // Using global filter logic or column filter?
-            // Actually let's use column filter for status
             columnFilters: statusFilter === 'all' ? [] : [{ id: 'status', value: statusFilter }],
         },
     });
@@ -211,7 +209,7 @@ export function InvitationsTable({
                         </SelectContent>
                     </Select>
                     <span className="text-sm text-slate-400">
-                        Showing {table.getFilteredRowModel().rows.length} of {invitations.length} invitations
+                        Showing {table.getFilteredRowModel().rows.length} of {(invitations ?? []).length} invitations
                     </span>
                 </div>
 
