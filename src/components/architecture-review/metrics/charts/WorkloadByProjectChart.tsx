@@ -19,9 +19,9 @@ export function WorkloadByProjectChart({ data, isLoading }: WorkloadByProjectCha
             <CardHeader>
                 <CardTitle>Review Workload by Project</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="min-w-0">
                 {hasData ? (
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={300} debounce={100}>
                         <BarChart data={chartData}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} />
                             <XAxis dataKey="projectName" fontSize={12} tickLine={false} axisLine={false} />

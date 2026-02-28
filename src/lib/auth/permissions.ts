@@ -90,6 +90,9 @@ export function canAccessEventType(
 ): boolean {
   if (!user) return false;
 
+  // Defensive: guard against malformed user objects with missing/invalid role
+  if (typeof user.role !== 'string') return false;
+
   // Admin-only event types
   const adminOnlyEvents = [
     'error.production',

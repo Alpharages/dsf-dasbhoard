@@ -137,15 +137,15 @@ export function BudgetSectionContainer({ projectId, period }: BudgetSectionConta
             </div>
 
             {/* Reuse existing Budget Trend Chart */}
-            <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Budget Trends</h3>
                 <BudgetTrendChart projectId={projectId} />
             </div>
 
             {/* Burn Rate Chart with Moving Averages */}
-            <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Burn Rate Analysis</h3>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={300} debounce={100}>
                     <LineChart data={burnRateData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                         <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />

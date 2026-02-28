@@ -120,9 +120,9 @@ export function RoiSectionContainer({ projectId }: RoiSectionContainerProps) {
             </div>
 
             {/* ROI Trend Chart */}
-            <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
                 <h3 className="text-lg font-semibold text-foreground mb-4">ROI Trend Over Time</h3>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={300} debounce={100}>
                     <LineChart data={trendData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                         <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
@@ -142,9 +142,9 @@ export function RoiSectionContainer({ projectId }: RoiSectionContainerProps) {
             </div>
 
             {/* Cost vs Value Comparison */}
-            <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Cost vs Value Comparison</h3>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={300} debounce={100}>
                     <AreaChart data={trendData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                         <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />

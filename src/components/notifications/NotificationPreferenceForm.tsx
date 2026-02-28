@@ -129,10 +129,11 @@ export function NotificationPreferenceForm({
     }
   };
 
-  // Filter available event types based on user role
-  const filteredEventTypes = AVAILABLE_EVENT_TYPES.filter(
-    et => canAccessEventType(user, et.value)
-  );
+  // Filter available event types based on user role — fall back to full list if
+  // user is not yet loaded to avoid empty dropdown on initial render
+  const filteredEventTypes = user
+    ? AVAILABLE_EVENT_TYPES.filter(et => canAccessEventType(user, et.value))
+    : AVAILABLE_EVENT_TYPES;
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>

@@ -1,4 +1,5 @@
 import { useState, useCallback, memo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { 
   Bell, 
   Check, 
@@ -10,11 +11,12 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'react-hot-toast';
 import { useSocketIO, useNotificationEvents } from '@/lib/socket/useSocketIO';
-import { 
-  useInAppNotifications, 
+import {
+  useInAppNotifications,
   useUnreadNotificationCount,
   useMarkNotificationAsRead,
-  useMarkAllNotificationsAsRead 
+  useMarkAllNotificationsAsRead,
+  notificationKeys,
 } from '@/hooks/queries/useNotifications';
 import type { InAppNotification } from '@/types/notifications';
 import { Button } from '@/components/ui/button';
@@ -65,71 +67,55 @@ const EVENT_TYPE_COLORS: Record<string, string> = {
 
 export const NotificationCenter = memo(function NotificationCenter({ maxNotifications = 10 }: NotificationCenterProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [realTimeNotifications, setRealTimeNotifications] = useState<InAppNotification[]>([]);
-  
+  const queryClient = useQueryClient();
+
   // Socket connection
   const { socket, connected } = useSocketIO();
 
   // Fetch notifications
-  const { 
-    data: notifications = [], 
+  const {
+    data: notifications = [],
     isLoading,
-    refetch 
   } = useInAppNotifications({ limit: maxNotifications });
 
   // Fetch unread count
-  const { data: unreadCount = 0, refetch: refetchCount } = useUnreadNotificationCount();
+  const { data: unreadCount = 0 } = useUnreadNotificationCount();
 
   // Mutations
   const markAsRead = useMarkNotificationAsRead();
   const markAllAsRead = useMarkAllNotificationsAsRead();
 
-  // Combine fetched and real-time notifications
-  const allNotifications = [...realTimeNotifications, ...notifications].slice(0, maxNotifications);
+  // Rely solely on query data — React Query is the single source of truth (AC 3)
+  const allNotifications = notifications.slice(0, maxNotifications);
 
-  // Handle real-time notification events
+  // Handle real-time notification events via query invalidation (AC 3)
+  // Invalidate only the inbox and count queries — not notificationKeys.all, which
+  // would unnecessarily bust the preferences cache on every socket event.
   useNotificationEvents(socket, {
     onNew: useCallback((payload: import('@/lib/socket/socketEvents').NotificationPayload) => {
-      const newNotification: InAppNotification = {
-        id: payload.notificationId,
-        userId: '', // Not needed for display
-        title: payload.title,
-        message: payload.message,
-        eventType: payload.eventType as import('@/types/notifications').NotificationEventType,
-        channels: payload.channels,
-        read: false,
-        createdAt: payload.createdAt,
-      };
-      
-      setRealTimeNotifications(prev => [newNotification, ...prev].slice(0, maxNotifications));
-      refetchCount();
-      
-      // Show toast for new notification
+      queryClient.invalidateQueries({ queryKey: notificationKeys.inApp() });
+      queryClient.invalidateQueries({ queryKey: notificationKeys.unreadCount() });
       toast.success(payload.title);
-    }, [maxNotifications, refetchCount]),
+    }, [queryClient]),
     onRead: useCallback(() => {
-      refetch();
-      refetchCount();
-    }, [refetch, refetchCount]),
+      queryClient.invalidateQueries({ queryKey: notificationKeys.inApp() });
+      queryClient.invalidateQueries({ queryKey: notificationKeys.unreadCount() });
+    }, [queryClient]),
     onReadAll: useCallback(() => {
-      refetch();
-      refetchCount();
-      setRealTimeNotifications([]);
-    }, [refetch, refetchCount]),
+      queryClient.invalidateQueries({ queryKey: notificationKeys.inApp() });
+      queryClient.invalidateQueries({ queryKey: notificationKeys.unreadCount() });
+    }, [queryClient]),
   });
 
-  // Handle mark as read
+  // Handle mark as read — mutation's onSuccess already invalidates queries via useNotifications
   const handleMarkAsRead = async (notificationId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     await markAsRead.mutateAsync(notificationId);
-    // Remove from real-time list if present
-    setRealTimeNotifications(prev => prev.filter(n => n.id !== notificationId));
   };
 
   // Handle mark all as read
   const handleMarkAllAsRead = async () => {
     await markAllAsRead.mutateAsync();
-    setRealTimeNotifications([]);
   };
 
   // Format badge count
@@ -153,9 +139,9 @@ export const NotificationCenter = memo(function NotificationCenter({ maxNotifica
       <DropdownMenuTrigger asChild>
         <button className="relative p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-full transition-colors">
           <Bell className="w-5 h-5" />
-          {unreadCount + realTimeNotifications.filter(n => !n.read).length > 0 && (
+          {unreadCount > 0 && (
             <span className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] flex items-center justify-center px-1 bg-rose-500 text-white text-[10px] font-bold rounded-full border-2 border-slate-900">
-              {formatBadgeCount(unreadCount + realTimeNotifications.filter(n => !n.read).length)}
+              {formatBadgeCount(unreadCount)}
             </span>
           )}
           {!connected && (

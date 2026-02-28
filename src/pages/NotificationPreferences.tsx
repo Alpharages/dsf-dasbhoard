@@ -118,10 +118,11 @@ export function NotificationPreferences() {
 
 
 
-  // Filter preferences based on user role
-  const filteredPreferences = preferences.filter(
-    p => canAccessEventType(user, p.eventType)
-  );
+  // Filter preferences based on user role — guard ensures filter only runs when
+  // both user and preferences are fully loaded to prevent crashes on initial load
+  const filteredPreferences = !isLoading && user
+    ? preferences.filter(p => canAccessEventType(user, p.eventType))
+    : [];
 
   return (
     <div className="space-y-6">

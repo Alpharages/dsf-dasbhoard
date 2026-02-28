@@ -17,8 +17,8 @@ export function ApprovalRateChart({ data, isLoading }: ApprovalRateChartProps) {
             <CardHeader>
                 <CardTitle>Approval Rate Trend</CardTitle>
             </CardHeader>
-            <CardContent className="pl-2">
-                <ResponsiveContainer width="100%" height={300}>
+            <CardContent className="pl-2 min-w-0">
+                <ResponsiveContainer width="100%" height={300} debounce={100}>
                     <AreaChart data={data}>
                         <defs>
                             <linearGradient id="colorApproved" x1="0" y1="0" x2="0" y2="1">

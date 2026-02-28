@@ -51,6 +51,7 @@ export function useNotificationPreferences(
     queryKey: notificationKeys.preferences(),
     queryFn: () => getNotificationPreferences().then(r => r.preferences),
     staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false, // Prevent 429 bursts on tab switching (QA-FR12)
     ...options,
   });
 }
@@ -128,7 +129,8 @@ export function useInAppNotifications(
     queryKey: [...notificationKeys.inApp(), options],
     queryFn: () => getInAppNotifications(options).then(r => r.notifications),
     staleTime: 30 * 1000, // 30 seconds
-    refetchInterval: 30 * 1000, // Poll every 30s as fallback
+    refetchInterval: 300_000, // Poll every 5 min as fallback (QA-FR12: prevent 429 bursts)
+    refetchOnWindowFocus: false, // Prevent 429 bursts when switching tabs (QA-NFR7)
     ...queryOptions,
   });
 }
@@ -143,7 +145,8 @@ export function useUnreadNotificationCount(
     queryKey: notificationKeys.unreadCount(),
     queryFn: () => getUnreadNotificationCount().then(r => r.count),
     staleTime: 30 * 1000,
-    refetchInterval: 30 * 1000,
+    refetchInterval: 300_000, // Poll every 5 min (QA-FR12)
+    refetchOnWindowFocus: false, // Prevent 429 bursts on tab switching (QA-NFR7)
     ...options,
   });
 }

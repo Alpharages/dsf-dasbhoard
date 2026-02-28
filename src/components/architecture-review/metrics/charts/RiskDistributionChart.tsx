@@ -26,9 +26,9 @@ export function RiskDistributionChart({ data, isLoading }: RiskDistributionChart
             <CardHeader>
                 <CardTitle>Risk Distribution</CardTitle>
             </CardHeader>
-            <CardContent className="h-[300px]">
+            <CardContent className="h-[300px] min-w-0">
                 {hasData ? (
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height="100%" debounce={100}>
                         <PieChart>
                             <Pie
                                 data={chartData}

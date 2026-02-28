@@ -21,7 +21,7 @@ export function CostValueChart(_props: CostValueChartProps) {
     ];
 
     return (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={300} debounce={100}>
             <AreaChart data={costValueData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="period" stroke="#94a3b8" fontSize={12} />

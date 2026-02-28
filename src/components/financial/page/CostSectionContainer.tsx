@@ -77,15 +77,15 @@ export function CostSectionContainer({ projectId, startDate, endDate }: CostSect
             </div>
 
             {/* Reuse existing CostPerFeatureChart */}
-            <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Cost Per Feature</h3>
                 <CostPerFeatureChart projectId={projectId} />
             </div>
 
             {/* Epic Comparison Chart */}
-            <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Epic Comparison</h3>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={300} debounce={100}>
                     <BarChart data={epics.slice(0, 5)}>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                         <XAxis dataKey="epicTitle" stroke="hsl(var(--muted-foreground))" fontSize={12} />
@@ -106,12 +106,12 @@ export function CostSectionContainer({ projectId, startDate, endDate }: CostSect
 
             {/* Provider Distribution */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-card border border-border rounded-2xl p-6">
+                <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
                     <h3 className="text-lg font-semibold text-foreground mb-4">Provider Distribution</h3>
-                    <ResponsiveContainer width="100%" height={250}>
+                    <ResponsiveContainer width="100%" height={250} debounce={100}>
                         <PieChart>
                             <Pie
-                                data={providerBreakdown as any}
+                                data={providerBreakdown}
                                 dataKey="percentage"
                                 nameKey="provider"
                                 cx="50%"

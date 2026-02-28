@@ -21,7 +21,8 @@ export function RoiTrendChart(_props: RoiTrendChartProps) {
     ];
 
     return (
-        <ResponsiveContainer width="100%" height={300}>
+        <div className="min-w-0 w-full">
+        <ResponsiveContainer width="100%" height={300} debounce={100}>
             <LineChart data={trendData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="period" stroke="#94a3b8" fontSize={12} />
@@ -45,5 +46,6 @@ export function RoiTrendChart(_props: RoiTrendChartProps) {
                 />
             </LineChart>
         </ResponsiveContainer>
+        </div>
     );
 }

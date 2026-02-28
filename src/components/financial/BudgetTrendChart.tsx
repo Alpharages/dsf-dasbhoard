@@ -125,8 +125,8 @@ export const BudgetTrendChart: React.FC<BudgetTrendChartProps> = ({ projectId })
             </div>
 
             {/* Area chart */}
-            <div className="h-72 mb-6">
-                <ResponsiveContainer width="100%" height="100%">
+            <div className="h-72 mb-6 min-w-0">
+                <ResponsiveContainer width="100%" height="100%" debounce={100}>
                     <AreaChart data={chartData}>
                         <defs>
                             <linearGradient id="cumulativeGradient" x1="0" y1="0" x2="0" y2="1">

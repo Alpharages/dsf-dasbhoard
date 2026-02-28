@@ -21,8 +21,8 @@ export function ProviderDonutChart({ providerData }: ProviderDonutChartProps) {
     const totalCost = chartData.reduce((sum, item) => sum + item.value, 0);
 
     return (
-        <div className="relative">
-            <ResponsiveContainer width="100%" height={250}>
+        <div className="relative min-w-0">
+            <ResponsiveContainer width="100%" height={250} debounce={100}>
                 <PieChart>
                     <Pie
                         data={chartData}

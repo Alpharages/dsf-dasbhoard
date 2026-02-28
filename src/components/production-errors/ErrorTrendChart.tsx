@@ -61,13 +61,13 @@ function ErrorTrendChartComponent() {
   }
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+    <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 min-w-0">
       <h3 className="text-lg font-semibold text-slate-200 mb-4">
         Error Trends (7 Days)
       </h3>
       
-      <div className="h-[300px]">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="h-[300px] min-w-0">
+        <ResponsiveContainer width="100%" height="100%" debounce={100}>
           <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
             <XAxis 

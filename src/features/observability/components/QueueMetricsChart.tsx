@@ -101,8 +101,9 @@ export function QueueMetricsChart({
           <CardTitle>Queue Metrics</CardTitle>
           <CardDescription>Loading queue data...</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="h-[300px] animate-pulse bg-gray-200 rounded" />
+        <CardContent className="space-y-4">
+          <div className="h-[250px] animate-pulse bg-muted rounded" />
+          <div className="h-[200px] animate-pulse bg-muted rounded" />
         </CardContent>
       </Card>
     );
@@ -147,8 +148,8 @@ export function QueueMetricsChart({
               <Badge variant="destructive">Alert</Badge>
             )}
           </h4>
-          <div className="h-[250px]">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-[250px] min-w-0">
+            <ResponsiveContainer width="100%" height="100%" debounce={100}>
               <BarChart
                 data={chartData}
                 margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
@@ -173,8 +174,8 @@ export function QueueMetricsChart({
         {/* Processing Rate Line Chart */}
         <div>
           <h4 className="text-sm font-semibold mb-3">Processing Rate (tickets/hour)</h4>
-          <div className="h-[200px]">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-[200px] min-w-0">
+            <ResponsiveContainer width="100%" height="100%" debounce={100}>
               <LineChart
                 data={chartData}
                 margin={{ top: 20, right: 30, left: 0, bottom: 5 }}

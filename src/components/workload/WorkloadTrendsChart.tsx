@@ -26,8 +26,8 @@ export const WorkloadTrendsChart: React.FC<WorkloadTrendsChartProps> = ({ data }
                 </h3>
             </div>
 
-            <div className="flex-1 w-full">
-                <ResponsiveContainer width="100%" height="100%">
+            <div className="flex-1 w-full min-w-0">
+                <ResponsiveContainer width="100%" height="100%" debounce={100}>
                     <AreaChart data={data}>
                         <defs>
                             <linearGradient id="colorUtil" x1="0" y1="0" x2="0" y2="1">

@@ -25,10 +25,11 @@ export function EpicComparisonChart({ projectId, selectedEpics }: EpicComparison
             });
         },
         enabled: !!projectId,
+        staleTime: 5 * 60 * 1000, // 5 minutes
     });
 
     if (isLoading) {
-        return <div className="h-64 bg-slate-950 animate-pulse rounded-xl" />;
+        return <div className="h-[300px] bg-muted animate-pulse rounded-xl" />;
     }
 
     const epics = data || [];
@@ -37,8 +38,8 @@ export function EpicComparisonChart({ projectId, selectedEpics }: EpicComparison
         : epics.slice(0, 5);
 
     return (
-        <div>
-            <ResponsiveContainer width="100%" height={300}>
+        <div className="min-w-0 w-full">
+            <ResponsiveContainer width="100%" height={300} debounce={100}>
                 <BarChart data={filteredEpics}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                     <XAxis dataKey="epicTitle" stroke="#94a3b8" fontSize={12} />

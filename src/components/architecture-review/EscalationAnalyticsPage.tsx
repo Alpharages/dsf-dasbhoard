@@ -89,8 +89,8 @@ export const EscalationAnalyticsPage: React.FC = () => {
                         <PieChartIcon className="w-5 h-5 text-slate-400" />
                         Primary Escalation Reasons
                     </h3>
-                    <div className="h-[300px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
+                    <div className="h-[300px] w-full min-w-0">
+                        <ResponsiveContainer width="100%" height="100%" debounce={100}>
                             <PieChart>
                                 <Pie
                                     data={metrics.topReasons}

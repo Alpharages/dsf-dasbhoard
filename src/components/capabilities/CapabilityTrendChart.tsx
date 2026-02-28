@@ -30,13 +30,13 @@ export const CapabilityTrendChart: React.FC<CapabilityTrendChartProps> = ({ capa
     }));
 
     return (
-        <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50">
+        <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50 min-w-0">
             <div className="mb-4">
                 <h3 className="text-xl font-bold text-white">Success Rate by Task Type</h3>
                 <p className="text-sm text-slate-400">AI performance across different task categories</p>
             </div>
 
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={300} debounce={100}>
                 <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
                     <XAxis
                         dataKey="name"

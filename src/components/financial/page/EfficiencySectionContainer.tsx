@@ -145,9 +145,9 @@ export function EfficiencySectionContainer({ projectId, startDate, endDate }: Ef
             </div>
 
             {/* Success Rate Comparison */}
-            <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Success Rate Comparison</h3>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={300} debounce={100}>
                     <BarChart data={successRateData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                         <XAxis dataKey="model" stroke="hsl(var(--muted-foreground))" fontSize={12} />
@@ -168,9 +168,9 @@ export function EfficiencySectionContainer({ projectId, startDate, endDate }: Ef
             </div>
 
             {/* Cost-Speed Scatter Plot */}
-            <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Cost-Speed Analysis</h3>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={300} debounce={100}>
                     <ScatterChart>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                         <XAxis

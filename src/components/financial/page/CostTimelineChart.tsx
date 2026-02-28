@@ -21,7 +21,7 @@ export function CostTimelineChart(_props: CostTimelineChartProps) {
     ];
 
     return (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={300} debounce={100}>
             <AreaChart data={timelineData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} />
