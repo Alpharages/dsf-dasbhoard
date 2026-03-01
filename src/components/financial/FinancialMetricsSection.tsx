@@ -5,6 +5,8 @@ import { BudgetTrendChart } from './BudgetTrendChart';
 import { ModelEfficiencyTable } from './ModelEfficiencyTable';
 import { DollarSign, ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '../../contexts/AuthContext';
+import { canAccess } from '../../utils/roleHelpers';
 
 interface FinancialMetricsSectionProps {
     projectId?: string;
@@ -14,6 +16,7 @@ export const FinancialMetricsSection: React.FC<FinancialMetricsSectionProps> = (
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [selectedProject, setSelectedProject] = useState(projectId || '');
     const queryClient = useQueryClient();
+    const { user } = useAuth();
 
     // Store last selected project in localStorage
     useEffect(() => {
@@ -30,13 +33,9 @@ export const FinancialMetricsSection: React.FC<FinancialMetricsSectionProps> = (
         }
     }, [projectId]);
 
-    // Check user role (MANAGER/ADMIN only)
-    // TODO: Replace with actual auth context when available
-    const userRole = localStorage.getItem('userRole') || 'PM';
-    const hasAccess = ['MANAGER', 'ADMIN'].includes(userRole);
-
-    if (!hasAccess) {
-        return null; // Hide section for users without MANAGER/ADMIN role
+    // Guard: MANAGER/ADMIN only — mirrors Dashboard-level canAccess check
+    if (!canAccess(user?.role || 'VIEWER', 'MANAGER')) {
+        return null;
     }
 
     if (!selectedProject) {

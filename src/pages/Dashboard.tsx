@@ -15,12 +15,14 @@ import { CommandPalette } from '../components/ux/CommandPalette';
 import { HelpModal } from '../components/ux/HelpModal';
 import { ProjectCardListView } from '../components/dashboard/ProjectCardListView';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../components/ui/dropdown-menu';
-import type { Project, DashboardSummary } from '../types';
+import type { Project, DashboardSummary } from '@/types';
 import apiClient from '../api/client';
 import { useSocket } from '../hooks/useSocket';
 import { useProjectUpdates } from '../hooks/useProjectUpdates';
 import { filterProjects } from '../utils/projectFilters';
 import { sortProjects } from '../utils/projectSort';
+import { useAuth } from '@/contexts';
+import { canAccess } from '../utils/roleHelpers';
 
 /** Returns null for invalid or missing date strings, guarding against NaN Date objects. */
 function parseDate(param: string | null): Date | null {
@@ -39,6 +41,7 @@ export function Dashboard() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
   const { socket, connected } = useSocket();
   useProjectUpdates(socket, setProjects);
 
@@ -267,7 +270,7 @@ export function Dashboard() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [user?.id]);
 
   return (
     <>
@@ -334,7 +337,9 @@ export function Dashboard() {
       </div>
 
       {/* Financial Metrics Section (Manager/Admin only) - Story 6-R-3 */}
-      <FinancialMetricsSection projectId={projects[0]?.id} />
+      {canAccess(user?.role || 'VIEWER', 'MANAGER') && (
+        <FinancialMetricsSection projectId={projects[0]?.id} />
+      )}
 
       <div className="bg-card/40 border border-border rounded-2xl p-4 mb-8 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2">
