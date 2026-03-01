@@ -83,7 +83,7 @@ function DropdownMenuContent({
   sideOffset = 4 
 }: DropdownMenuContentProps) {
   const { open, setOpen, triggerRef } = React.useContext(DropdownMenuContext)
-  const [position, setPosition] = React.useState({ top: 0, left: 0, right: 'auto' })
+  const [position, setPosition] = React.useState<{top: number, left: number | 'auto', right: number | 'auto'}>({ top: 0, left: 0, right: 'auto' })
   const ref = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
@@ -91,7 +91,7 @@ function DropdownMenuContent({
       const trigger = triggerRef.current
       const rect = trigger.getBoundingClientRect()
       
-      let left = rect.left
+      let left: number | 'auto' = rect.left
       let right: number | 'auto' = 'auto'
       
       if (align === 'center') {

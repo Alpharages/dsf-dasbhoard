@@ -12,7 +12,7 @@ import { toast } from 'react-hot-toast';
 import { useGithubAccounts, useGithubRepos } from '@/hooks/queries/useGithubAccounts';
 import { saveProjectGithubRepo, getGithubLoginUrl } from '@/api/githubApi';
 import { projectKeys } from '@/hooks/queries/useProjects';
-import { AlertCircle, Lock, Check, ExternalLink, Plus, ChevronsUpDown, RefreshCw } from 'lucide-react';
+import { AlertCircle, Lock, Check, ExternalLink, Plus, ChevronsUpDown, RefreshCw, Github } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface GithubRepoSelectorProps {

@@ -111,8 +111,8 @@ export function CostSectionContainer({ projectId, startDate, endDate }: CostSect
                     <ResponsiveContainer width="100%" height={250} debounce={100}>
                         <PieChart>
                             <Pie
-                                data={providerBreakdown}
-                                dataKey="percentage"
+                                data={providerBreakdown as any}
+                                dataKey="cost"
                                 nameKey="provider"
                                 cx="50%"
                                 cy="50%"

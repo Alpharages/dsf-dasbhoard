@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Filter, Grid, List, SortAsc, Plus, RefreshCw, XCircle } from 'lucide-react';
+import { Filter, Grid, List, SortAsc, Plus, RefreshCw, XCircle, ChevronDown, Check } from 'lucide-react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { toast } from 'react-hot-toast';
 import { StatsGrid } from '../components/dashboard/StatsGrid';
@@ -13,11 +13,14 @@ import { ConversationListWidget } from '../components/conversations/Conversation
 import { FinancialMetricsSection } from '../components/financial/FinancialMetricsSection';
 import { CommandPalette } from '../components/ux/CommandPalette';
 import { HelpModal } from '../components/ux/HelpModal';
+import { ProjectCardListView } from '../components/dashboard/ProjectCardListView';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../components/ui/dropdown-menu';
 import type { Project, DashboardSummary } from '../types';
 import apiClient from '../api/client';
 import { useSocket } from '../hooks/useSocket';
 import { useProjectUpdates } from '../hooks/useProjectUpdates';
 import { filterProjects } from '../utils/projectFilters';
+import { sortProjects } from '../utils/projectSort';
 
 /** Returns null for invalid or missing date strings, guarding against NaN Date objects. */
 function parseDate(param: string | null): Date | null {
@@ -25,6 +28,9 @@ function parseDate(param: string | null): Date | null {
   const d = new Date(param);
   return isNaN(d.getTime()) ? null : d;
 }
+
+export type SortOption = 'activity-desc' | 'name-asc' | 'tickets-desc' | 'blocked-desc';
+export type ViewMode = 'grid' | 'list';
 
 export function Dashboard() {
   const navigate = useNavigate();
@@ -35,6 +41,32 @@ export function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const { socket, connected } = useSocket();
   useProjectUpdates(socket, setProjects);
+
+  const [sortPreference, setSortPreference] = useState<SortOption>(() => {
+    return (localStorage.getItem('dsf_project_sort') as SortOption) || 'activity-desc';
+  });
+  
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    return (localStorage.getItem('dsf_project_view_mode') as ViewMode) || 'grid';
+  });
+
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('dsf_project_sort', sortPreference);
+  }, [sortPreference]);
+
+  useEffect(() => {
+    localStorage.setItem('dsf_project_view_mode', viewMode);
+  }, [viewMode]);
+
 
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
@@ -81,6 +113,12 @@ export function Dashboard() {
     () => filterProjects(projects, filters),
     [projects, filters],
   );
+
+  const sortedProjects = useMemo(
+    () => sortProjects(filteredProjects, sortPreference),
+    [filteredProjects, sortPreference],
+  );
+
 
   const handleShortcutAction = async (decision: 'APPROVE' | 'REJECT' | 'REWORK', label: string) => {
     if (!reviewState.isOpen) return;
@@ -300,15 +338,43 @@ export function Dashboard() {
 
       <div className="bg-card/40 border border-border rounded-2xl p-4 mb-8 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <button className="p-2 bg-secondary text-primary rounded-lg shadow-inner ring-1 ring-background/5">
-            <Grid className="w-5 h-5" />
-          </button>
-          <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
-            <List className="w-5 h-5" />
-          </button>
+          <div role="group" aria-label="View mode" className="flex items-center bg-secondary/50 rounded-lg p-1 border border-border/50">
+            <button
+              onClick={() => setViewMode('grid')}
+              aria-pressed={viewMode === 'grid'}
+              className={`p-1.5 rounded-md transition-all ${
+                viewMode === 'grid'
+                  ? 'bg-background text-primary shadow-sm ring-1 ring-border'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+              }`}
+              title="Grid View"
+            >
+              <Grid className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              disabled={isMobile}
+              aria-pressed={viewMode === 'list' && !isMobile}
+              className={`p-1.5 rounded-md transition-all ${
+                isMobile ? 'opacity-50 cursor-not-allowed' : ''
+              } ${
+                viewMode === 'list' && !isMobile
+                  ? 'bg-background text-primary shadow-sm ring-1 ring-border'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+              }`}
+              title={isMobile ? 'List view unavailable on mobile' : 'List View'}
+            >
+              <List className="w-5 h-5" />
+            </button>
+          </div>
           <div className="h-6 w-px bg-border mx-2"></div>
           <div className="text-sm font-bold text-muted-foreground">
-            Sorted by <span className="text-foreground">Last Activity</span>
+            Sorted by <span className="text-foreground">
+              {sortPreference === 'activity-desc' && 'Last Activity'}
+              {sortPreference === 'name-asc' && 'Name A-Z'}
+              {sortPreference === 'tickets-desc' && 'Ticket Count'}
+              {sortPreference === 'blocked-desc' && 'Blocked Count'}
+            </span>
           </div>
         </div>
 
@@ -324,10 +390,32 @@ export function Dashboard() {
             <Filter className="w-4 h-4" />
             Filter {activeFilterCount > 0 && `(${activeFilterCount})`}
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground text-sm font-semibold rounded-xl border border-border/50 transition-all">
-            <SortAsc className="w-4 h-4" />
-            Sort
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground text-sm font-semibold rounded-xl border border-border/50 transition-all">
+                <SortAsc className="w-4 h-4" />
+                Sort
+                <ChevronDown className="w-3.5 h-3.5 ml-1 opacity-70" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {[
+                { value: 'activity-desc', label: 'Last Activity' },
+                { value: 'name-asc', label: 'Name A-Z' },
+                { value: 'tickets-desc', label: 'Ticket Count' },
+                { value: 'blocked-desc', label: 'Blocked Count' },
+              ].map(option => (
+                <DropdownMenuItem 
+                  key={option.value} 
+                  onClick={() => setSortPreference(option.value as SortOption)}
+                  className="flex items-center justify-between font-medium py-2 cursor-pointer"
+                >
+                  {option.label}
+                  {sortPreference === option.value && <Check className="w-4 h-4 text-primary" />}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -340,11 +428,19 @@ export function Dashboard() {
             ></div>
           ))}
         </div>
-      ) : filteredProjects.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 pb-12">
-          {filteredProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} onReview={handleReview} />
-          ))}
+      ) : sortedProjects.length > 0 ? (
+        <div className="pb-12">
+          {viewMode === 'list' && !isMobile ? (
+            <div className="animate-in fade-in slide-in-from-top-1 duration-200">
+              <ProjectCardListView projects={sortedProjects} onReview={handleReview} />
+            </div>
+          ) : (
+            <div className="animate-in fade-in slide-in-from-top-1 duration-200 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 pb-12">
+              {sortedProjects.map((project) => (
+                <ProjectCard key={project.id} project={project} onReview={handleReview} />
+              ))}
+            </div>
+          )}
         </div>
       ) : !error ? (
         projects.length === 0 ? (

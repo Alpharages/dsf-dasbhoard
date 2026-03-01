@@ -262,7 +262,7 @@ describe('NotificationCenter: socket events invalidate only inApp + unreadCount 
   }
 
   function calledKeys(spy: ReturnType<typeof vi.spyOn>) {
-    return spy.mock.calls.map((c) => (c[0] as { queryKey?: unknown }).queryKey);
+    return spy.mock.calls.map((c: any) => (c[0] as { queryKey?: unknown }).queryKey);
   }
 
   it('onNew: invalidates inApp and unreadCount — not the broad .all prefix', async () => {
