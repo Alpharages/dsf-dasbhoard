@@ -1,12 +1,15 @@
-import { Routes, Route, useNavigate, useParams, Outlet } from 'react-router-dom';
+import { Routes, Route, useNavigate, useParams, Outlet, useSearchParams } from 'react-router-dom';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { StatsGrid } from './components/dashboard/StatsGrid';
 import { ProjectCard } from './components/dashboard/ProjectCard';
-import { Filter, Grid, List, SortAsc, Plus, RefreshCw } from 'lucide-react';
+import { NewProjectDialog } from './components/dashboard/NewProjectDialog';
+import type { ProjectFilters } from './components/dashboard/ProjectFilterSheet';
+import { ProjectFilterSheet } from './components/dashboard/ProjectFilterSheet';
+import { Filter, Grid, List, SortAsc, Plus, RefreshCw, XCircle } from 'lucide-react';
 import type { Project, DashboardSummary } from './types';
 import apiClient from './api/client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSocket } from './hooks/useSocket';
 import { useProjectUpdates } from './hooks/useProjectUpdates';
 import { ReviewModal } from './components/quality-gate/ReviewModal';
@@ -96,6 +99,7 @@ function DashboardLayout() {
 // Dashboard component
 function Dashboard() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [projects, setProjects] = useState<Project[]>([]);
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -105,6 +109,65 @@ function Dashboard() {
 
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const filters = useMemo<ProjectFilters>(() => {
+    return {
+      statuses: searchParams.getAll('status'),
+      clientName: searchParams.get('client') || '',
+      dateRange: {
+        startDate: searchParams.get('start') ? new Date(searchParams.get('start') as string) : null,
+        endDate: searchParams.get('end') ? new Date(searchParams.get('end') as string) : null,
+      },
+    };
+  }, [searchParams]);
+
+  const activeFilterCount = filters.statuses.length + (filters.clientName ? 1 : 0) + (filters.dateRange.startDate || filters.dateRange.endDate ? 1 : 0);
+
+  const handleFilterChange = (newFilters: ProjectFilters) => {
+    const params = new URLSearchParams();
+    newFilters.statuses.forEach(status => params.append('status', status));
+    if (newFilters.clientName) params.set('client', newFilters.clientName);
+    if (newFilters.dateRange.startDate) params.set('start', newFilters.dateRange.startDate.toISOString());
+    if (newFilters.dateRange.endDate) params.set('end', newFilters.dateRange.endDate.toISOString());
+    setSearchParams(params);
+  };
+
+  const handleClearFilters = () => {
+    setSearchParams(new URLSearchParams());
+  };
+
+  const filteredProjects = useMemo(() => {
+    return projects.filter(project => {
+      // Client Name Filter
+      if (filters.clientName && !project.client_name?.toLowerCase().includes(filters.clientName.toLowerCase()) && !project.name.toLowerCase().includes(filters.clientName.toLowerCase())) {
+        return false;
+      }
+      
+      // Status Filter
+      if (filters.statuses.length > 0 && project.status) {
+         const normalizedStatuses = filters.statuses.map(s => s.toLowerCase());
+         // Map "Archived" to "completed" or "on-hold" if needed, but simple lower case mapping for now.
+         // Actually "archived" might just be "completed" or "on-hold". We will check if it matches project status.
+         if (
+           !normalizedStatuses.includes(project.status.toLowerCase()) && 
+           !(normalizedStatuses.includes('archived') && (project.status === 'completed' || project.status === 'on-hold'))
+         ) {
+           return false;
+         }
+      }
+
+      // Date Filter
+      if (filters.dateRange.startDate || filters.dateRange.endDate) {
+        const projectDate = new Date(project.created_at);
+        if (filters.dateRange.startDate && projectDate < filters.dateRange.startDate) return false;
+        if (filters.dateRange.endDate && projectDate > filters.dateRange.endDate) return false;
+      }
+
+      return true;
+    });
+  }, [projects, filters]);
 
   const handleShortcutAction = async (decision: 'APPROVE' | 'REJECT' | 'REWORK', label: string) => {
     if (!reviewState.isOpen) return;
@@ -139,7 +202,7 @@ function Dashboard() {
   useHotkeys('n', (e) => {
     e.preventDefault();
     if (isPaletteOpen || isHelpOpen || reviewState.isOpen) return;
-    toast.success('New Project creation opened (Shortcut: N)');
+    setIsNewProjectOpen(true);
     recordShortcutUsage('new_project');
   });
 
@@ -276,7 +339,7 @@ function Dashboard() {
           >
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
           </button>
-          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-2xl shadow-lg shadow-blue-500/20 transition-all hover:translate-y-[-2px] active:translate-y-0">
+          <button onClick={() => setIsNewProjectOpen(true)} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-2xl shadow-lg shadow-blue-500/20 transition-all hover:translate-y-[-2px] active:translate-y-0">
             <Plus className="w-5 h-5" />
             New Project
           </button>
@@ -318,9 +381,12 @@ function Dashboard() {
         </div>
 
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground text-sm font-semibold rounded-xl border border-border/50 transition-all">
+          <button 
+            onClick={() => setIsFilterOpen(true)}
+            className={`flex items-center gap-2 px-4 py-2 ${activeFilterCount > 0 ? 'bg-primary/20 hover:bg-primary/30 text-primary border-primary/30' : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border-border/50'} text-sm font-semibold rounded-xl border transition-all`}
+          >
             <Filter className="w-4 h-4" />
-            Filter
+            Filter {activeFilterCount > 0 && `(${activeFilterCount})`}
           </button>
           <button className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground text-sm font-semibold rounded-xl border border-border/50 transition-all">
             <SortAsc className="w-4 h-4" />
@@ -335,9 +401,9 @@ function Dashboard() {
             <div key={i} className="h-64 bg-card/50 border border-border animate-pulse rounded-2xl"></div>
           ))}
         </div>
-      ) : projects.length > 0 ? (
+      ) : filteredProjects.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 pb-12">
-          {projects.map((project) => (
+          {filteredProjects.map((project) => (
             <ProjectCard
               key={project.id}
               project={project}
@@ -345,11 +411,24 @@ function Dashboard() {
             />
           ))}
         </div>
-      ) : !error && (
-        <div className="text-center py-20 bg-card/20 border border-dashed border-border rounded-3xl">
-          <p className="text-muted-foreground text-xl font-medium">No projects found. Create your first one!</p>
-        </div>
-      )}
+      ) : !error ? (
+        projects.length === 0 ? (
+          <div className="text-center py-20 bg-card/20 border border-dashed border-border rounded-3xl">
+            <p className="text-muted-foreground text-xl font-medium">No projects found. Create your first one!</p>
+          </div>
+        ) : (
+          <div className="text-center py-20 bg-card/20 border border-dashed border-border rounded-3xl flex flex-col items-center justify-center">
+            <XCircle className="w-12 h-12 text-muted-foreground mb-4 opacity-50" />
+            <p className="text-muted-foreground text-xl font-medium mb-4">No projects match your filters.</p>
+            <button 
+              onClick={handleClearFilters}
+              className="px-6 py-2.5 bg-primary text-primary-foreground font-semibold rounded-xl shadow-md hover:shadow-lg transition-all"
+            >
+              Clear Filters
+            </button>
+          </div>
+        )
+      ) : null}
 
       <ReviewModal
         isOpen={reviewState.isOpen}
@@ -362,6 +441,16 @@ function Dashboard() {
         qaSummary={reviewState.qaSummary}
         diffs={reviewState.diffs}
         onActionComplete={fetchData}
+      />
+
+      <NewProjectDialog isOpen={isNewProjectOpen} onOpenChange={setIsNewProjectOpen} onSuccess={fetchData} />
+      
+      <ProjectFilterSheet 
+        isOpen={isFilterOpen} 
+        onOpenChange={setIsFilterOpen} 
+        filters={filters} 
+        onFilterChange={handleFilterChange} 
+        onClearFilters={handleClearFilters} 
       />
 
       <CommandPalette isOpen={isPaletteOpen} onClose={() => setIsPaletteOpen(false)} onOpenHelp={() => setIsHelpOpen(true)} />

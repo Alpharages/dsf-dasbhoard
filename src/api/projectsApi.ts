@@ -6,7 +6,23 @@
 import apiClient from './client';
 import type { Project } from '@/types/project';
 
+export interface CreateProjectPayload {
+  name: string;
+  clickup_list_id: string;
+  client_name: string;
+  pm_id: string;
+  github_repository_url?: string;
+}
+
 const BASE_URL = '/projects';
+
+/**
+ * Create a new project
+ */
+export async function createProject(payload: CreateProjectPayload): Promise<Project> {
+  const response = await apiClient.post<Project>(BASE_URL, payload);
+  return response.data;
+}
 
 /**
  * Get current user's accessible projects
