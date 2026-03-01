@@ -1,51 +1,25 @@
-import { Routes, Route, useNavigate, useParams, Outlet, useSearchParams } from 'react-router-dom';
+import { Routes, Route, useNavigate, useParams, Outlet } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider, useAuth } from './contexts';
+import { SocketProvider } from './contexts/SocketContext';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { TooltipProvider } from './components/ui/tooltip';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
-import { StatsGrid } from './components/dashboard/StatsGrid';
-import { ProjectCard } from './components/dashboard/ProjectCard';
-import { NewProjectDialog } from './components/dashboard/NewProjectDialog';
-import type { ProjectFilters } from './components/dashboard/ProjectFilterSheet';
-import { ProjectFilterSheet } from './components/dashboard/ProjectFilterSheet';
-import { Filter, Grid, List, SortAsc, Plus, RefreshCw, XCircle } from 'lucide-react';
-import type { Project, DashboardSummary } from './types';
-import apiClient from './api/client';
-import { useState, useEffect, useMemo } from 'react';
-import { useSocket } from './hooks/useSocket';
-import { useProjectUpdates } from './hooks/useProjectUpdates';
-import { ReviewModal } from './components/quality-gate/ReviewModal';
-import { ConversationUploadForm } from './components/conversations/ConversationUploadForm';
-import { ConversationDetailView } from './components/conversations/ConversationDetailView';
-import { ConversationSearchInterface } from './components/conversations/ConversationSearchInterface';
-import { ConversationListWidget } from './components/conversations/ConversationListWidget';
-import { CommandPalette } from './components/ux/CommandPalette';
-import { HelpModal } from './components/ux/HelpModal';
-import { useHotkeys } from 'react-hotkeys-hook';
-import { SettingsLayout } from './pages/settings/SettingsLayout';
-import {
-  CleanupPanel,
-  SelfHealingPanel,
-  DependencyPanel,
-  AutoMergePanel,
-  CostPanel,
-  AuditPanel,
-  HealthPanel
-} from './pages/settings/panels/AllPanels';
-import { GithubCallback } from './pages/settings/GithubCallback';
+import { Toaster } from 'react-hot-toast';
+import { Loader2 } from 'lucide-react';
+
+import { Dashboard } from './pages/Dashboard';
+import { LoginPage } from './pages/LoginPage';
+import { RegistrationPage } from './pages/RegistrationPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { ForbiddenPage } from './pages/ForbiddenPage';
 import { DecisionDashboard } from './pages/DecisionDashboard';
 import { FinancialMetricsPage } from './pages/FinancialMetricsPage';
 import { WorkloadCapacityPage } from './pages/WorkloadCapacityPage';
 import { ProjectsSyncPage } from './pages/ProjectsSyncPage';
-import { Toaster, toast } from 'react-hot-toast';
-import { FinancialMetricsSection } from './components/financial/FinancialMetricsSection';
-import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import { AuthProvider, useAuth } from './contexts';
-import { SocketProvider } from './contexts/SocketContext';
-import { ForbiddenPage } from './pages/ForbiddenPage';
-import { Loader2 } from 'lucide-react';
-
 import { ArchitectureReviewQueuePage } from './pages/ArchitectureReviewQueuePage';
 import { ConstraintsPage } from './pages/architecture-review/constraints/ConstraintsPage';
-import { EscalationAnalyticsPage } from './components/architecture-review/EscalationAnalyticsPage';
 import ArchitectureMetricsPage from './pages/architecture-review/ArchitectureMetricsPage';
 import { InvitationsPage } from './pages/InvitationsPage';
 import UsersPage from './pages/UsersPage';
@@ -55,11 +29,27 @@ import { ExecutionMonitoringDashboard } from './pages/ExecutionMonitoringDashboa
 import { NotificationPreferences } from './pages/NotificationPreferences';
 import { PmApprovalDashboardPage } from './pages/PmApprovalDashboardPage';
 import { AuditLogsDashboard } from './pages/AuditLogsDashboard';
-import { ResourceManagerPage } from './features/resource-manager';
 import { ObservabilityPage } from './pages/observability';
 import CostAnalysisPage from './pages/CostAnalysisPage';
+import { CapabilityManagementPage } from './pages/CapabilityManagementPage';
+import { SettingsLayout } from './pages/settings/SettingsLayout';
+import {
+  CleanupPanel,
+  SelfHealingPanel,
+  DependencyPanel,
+  AutoMergePanel,
+  CostPanel,
+  AuditPanel,
+  HealthPanel,
+} from './pages/settings/panels/AllPanels';
+import { GithubCallback } from './pages/settings/GithubCallback';
 
+import { ConversationUploadForm } from './components/conversations/ConversationUploadForm';
+import { ConversationDetailView } from './components/conversations/ConversationDetailView';
+import { ConversationSearchInterface } from './components/conversations/ConversationSearchInterface';
+import { EscalationAnalyticsPage } from './components/architecture-review/EscalationAnalyticsPage';
 
+import { ResourceManagerPage } from './features/resource-manager';
 
 // Shared Layout component
 function DashboardLayout() {
@@ -69,18 +59,18 @@ function DashboardLayout() {
       <aside className="hidden lg:block fixed left-0 top-0 h-screen w-[280px] z-40">
         <Sidebar />
       </aside>
-      
+
       {/* Main Content - margin to account for sidebar */}
       <main className="flex-1 lg:ml-[280px] min-h-screen flex flex-col">
         {/* Header - full width within main content */}
         <Header />
-        
+
         {/* Page Content - consistent padding */}
         <div className="flex-1 px-6 py-6">
           <Outlet />
         </div>
       </main>
-      
+
       <Toaster
         position="bottom-right"
         toastOptions={{
@@ -89,388 +79,18 @@ function DashboardLayout() {
             color: 'var(--card-foreground)',
             border: '1px solid var(--border)',
             borderRadius: '12px',
-          }
+          },
         }}
       />
     </div>
   );
 }
 
-// Dashboard component
-function Dashboard() {
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [summary, setSummary] = useState<DashboardSummary | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { socket, connected } = useSocket();
-  useProjectUpdates(socket, setProjects);
-
-  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
-  const [isHelpOpen, setIsHelpOpen] = useState(false);
-  const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-
-  const filters = useMemo<ProjectFilters>(() => {
-    return {
-      statuses: searchParams.getAll('status'),
-      clientName: searchParams.get('client') || '',
-      dateRange: {
-        startDate: searchParams.get('start') ? new Date(searchParams.get('start') as string) : null,
-        endDate: searchParams.get('end') ? new Date(searchParams.get('end') as string) : null,
-      },
-    };
-  }, [searchParams]);
-
-  const activeFilterCount = filters.statuses.length + (filters.clientName ? 1 : 0) + (filters.dateRange.startDate || filters.dateRange.endDate ? 1 : 0);
-
-  const handleFilterChange = (newFilters: ProjectFilters) => {
-    const params = new URLSearchParams();
-    newFilters.statuses.forEach(status => params.append('status', status));
-    if (newFilters.clientName) params.set('client', newFilters.clientName);
-    if (newFilters.dateRange.startDate) params.set('start', newFilters.dateRange.startDate.toISOString());
-    if (newFilters.dateRange.endDate) params.set('end', newFilters.dateRange.endDate.toISOString());
-    setSearchParams(params);
-  };
-
-  const handleClearFilters = () => {
-    setSearchParams(new URLSearchParams());
-  };
-
-  const filteredProjects = useMemo(() => {
-    return projects.filter(project => {
-      // Client Name Filter
-      if (filters.clientName && !project.client_name?.toLowerCase().includes(filters.clientName.toLowerCase()) && !project.name.toLowerCase().includes(filters.clientName.toLowerCase())) {
-        return false;
-      }
-      
-      // Status Filter
-      if (filters.statuses.length > 0 && project.status) {
-         const normalizedStatuses = filters.statuses.map(s => s.toLowerCase());
-         // Map "Archived" to "completed" or "on-hold" if needed, but simple lower case mapping for now.
-         // Actually "archived" might just be "completed" or "on-hold". We will check if it matches project status.
-         if (
-           !normalizedStatuses.includes(project.status.toLowerCase()) && 
-           !(normalizedStatuses.includes('archived') && (project.status === 'completed' || project.status === 'on-hold'))
-         ) {
-           return false;
-         }
-      }
-
-      // Date Filter
-      if (filters.dateRange.startDate || filters.dateRange.endDate) {
-        const projectDate = new Date(project.created_at);
-        if (filters.dateRange.startDate && projectDate < filters.dateRange.startDate) return false;
-        if (filters.dateRange.endDate && projectDate > filters.dateRange.endDate) return false;
-      }
-
-      return true;
-    });
-  }, [projects, filters]);
-
-  const handleShortcutAction = async (decision: 'APPROVE' | 'REJECT' | 'REWORK', label: string) => {
-    if (!reviewState.isOpen) return;
-
-    try {
-      await apiClient.post(`/executions/${reviewState.executionId}/approve`, {
-        decision,
-        reasoning: `Action triggered via keyboard shortcut (${label})`
-      });
-
-      toast.success(`${label} successful!`);
-      setReviewState(prev => ({ ...prev, isOpen: false }));
-      fetchData();
-    } catch (err: any) {
-      console.error(`Failed to ${label}:`, err);
-      toast.error(`Failed to ${label}`);
-    }
-  };
-
-  useHotkeys('mod+k, /', (e) => {
-    e.preventDefault();
-    setIsPaletteOpen((prev) => !prev);
-    recordShortcutUsage(e.key === '/' ? 'search' : 'cmdk');
-  }, { enableOnFormTags: true });
-
-  useHotkeys('shift+?', (e) => {
-    e.preventDefault();
-    setIsHelpOpen(true);
-    recordShortcutUsage('help');
-  });
-
-  useHotkeys('n', (e) => {
-    e.preventDefault();
-    if (isPaletteOpen || isHelpOpen || reviewState.isOpen) return;
-    setIsNewProjectOpen(true);
-    recordShortcutUsage('new_project');
-  });
-
-  useHotkeys('a', (e) => {
-    e.preventDefault();
-    if (reviewState.isOpen) {
-      handleShortcutAction('APPROVE', 'Approval');
-      recordShortcutUsage('approve');
-    }
-  });
-
-  useHotkeys('r', (e) => {
-    e.preventDefault();
-    if (reviewState.isOpen) {
-      handleShortcutAction('REJECT', 'Rejection');
-      recordShortcutUsage('reject');
-    }
-  });
-
-  useHotkeys('e', (e) => {
-    e.preventDefault();
-    if (reviewState.isOpen) {
-      handleShortcutAction('REWORK', 'Rework');
-      recordShortcutUsage('rework');
-    }
-  });
-
-  useHotkeys('esc', (e) => {
-    e.preventDefault();
-    if (isPaletteOpen) setIsPaletteOpen(false);
-    if (isHelpOpen) setIsHelpOpen(false);
-    if (reviewState.isOpen) setReviewState(prev => ({ ...prev, isOpen: false }));
-  });
-
-  const recordShortcutUsage = async (shortcut: string) => {
-    try {
-      await apiClient.post('/telemetry/shortcut', { shortcut });
-    } catch (err) {
-      console.error('Failed to log shortcut usage:', err);
-    }
-  };
-
-  const fetchData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const [projectsRes, summaryRes] = await Promise.all([
-        apiClient.get('/pm-dashboard/projects'),
-        apiClient.get('/pm-dashboard/summary')
-      ]);
-
-      setProjects(projectsRes.data.data);
-      setSummary(summaryRes.data);
-    } catch (err: any) {
-      console.error('Error fetching dashboard data:', err);
-      setError('Failed to fetch dashboard data');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const [reviewState, setReviewState] = useState<{
-    isOpen: boolean;
-    projectName: string;
-    ticketTitle: string;
-    executionId: string;
-    qaSummary: any;
-    diffs: any[];
-    ticketRequirements: string;
-    confidenceScore: number;
-  }>({
-    isOpen: false,
-    projectName: '',
-    ticketTitle: '',
-    executionId: '',
-    qaSummary: null,
-    diffs: [],
-    ticketRequirements: '',
-    confidenceScore: 0
-  });
-
-  const handleReview = async (project: Project) => {
-    setReviewState({
-      isOpen: true,
-      projectName: project.name,
-      ticketTitle: 'Update Dashboard Components',
-      executionId: 'exec-12345',
-      ticketRequirements: '1. Update the layout to use a darker theme.\n2. Ensure responsiveness for mobile devices.\n3. Add a new ProjectCard component for displaying project details.',
-      confidenceScore: 0.89,
-      qaSummary: {
-        linting_passed: true,
-        tests_passed: true,
-        test_coverage: 85,
-        quality_score: 92
-      },
-      diffs: [
-        {
-          fileName: 'src/components/Dashboard.tsx',
-          oldCode: 'const Dashboard = () => { return <div>Old Dashboard</div> }',
-          newCode: 'const Dashboard = () => { return <div className="bg-slate-900">New Premium Dashboard</div> }'
-        }
-      ]
-    });
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  return (
-    <>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div>
-          <div className="flex items-center gap-4 mb-2">
-            <h1 className="text-3xl font-bold text-foreground tracking-tight">
-              PM Dashboard
-            </h1>
-            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${connected ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-destructive/10 text-destructive border-destructive/20 '
-              }`}>
-              <div className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-emerald-500 animate-pulse' : 'bg-destructive'}`}></div>
-              {connected ? 'Real-time Live' : 'Offline'}
-            </div>
-          </div>
-          <p className="text-muted-foreground font-medium">
-            Monitor your project portfolio and AI metrics in real-time.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <button
-            onClick={fetchData}
-            className="p-3 bg-card border border-border text-muted-foreground hover:text-foreground rounded-2xl transition-all"
-            title="Refresh Data"
-          >
-            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-          </button>
-          <button onClick={() => setIsNewProjectOpen(true)} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-2xl shadow-lg shadow-blue-500/20 transition-all hover:translate-y-[-2px] active:translate-y-0">
-            <Plus className="w-5 h-5" />
-            New Project
-          </button>
-        </div>
-      </div>
-
-      {error && (
-        <div className="bg-destructive/10 border border-destructive/20 rounded-2xl p-6 mb-8 text-destructive flex items-center justify-between">
-          <p className="font-semibold">{error}</p>
-          <button onClick={fetchData} className="px-4 py-2 bg-destructive text-destructive-foreground rounded-xl text-sm font-bold">Retry</button>
-        </div>
-      )}
-
-      {summary && <StatsGrid summary={summary} />}
-
-      {/* Recent Conversations Widget */}
-      <div className="mb-8">
-        <ConversationListWidget
-          onConversationClick={(id) => navigate(`/conversations/${id}`)}
-          onViewAll={() => navigate('/conversations')}
-        />
-      </div>
-
-      {/* Financial Metrics Section (Manager/Admin only) - Story 6-R-3 */}
-      <FinancialMetricsSection projectId={projects[0]?.id} />
-
-      <div className="bg-card/40 border border-border rounded-2xl p-4 mb-8 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <button className="p-2 bg-secondary text-primary rounded-lg shadow-inner ring-1 ring-background/5">
-            <Grid className="w-5 h-5" />
-          </button>
-          <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
-            <List className="w-5 h-5" />
-          </button>
-          <div className="h-6 w-px bg-border mx-2"></div>
-          <div className="text-sm font-bold text-muted-foreground">
-            Sorted by <span className="text-foreground">Last Activity</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => setIsFilterOpen(true)}
-            className={`flex items-center gap-2 px-4 py-2 ${activeFilterCount > 0 ? 'bg-primary/20 hover:bg-primary/30 text-primary border-primary/30' : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border-border/50'} text-sm font-semibold rounded-xl border transition-all`}
-          >
-            <Filter className="w-4 h-4" />
-            Filter {activeFilterCount > 0 && `(${activeFilterCount})`}
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground text-sm font-semibold rounded-xl border border-border/50 transition-all">
-            <SortAsc className="w-4 h-4" />
-            Sort
-          </button>
-        </div>
-      </div>
-
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 pb-12">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-64 bg-card/50 border border-border animate-pulse rounded-2xl"></div>
-          ))}
-        </div>
-      ) : filteredProjects.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 pb-12">
-          {filteredProjects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              onReview={handleReview}
-            />
-          ))}
-        </div>
-      ) : !error ? (
-        projects.length === 0 ? (
-          <div className="text-center py-20 bg-card/20 border border-dashed border-border rounded-3xl">
-            <p className="text-muted-foreground text-xl font-medium">No projects found. Create your first one!</p>
-          </div>
-        ) : (
-          <div className="text-center py-20 bg-card/20 border border-dashed border-border rounded-3xl flex flex-col items-center justify-center">
-            <XCircle className="w-12 h-12 text-muted-foreground mb-4 opacity-50" />
-            <p className="text-muted-foreground text-xl font-medium mb-4">No projects match your filters.</p>
-            <button 
-              onClick={handleClearFilters}
-              className="px-6 py-2.5 bg-primary text-primary-foreground font-semibold rounded-xl shadow-md hover:shadow-lg transition-all"
-            >
-              Clear Filters
-            </button>
-          </div>
-        )
-      ) : null}
-
-      <ReviewModal
-        isOpen={reviewState.isOpen}
-        onClose={() => setReviewState(prev => ({ ...prev, isOpen: false }))}
-        executionId={reviewState.executionId}
-        projectName={reviewState.projectName}
-        ticketTitle={reviewState.ticketTitle}
-        ticketRequirements={reviewState.ticketRequirements}
-        confidenceScore={reviewState.confidenceScore}
-        qaSummary={reviewState.qaSummary}
-        diffs={reviewState.diffs}
-        onActionComplete={fetchData}
-      />
-
-      <NewProjectDialog isOpen={isNewProjectOpen} onOpenChange={setIsNewProjectOpen} onSuccess={fetchData} />
-      
-      <ProjectFilterSheet 
-        isOpen={isFilterOpen} 
-        onOpenChange={setIsFilterOpen} 
-        filters={filters} 
-        onFilterChange={handleFilterChange} 
-        onClearFilters={handleClearFilters} 
-      />
-
-      <CommandPalette isOpen={isPaletteOpen} onClose={() => setIsPaletteOpen(false)} onOpenHelp={() => setIsHelpOpen(true)} />
-      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
-    </>
-  );
-}
-
-import { CapabilityManagementPage } from './pages/CapabilityManagementPage';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { TooltipProvider } from './components/ui/tooltip';
-import { LoginPage } from './pages/LoginPage';
-import { RegistrationPage } from './pages/RegistrationPage';
-import { ProfilePage } from './pages/ProfilePage';
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 60 * 1000, // 60 seconds (AC#1)
-      gcTime: 300 * 1000,   // 5 minutes (AC#1)
+      gcTime: 300 * 1000, // 5 minutes (AC#1)
     },
   },
 });
@@ -515,56 +135,85 @@ function AppContent({ navigate }: { navigate: any }) {
           {/* Protected routes inside DashboardLayout */}
           <Route element={<DashboardLayout />}>
             {/* Dashboard - all authenticated users */}
-            <Route path="/" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <ProfilePage />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
             {/* Conversations - all authenticated users */}
-            <Route path="/conversations" element={
-              <ProtectedRoute>
-                <ConversationSearchInterface onConversationClick={(id) => navigate(`/conversations/${id}`)} />
-              </ProtectedRoute>
-            } />
-            <Route path="/conversations/upload" element={
-              <ProtectedRoute>
-                <ConversationUploadForm onSuccess={(id) => navigate(`/conversations/${id}`)} />
-              </ProtectedRoute>
-            } />
-            <Route path="/conversations/:id" element={
-              <ProtectedRoute>
-                <ConversationDetailViewWrapper />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="/conversations"
+              element={
+                <ProtectedRoute>
+                  <ConversationSearchInterface
+                    onConversationClick={(id) => navigate(`/conversations/${id}`)}
+                  />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/conversations/upload"
+              element={
+                <ProtectedRoute>
+                  <ConversationUploadForm onSuccess={(id) => navigate(`/conversations/${id}`)} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/conversations/:id"
+              element={
+                <ProtectedRoute>
+                  <ConversationDetailViewWrapper />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Projects sync - all authenticated users */}
-            <Route path="/projects/sync" element={
-              <ProtectedRoute>
-                <ProjectsSyncPage />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="/projects/sync"
+              element={
+                <ProtectedRoute>
+                  <ProjectsSyncPage />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Decisions - all authenticated users */}
-            <Route path="/decisions" element={
-              <ProtectedRoute>
-                <DecisionDashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/audit-logs" element={
-              <ProtectedRoute requiredRoles={['QA', 'TL', 'ADMIN', 'MANAGER']}>
-                <AuditLogsDashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/resource-manager" element={
-              <ProtectedRoute requiredRoles={['TL', 'ADMIN', 'MANAGER']}>
-                <ResourceManagerPage />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="/decisions"
+              element={
+                <ProtectedRoute>
+                  <DecisionDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/audit-logs"
+              element={
+                <ProtectedRoute requiredRoles={['QA', 'TL', 'ADMIN', 'MANAGER']}>
+                  <AuditLogsDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/resource-manager"
+              element={
+                <ProtectedRoute requiredRoles={['TL', 'ADMIN', 'MANAGER']}>
+                  <ResourceManagerPage />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/financial-metrics"
               element={
@@ -641,24 +290,33 @@ function AppContent({ navigate }: { navigate: any }) {
             />
 
             {/* Admin/Manager routes */}
-            <Route path="/admin/invitations" element={
-              <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER']}>
-                <InvitationsPage />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="/admin/invitations"
+              element={
+                <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER']}>
+                  <InvitationsPage />
+                </ProtectedRoute>
+              }
+            />
 
-            <Route path="/admin/users" element={
-              <ProtectedRoute requiredRoles={['ADMIN']}>
-                <UsersPage />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="/admin/users"
+              element={
+                <ProtectedRoute requiredRoles={['ADMIN']}>
+                  <UsersPage />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Settings - all authenticated users */}
-            <Route path="/settings" element={
-              <ProtectedRoute>
-                <SettingsLayout />
-              </ProtectedRoute>
-            }>
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <SettingsLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route path="cleanup" element={<CleanupPanel />} />
               <Route path="self-healing" element={<SelfHealingPanel />} />
               <Route path="dependency" element={<DependencyPanel />} />
@@ -721,11 +379,14 @@ function AppContent({ navigate }: { navigate: any }) {
             />
 
             {/* Catch-all redirect to dashboard (protected) */}
-            <Route path="*" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="*"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
           </Route>
         </Routes>
       </TooltipProvider>
@@ -740,4 +401,3 @@ function ConversationDetailViewWrapper() {
 }
 
 export default App;
-

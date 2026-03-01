@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DateRangePicker } from '@/components/financial/page/DateRangePicker';
-import { X } from 'lucide-react';
+import { X, Calendar } from 'lucide-react';
 
 export interface ProjectFilters {
   statuses: string[];
@@ -21,7 +21,7 @@ interface ProjectFilterSheetProps {
   onClearFilters: () => void;
 }
 
-const STATUS_OPTIONS = ['Active', 'Paused', 'Archived'];
+const STATUS_OPTIONS = ['Active', 'Paused', 'Completed', 'On Hold'];
 
 export function ProjectFilterSheet({
   isOpen,
@@ -123,15 +123,31 @@ export function ProjectFilterSheet({
               )}
             </div>
             <div className="p-4 bg-muted/30 rounded-xl border border-border/50">
-              <DateRangePicker
-                startDate={filters.dateRange.startDate || new Date(new Date().setMonth(new Date().getMonth() - 1))}
-                endDate={filters.dateRange.endDate || new Date()}
-                onChange={handleDateRangeChange}
-              />
-              {!filters.dateRange.startDate && !filters.dateRange.endDate && (
-                <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
-                  Select a date range to filter projects by their creation date.
-                </p>
+              {filters.dateRange.startDate || filters.dateRange.endDate ? (
+                <DateRangePicker
+                  startDate={filters.dateRange.startDate ?? new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)}
+                  endDate={filters.dateRange.endDate ?? new Date()}
+                  onChange={handleDateRangeChange}
+                />
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-muted-foreground font-normal h-10"
+                    onClick={() =>
+                      handleDateRangeChange({
+                        startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+                        endDate: new Date(),
+                      })
+                    }
+                  >
+                    <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
+                    Select date range...
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
+                    Select a date range to filter projects by their creation date.
+                  </p>
+                </>
               )}
             </div>
           </div>
