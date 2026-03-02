@@ -122,28 +122,52 @@ export function ConstraintsPage() {
         </div>
       </div>
 
+      {/* Mutual-Exclusion State Machine */}
       {isLoading ? (
-        <div className="bg-card border border-border animate-pulse rounded-2xl h-64"></div>
+        <div className="bg-card border border-border animate-pulse rounded-2xl h-64 flex items-center justify-center">
+          <p className="text-muted-foreground font-medium flex items-center gap-2">
+            <RefreshCw className="w-5 h-5 animate-spin" />
+            Loading constraints...
+          </p>
+        </div>
+      ) : error ? (
+        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-8 text-center">
+          <p className="text-red-400 font-bold mb-3 text-lg">Failed to load constraints</p>
+          <p className="text-red-400/80 mb-6">{error instanceof Error ? error.message : "An unknown error occurred"}</p>
+          <button onClick={() => refetch()} className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-colors">
+            Try Again
+          </button>
+        </div>
+      ) : constraints.length === 0 ? (
+        <div className="bg-card border border-border rounded-2xl p-12 text-center">
+          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4 border border-border shadow-sm">
+            <Plus className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <h3 className="text-xl font-bold text-foreground mb-2">No constraints defined</h3>
+          <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+            Get started by creating your first architecture constraint to guide the AI-driven development process.
+          </p>
+          <button
+            onClick={() => setIsFormOpen(true)}
+            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-6 rounded-xl shadow-md transition-all">
+            <Plus className="w-5 h-5" />
+            Create Constraint
+          </button>
+        </div>
       ) : (
         <ConstraintsList
           constraints={constraints}
           onEdit={handleEdit}
-          onDelete={handleDelete}>
-        </ConstraintsList>
+          onDelete={handleDelete}
+        />
       )}
 
       <ConstraintForm
         isOpen={isFormOpen}
         onClose={closeForm}
         onSubmit={editConstraint ? handleUpdate : handleCreate}
-        editConstraint={editConstraint}>
-      </ConstraintForm>
-
-      {error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 mb-6">
-          <p className="text-red-400 font-semibold">Failed to load constraints. Please try again.</p>
-        </div>
-      )}
+        editConstraint={editConstraint}
+      />
 
       {deleteConfirmId && deleteConstraint && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">

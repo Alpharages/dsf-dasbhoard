@@ -13,6 +13,7 @@ interface HealthMonitorGridProps {
   aiProviders?: AIProviderDto[];
   executionPaused?: boolean;
   onTogglePause?: (paused: boolean) => void;
+  aiProvidersError?: Error | null;
 }
 
 /**
@@ -145,6 +146,7 @@ export function HealthMonitorGrid({
   aiProviders = [],
   executionPaused = false,
   onTogglePause,
+  aiProvidersError,
 }: HealthMonitorGridProps) {
   if (isLoading) {
     return (
@@ -277,7 +279,13 @@ export function HealthMonitorGrid({
           )}
 
           <div className="grid gap-4 md:grid-cols-3">
-            {aiProviders.length > 0 ? (
+            {aiProvidersError ? (
+              <Card className="md:col-span-3">
+                <CardContent className="p-4 text-center text-sm text-muted-foreground">
+                  Failed to load AI providers: {aiProvidersError.message}
+                </CardContent>
+              </Card>
+            ) : aiProviders.length > 0 ? (
               aiProviders.map((provider) => (
                 <AIProviderCard key={provider.name} provider={provider} />
               ))

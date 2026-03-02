@@ -102,8 +102,12 @@ export function ProductionErrorDashboard() {
       
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ErrorTrendChart />
-        <ApplicationHealthHeatmap onSelectApplication={handleApplicationSelect} />
+        <div className="min-w-0">
+          <ErrorTrendChart />
+        </div>
+        <div className="min-w-0">
+          <ApplicationHealthHeatmap onSelectApplication={handleApplicationSelect} />
+        </div>
       </div>
       
       {/* Error List */}

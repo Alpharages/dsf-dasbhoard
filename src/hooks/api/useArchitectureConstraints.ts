@@ -2,9 +2,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { architectureReviewApi } from '../../api/architectureReviewApi';
 import type { CreateConstraintDto, UpdateConstraintDto, ArchitectureConstraint } from '../../types/architectureConstraint';
 import { toast } from 'react-hot-toast';
+import { useAuth, getAccessToken } from '@/contexts/AuthContext';
 
 function getAuthToken(): string {
-    const token = localStorage.getItem('access_token');
+    const token = getAccessToken();
     if (!token) {
         throw new Error('Authentication required. Please log in.');
     }
@@ -12,10 +13,14 @@ function getAuthToken(): string {
 }
 
 export function useArchitectureConstraints(projectId?: string) {
+    const { isAuthenticated } = useAuth();
+    const token = getAccessToken();
+    
     return useQuery({
         queryKey: ['architectureConstraints', projectId],
         queryFn: () => architectureReviewApi.getArchitectureConstraints(projectId, getAuthToken()),
         staleTime: 60000, // 60s cache
+        enabled: isAuthenticated && !!token,
     });
 }
 

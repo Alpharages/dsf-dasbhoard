@@ -15,7 +15,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 describe('ConstraintsPage', () => {
     it('renders page title and add button', () => {
         vi.spyOn(hooks, 'useArchitectureConstraints').mockReturnValue({
-            data: [],
+            data: [{ id: 'test', type: 'PATTERN', scope: 'GLOBAL', version: 1, title: 'Test', description: 'Test', tags: [], rules: { pattern: '.*' } }],
             isLoading: false,
             refetch: vi.fn(),
             error: null
@@ -25,6 +25,21 @@ describe('ConstraintsPage', () => {
 
         expect(screen.getByText('Architecture Constraints')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /Add Constraint/i })).toBeInTheDocument();
+    });
+
+    it('displays empty state when no constraints exist', () => {
+        vi.spyOn(hooks, 'useArchitectureConstraints').mockReturnValue({
+            data: [],
+            isLoading: false,
+            refetch: vi.fn(),
+            error: null
+        } as any);
+
+        render(<ConstraintsPage />, { wrapper });
+
+        expect(screen.getByText('No constraints defined')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Create Constraint/i })).toBeInTheDocument();
+        expect(screen.queryByText(/Failed to load constraints/i)).not.toBeInTheDocument();
     });
 
     it('displays loading state', () => {
@@ -37,7 +52,7 @@ describe('ConstraintsPage', () => {
 
         render(<ConstraintsPage />, { wrapper });
 
-        expect(screen.getByRole('img', { hidden: true })).toHaveClass('animate-pulse');
+        expect(screen.getByText('Loading constraints...')).toBeInTheDocument();
     });
 
     it('displays error message on fetch failure', () => {
@@ -55,7 +70,7 @@ describe('ConstraintsPage', () => {
 
     it('opens form modal when Add Constraint button is clicked', async () => {
         vi.spyOn(hooks, 'useArchitectureConstraints').mockReturnValue({
-            data: [],
+            data: [{ id: 'test', type: 'PATTERN', scope: 'GLOBAL', version: 1, title: 'Test', description: 'Test', tags: [], rules: { pattern: '.*' } }],
             isLoading: false,
             refetch: vi.fn(),
             error: null
@@ -67,7 +82,7 @@ describe('ConstraintsPage', () => {
         fireEvent.click(addButton);
 
         await waitFor(() => {
-            expect(screen.getByText('Add Constraint')).toBeInTheDocument();
+            expect(screen.getByRole('heading', { name: /Add Constraint/i })).toBeInTheDocument();
         });
     });
 });

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useCallback } from 'react';
 import { useSocket } from '@/hooks/useSocket';
+import { useAuth, getAccessToken } from '@/contexts/AuthContext';
 import type { SystemHealthDto, QueueMetricsDto, FileLockResponseDto, AIProvidersResponseDto } from '../types';
 import {
   fetchSystemHealth,
@@ -88,8 +89,10 @@ export function useObservabilityData(
   const {
     pollingEnabled = true,
     pollingInterval = POLLING_INTERVAL,
-    token = localStorage.getItem('access_token') || sessionStorage.getItem('access_token'),
   } = options;
+
+  const { isAuthenticated } = useAuth();
+  const token = options.token ?? (isAuthenticated ? getAccessToken() : null);
 
   const queryClient = useQueryClient();
   const { socket, connected: isSocketConnected } = useSocket(token);
@@ -216,8 +219,7 @@ export function useObservabilityData(
   // Connection State
   // ===================================================================
 
-  const isDisconnected =
-    !!systemHealthError || !!queueMetricsError || !!fileLocksError || !!aiProvidersError || !isSocketConnected;
+  const isDisconnected = !isSocketConnected && !!systemHealthError;
 
   return {
     // Data

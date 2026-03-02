@@ -2,7 +2,7 @@ import { useObservabilityData } from "../hooks/useObservabilityData";
 import { HealthMonitorGrid } from "./HealthMonitorGrid";
 import { QueueMetricsChart } from "./QueueMetricsChart";
 import { FileLockTable } from "./FileLockTable";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Activity, Wifi, WifiOff, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -80,9 +80,6 @@ export function ObservabilityControlPanel({
     refetchAiProviders();
   };
 
-  // Check for any errors
-  const hasErrors = systemHealthError || queueMetricsError || fileLocksError || aiProvidersError;
-
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8">
       {/* Header */}
@@ -136,66 +133,64 @@ export function ObservabilityControlPanel({
         </div>
       </div>
 
-      {/* Global Error Alert */}
-      {hasErrors && (
-        <Alert variant="destructive" className="mb-6">
-          <AlertTitle>Data Loading Error</AlertTitle>
-          <AlertDescription>
-            Some components failed to load. Retrying automatically...
-            {systemHealthError && (
-              <div className="text-sm mt-1">
-                System Health: {systemHealthError.message}
-              </div>
-            )}
-            {queueMetricsError && (
-              <div className="text-sm mt-1">
-                Queue Metrics: {queueMetricsError.message}
-              </div>
-            )}
-            {fileLocksError && (
-              <div className="text-sm mt-1">
-                File Locks: {fileLocksError.message}
-              </div>
-            )}
-            {aiProvidersError && (
-              <div className="text-sm mt-1">
-                AI Providers: {aiProvidersError.message}
-              </div>
-            )}
-          </AlertDescription>
-        </Alert>
-      )}
-
       {/* Main Content Grid */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* System Health - Spans full width */}
         <div className="lg:col-span-2">
-          <HealthMonitorGrid
-            systemHealth={systemHealth}
-            isLoading={isSystemHealthLoading || isAiProvidersLoading}
-            isDisconnected={isDisconnected}
-            aiProviders={aiProviders?.providers}
-            executionPaused={aiProviders?.execution_paused}
-            onTogglePause={togglePause}
-          />
+          {systemHealthError ? (
+            <Card className="min-h-[300px] flex flex-col items-center justify-center p-6 text-center border-dashed border-2">
+              <Activity className="h-8 w-8 text-muted-foreground mb-2 opacity-50" />
+              <Badge variant="destructive" className="mb-3">Metrics Unavailable</Badge>
+              <p className="text-sm text-muted-foreground">{systemHealthError.message || "Failed to load system health metrics."}</p>
+              <Button variant="outline" size="sm" onClick={() => refetchSystemHealth()} className="mt-4">Retry</Button>
+            </Card>
+          ) : (
+            <HealthMonitorGrid
+              systemHealth={systemHealth}
+              isLoading={isSystemHealthLoading || isAiProvidersLoading}
+              isDisconnected={isDisconnected}
+              aiProviders={aiProviders?.providers}
+              executionPaused={aiProviders?.execution_paused}
+              onTogglePause={togglePause}
+              aiProvidersError={aiProvidersError}
+            />
+          )}
         </div>
 
         {/* Queue Metrics */}
         <div className="lg:col-span-1">
-          <QueueMetricsChart
-            queueMetrics={queueMetrics}
-            isLoading={isQueueMetricsLoading}
-          />
+          {queueMetricsError ? (
+            <Card className="h-full min-h-[300px] flex flex-col items-center justify-center p-6 text-center border-dashed border-2">
+              <Activity className="h-8 w-8 text-muted-foreground mr-2 mb-2 opacity-50" />
+              <Badge variant="destructive" className="mb-3">Metrics Unavailable</Badge>
+              <p className="text-sm text-muted-foreground">{queueMetricsError.message || "Failed to load queue metrics."}</p>
+              <Button variant="outline" size="sm" onClick={() => refetchQueueMetrics()} className="mt-4">Retry</Button>
+            </Card>
+          ) : (
+            <QueueMetricsChart
+              queueMetrics={queueMetrics}
+              isLoading={isQueueMetricsLoading}
+            />
+          )}
         </div>
 
         {/* File Locks */}
         <div className="lg:col-span-1">
-          <FileLockTable
-            fileLocks={fileLocks}
-            isLoading={isFileLocksLoading}
-            onReleaseLock={releaseLock}
-            isReleasingLock={isReleasingLock}
-          />
+          {fileLocksError ? (
+            <Card className="h-full min-h-[300px] flex flex-col items-center justify-center p-6 text-center border-dashed border-2">
+              <Activity className="h-8 w-8 text-muted-foreground mr-2 mb-2 opacity-50" />
+              <Badge variant="destructive" className="mb-3">Metrics Unavailable</Badge>
+              <p className="text-sm text-muted-foreground">{fileLocksError.message || "Failed to load file locks."}</p>
+              <Button variant="outline" size="sm" onClick={() => refetchFileLocks()} className="mt-4">Retry</Button>
+            </Card>
+          ) : (
+            <FileLockTable
+              fileLocks={fileLocks}
+              isLoading={isFileLocksLoading}
+              onReleaseLock={releaseLock}
+              isReleasingLock={isReleasingLock}
+            />
+          )}
         </div>
       </div>
 
