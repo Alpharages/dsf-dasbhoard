@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Dashboard } from '../../pages/Dashboard';
 import * as AuthContext from '../../contexts/AuthContext';
 import type { User } from '../../contexts/AuthContext';
@@ -10,6 +11,8 @@ import apiClient from '../../api/client';
 
 // Mock all complex children and context hooks that are irrelevant to this test
 vi.mock('../../components/dashboard/StatsGrid', () => ({ StatsGrid: () => <div data-testid="stats-grid" /> }));
+vi.mock('../../components/dashboard/ExecutionKPISection', () => ({ ExecutionKPISection: () => <div data-testid="execution-kpi" /> }));
+vi.mock('../../components/dashboard/FinancialKPISection', () => ({ FinancialKPISection: () => <div data-testid="financial-kpi" /> }));
 vi.mock('../../components/dashboard/ProjectCard', () => ({ ProjectCard: () => <div data-testid="project-card" /> }));
 vi.mock('../../components/dashboard/NewProjectDialog', () => ({ NewProjectDialog: () => <div data-testid="new-project" /> }));
 vi.mock('../../components/dashboard/ProjectFilterSheet', () => ({ ProjectFilterSheet: () => <div data-testid="filter-sheet" /> }));
@@ -22,9 +25,13 @@ vi.mock('../../components/dashboard/ProjectCardListView', () => ({ ProjectCardLi
 vi.mock('../../api/client');
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <BrowserRouter>
-        {children}
-    </BrowserRouter>
+    <QueryClientProvider
+        client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+    >
+        <BrowserRouter>
+            {children}
+        </BrowserRouter>
+    </QueryClientProvider>
 );
 
 function makeAuthMock(user: User | null): AuthContext.AuthContextValue {

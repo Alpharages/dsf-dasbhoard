@@ -32,6 +32,18 @@ export interface DashboardSummary {
     blocked_tickets: number;
     avg_completion_rate?: number;
     utilization_percent: number;
+    success_rate?: number;
+    avg_completion_time_hours?: number;
+    active_ai_executions?: number;
+    queued_ai_executions?: number;
+    daily_avg_completion_hours?: number[];
+}
+
+export interface FinancialSummary {
+    cost_per_ticket: number | null;
+    daily_budget_burn: number[];
+    budget_ceiling: number;
+    budget_forecast: number;
 }
 
 export type ExecutionStatus = 'QUEUED' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED' | 'FAILED' | 'TIMEOUT' | 'CANCELLED' | 'AWAITING_APPROVAL';

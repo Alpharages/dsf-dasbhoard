@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Filter, Grid, List, SortAsc, Plus, RefreshCw, XCircle, ChevronDown, Check } from 'lucide-react';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -6,6 +7,8 @@ import { toast } from 'react-hot-toast';
 import { StatsGrid } from '../components/dashboard/StatsGrid';
 import { ProjectCard } from '../components/dashboard/ProjectCard';
 import { NewProjectDialog } from '../components/dashboard/NewProjectDialog';
+import { ExecutionKPISection } from '../components/dashboard/ExecutionKPISection';
+import { FinancialKPISection } from '../components/dashboard/FinancialKPISection';
 import type { ProjectFilters } from '../components/dashboard/ProjectFilterSheet';
 import { ProjectFilterSheet } from '../components/dashboard/ProjectFilterSheet';
 import { ReviewModal } from '../components/quality-gate/ReviewModal';
@@ -34,16 +37,37 @@ function parseDate(param: string | null): Date | null {
 export type SortOption = 'activity-desc' | 'name-asc' | 'tickets-desc' | 'blocked-desc';
 export type ViewMode = 'grid' | 'list';
 
+interface ReviewQaSummary {
+  linting_passed: boolean;
+  tests_passed: boolean;
+  test_coverage: number;
+  quality_score: number;
+}
+
+interface ReviewDiff {
+  fileName: string;
+  oldCode: string;
+  newCode: string;
+}
+
 export function Dashboard() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [projects, setProjects] = useState<Project[]>([]);
-  const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
   const { socket, connected } = useSocket();
   useProjectUpdates(socket, setProjects);
+
+  // M3: React Query with staleTime: 60s per Technical Guardrails
+  const { data: summaryData, refetch: refetchSummary } = useQuery<DashboardSummary>({
+    queryKey: ['pm-dashboard-summary', user?.id],
+    queryFn: () => apiClient.get('/pm-dashboard/summary').then((r) => r.data as DashboardSummary),
+    staleTime: 60_000,
+    enabled: !!user?.id,
+  });
+  const summary = summaryData ?? null;
 
   const [sortPreference, setSortPreference] = useState<SortOption>(() => {
     return (localStorage.getItem('dsf_project_sort') as SortOption) || 'activity-desc';
@@ -135,7 +159,7 @@ export function Dashboard() {
       toast.success(`${label} successful!`);
       setReviewState((prev) => ({ ...prev, isOpen: false }));
       fetchData();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(`Failed to ${label}:`, err);
       toast.error(`Failed to ${label}`);
     }
@@ -203,32 +227,28 @@ export function Dashboard() {
     }
   };
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const [projectsRes, summaryRes] = await Promise.all([
-        apiClient.get('/pm-dashboard/projects'),
-        apiClient.get('/pm-dashboard/summary'),
-      ]);
-
+      const projectsRes = await apiClient.get('/pm-dashboard/projects');
       setProjects(projectsRes.data.data);
-      setSummary(summaryRes.data);
-    } catch (err: any) {
+      void refetchSummary();
+    } catch (err: unknown) {
       console.error('Error fetching dashboard data:', err);
       setError('Failed to fetch dashboard data');
     } finally {
       setLoading(false);
     }
-  };
+  }, [refetchSummary]);
 
   const [reviewState, setReviewState] = useState<{
     isOpen: boolean;
     projectName: string;
     ticketTitle: string;
     executionId: string;
-    qaSummary: any;
-    diffs: any[];
+    qaSummary: ReviewQaSummary | null;
+    diffs: ReviewDiff[];
     ticketRequirements: string;
     confidenceScore: number;
   }>({
@@ -270,7 +290,7 @@ export function Dashboard() {
 
   useEffect(() => {
     fetchData();
-  }, [user?.id]);
+  }, [fetchData, user?.id]);
 
   return (
     <>
@@ -326,7 +346,13 @@ export function Dashboard() {
         </div>
       )}
 
-      {summary && <StatsGrid summary={summary} />}
+      {summary && (
+        <>
+          <ExecutionKPISection summary={summary} />
+          <FinancialKPISection />
+          <StatsGrid summary={summary} />
+        </>
+      )}
 
       {/* Recent Conversations Widget */}
       <div className="mb-8">
