@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { DollarSign, TrendingUp } from 'lucide-react';
@@ -24,9 +25,11 @@ const toYAxisValue = (value: number, maxValue: number) =>
 
 export function FinancialKPISection() {
   const { user } = useAuth();
+  const uid = useId();
+  const gradientId = `financial-burn-gradient-${uid}`;
   const canViewFinancialKpi = user?.role === 'MANAGER' || user?.role === 'ADMIN';
 
-  const { data, isLoading } = useQuery<FinancialSummary>({
+  const { data, isLoading, isError } = useQuery<FinancialSummary>({
     queryKey: ['pm-dashboard-financial-summary', user?.id],
     queryFn: () =>
       apiClient.get('/pm-dashboard/financial-summary').then((res) => res.data as FinancialSummary),
@@ -38,11 +41,21 @@ export function FinancialKPISection() {
     return null;
   }
 
-  if (isLoading || !data) {
+  if (isLoading || (!data && !isError)) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div className="h-40 rounded-2xl border border-border bg-card animate-pulse" />
         <div className="h-40 rounded-2xl border border-border bg-card animate-pulse" />
+      </div>
+    );
+  }
+
+  if (isError || !data) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div className="col-span-2 rounded-2xl border border-border bg-card p-4">
+          <p className="text-sm text-muted-foreground">Financial data unavailable. Please try refreshing.</p>
+        </div>
       </div>
     );
   }
@@ -58,7 +71,7 @@ export function FinancialKPISection() {
 
   const burnPoints = toSparklinePoints(data.daily_budget_burn, maxChartValue);
   const budgetCeilingY = toYAxisValue(data.budget_ceiling, maxChartValue);
-  const forecastStart = data.daily_budget_burn[0] ?? 0;
+  const forecastStart = data.daily_budget_burn[data.daily_budget_burn.length - 1] ?? 0;
   const forecastStartY = toYAxisValue(forecastStart, maxChartValue);
   const forecastEndY = toYAxisValue(data.budget_forecast, maxChartValue);
 
@@ -107,7 +120,7 @@ export function FinancialKPISection() {
                 <div className="h-[64px] w-full">
                   <svg viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`} preserveAspectRatio="none" className="h-full w-full">
                     <defs>
-                      <linearGradient id="financial-burn-gradient" x1="0" y1="0" x2="0" y2="1">
+                      <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="currentColor" stopOpacity="0.45" />
                         <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
                       </linearGradient>
@@ -115,7 +128,7 @@ export function FinancialKPISection() {
 
                     <polyline
                       points={`${burnPoints} ${SVG_WIDTH},${SVG_HEIGHT} 0,${SVG_HEIGHT}`}
-                      fill="url(#financial-burn-gradient)"
+                      fill={`url(#${gradientId})`}
                       stroke="none"
                       className="text-blue-400"
                     />

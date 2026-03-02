@@ -346,13 +346,9 @@ export function Dashboard() {
         </div>
       )}
 
-      {summary && (
-        <>
-          <ExecutionKPISection summary={summary} />
-          <FinancialKPISection />
-          <StatsGrid summary={summary} />
-        </>
-      )}
+      {summary && <ExecutionKPISection summary={summary} />}
+      <FinancialKPISection />
+      {summary && <StatsGrid summary={summary} />}
 
       {/* Recent Conversations Widget */}
       <div className="mb-8">
