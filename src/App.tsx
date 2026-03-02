@@ -5,7 +5,7 @@ import { AuthProvider, useAuth } from './contexts';
 import { SocketProvider } from './contexts/SocketContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { TooltipProvider } from './components/ui/tooltip';
-import { Sidebar } from './components/layout/Sidebar';
+import { ImprovedSidebar } from './components/improved/Sidebar';
 import { Header } from './components/layout/Header';
 import { Toaster } from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
@@ -57,10 +57,10 @@ import { ResourceManagerPage } from './features/resource-manager';
 function DashboardLayout() {
   return (
     <div className="flex min-h-screen bg-background text-foreground transition-colors duration-200">
-      {/* Desktop Sidebar - fixed position */}
-      <aside className="hidden md:block fixed left-0 top-0 h-screen md:w-[72px] lg:w-[280px] z-40">
-        <Sidebar />
-      </aside>
+      {/* Desktop Sidebar - visibility wrapper (fixed position handled by ImprovedSidebar internally) */}
+      <div className="hidden md:block">
+        <ImprovedSidebar />
+      </div>
 
       {/* Main Content - margin to account for sidebar */}
       <main className="flex-1 md:ml-[72px] lg:ml-[280px] min-h-screen flex flex-col">

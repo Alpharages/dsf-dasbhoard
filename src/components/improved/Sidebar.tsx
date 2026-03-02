@@ -3,145 +3,56 @@
  * Features: Collapsible groups, favorites, recent items, icon-only mode
  */
 
-import { useState, useMemo, useEffect } from 'react';
+import { useEffect, useMemo, useState, type MouseEvent } from 'react';
+import { formatDistanceToNow } from 'date-fns';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { canAccess } from '@/utils/roleHelpers';
 import { cn } from '@/lib/utils';
-import {
-  LayoutDashboard,
-  Briefcase,
-  MessageSquare,
-  Settings,
-  CheckCircle,
-  DollarSign,
-  Gauge,
-  Building,
-  Brain,
-  UserPlus,
-  Users,
-  ShieldCheck,
-  AlertTriangle,
-  Activity,
-  Bell,
-  ChevronDown,
-  ChevronRight,
-  Star,
-  Clock,
-  Pin,
-  PanelLeft,
-  BarChart3,
-} from 'lucide-react';
+import { Briefcase, ChevronDown, ChevronRight, Clock, PanelLeftClose, PanelLeftOpen, Pin, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-
-// Navigation groups with hierarchy
-const navigationGroups = [
-  {
-    id: 'overview',
-    label: 'Overview',
-    icon: LayoutDashboard,
-    items: [
-      { icon: LayoutDashboard, label: 'Dashboard', path: '/', shortcut: 'G D' },
-      { icon: Activity, label: 'Executions', path: '/executions', shortcut: 'G E' },
-    ],
-  },
-  {
-    id: 'projects',
-    label: 'Projects & Work',
-    icon: Briefcase,
-    items: [
-      { icon: Briefcase, label: 'Projects', path: '/projects/sync', shortcut: 'G P' },
-      { icon: CheckCircle, label: 'Decisions', path: '/decisions', shortcut: 'G N' },
-      { icon: ShieldCheck, label: 'QA Review', path: '/qa-review/dashboard', roles: ['QA', 'TL', 'ADMIN', 'MANAGER'] },
-    ],
-  },
-  {
-    id: 'analytics',
-    label: 'Analytics',
-    icon: BarChart3,
-    items: [
-      { icon: Gauge, label: 'Capacity Monitor', path: '/capacity-monitor' },
-      { icon: DollarSign, label: 'Financial Metrics', path: '/financial-metrics', roles: ['MANAGER', 'ADMIN'] },
-      { icon: BarChart3, label: 'Cost Analysis', path: '/cost' },
-    ],
-  },
-  {
-    id: 'architecture',
-    label: 'Architecture',
-    icon: Building,
-    items: [
-      { icon: Building, label: 'Review Queue', path: '/architecture-review/queue', roles: ['TL', 'ADMIN'] },
-      { icon: BarChart3, label: 'Metrics & Insights', path: '/architecture-review/metrics', roles: ['TL', 'ADMIN'] },
-      { icon: Settings, label: 'Constraints', path: '/architecture-review/constraints', roles: ['TL', 'ADMIN'] },
-      { icon: Brain, label: 'AI Capabilities', path: '/architecture/capabilities' },
-    ],
-  },
-  {
-    id: 'operations',
-    label: 'Operations',
-    icon: AlertTriangle,
-    items: [
-      { icon: AlertTriangle, label: 'Production Errors', path: '/production-errors' },
-      { icon: MessageSquare, label: 'Conversations', path: '/conversations' },
-    ],
-  },
-  {
-    id: 'admin',
-    label: 'Administration',
-    icon: Users,
-    items: [
-      { icon: UserPlus, label: 'Invitations', path: '/admin/invitations', roles: ['MANAGER', 'ADMIN'] },
-      { icon: Users, label: 'Users', path: '/admin/users', roles: ['ADMIN'] },
-      { icon: Bell, label: 'Notifications', path: '/notifications/preferences' },
-      { icon: Settings, label: 'Settings', path: '/settings' },
-    ],
-  },
-];
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { isNavItemActive, navigationGroups, type NavigationItem } from '@/config/navigation';
 
 interface SidebarProps {
   className?: string;
+  lastSyncAt?: Date;
 }
 
-export function ImprovedSidebar({ className }: SidebarProps) {
+export function ImprovedSidebar({ className, lastSyncAt: lastSyncAtProp }: SidebarProps) {
   const location = useLocation();
   const { user } = useAuth();
-  
-  // State for collapsible features
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState<string[]>(['overview', 'projects']);
-  const [favorites, setFavorites] = useState<string[]>(['/']);
 
-  // Auto-expand group when child route is active
+  // State for collapsible features
+  // Start collapsed on md screens (< 1024px) to match App.tsx md:ml-[72px] margin
+  const [isCollapsed, setIsCollapsed] = useState(() => window.innerWidth < 1024);
+  // Track groups the user has manually toggled. Active route's group is always auto-expanded.
+  const [userExpandedGroups, setUserExpandedGroups] = useState<string[]>(['overview', 'projects']);
+  const [favorites, setFavorites] = useState<string[]>(['/']);
+  const [syncAnchor] = useState<Date>(() => lastSyncAtProp ?? new Date());
+  const [, setNowTick] = useState(0);
+
   useEffect(() => {
-    const currentPath = location.pathname;
-    
-    // Find all groups that should be expanded based on current path
-    const groupsToExpand = navigationGroups
-      .filter(group => 
-        group.items.some(item => {
-          if (item.path === '/') {
-            return currentPath === '/';
-          }
-          return currentPath.startsWith(item.path);
-        })
-      )
+    const intervalId = window.setInterval(() => {
+      setNowTick((tick) => tick + 1);
+    }, 60_000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  // Derive expanded groups: union of user-toggled groups + the active route's group.
+  // This avoids setState-in-effect and ensures the active group is always visible.
+  const expandedGroups = useMemo(() => {
+    const activeGroupIds = navigationGroups
+      .filter(group => group.items.some(item => isNavItemActive(item.path, location.pathname)))
       .map(group => group.id);
-    
-    // Only update if there are new groups to expand
-    setExpandedGroups(prev => {
-      const newGroups = groupsToExpand.filter(id => !prev.includes(id));
-      if (newGroups.length > 0) {
-        return [...prev, ...newGroups];
-      }
-      return prev;
-    });
-  }, [location.pathname]);
+    return [...new Set([...userExpandedGroups, ...activeGroupIds])];
+  }, [location.pathname, userExpandedGroups]);
 
   // Toggle group expansion
   const toggleGroup = (groupId: string) => {
-    setExpandedGroups(prev =>
+    setUserExpandedGroups(prev =>
       prev.includes(groupId)
         ? prev.filter(id => id !== groupId)
         : [...prev, groupId]
@@ -149,7 +60,7 @@ export function ImprovedSidebar({ className }: SidebarProps) {
   };
 
   // Toggle favorite
-  const toggleFavorite = (path: string, e: React.MouseEvent) => {
+  const toggleFavorite = (path: string, e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setFavorites(prev =>
@@ -160,43 +71,39 @@ export function ImprovedSidebar({ className }: SidebarProps) {
   };
 
   // Check if item is active
-  const isActive = (path: string) => {
-    if (path === '/') {
-      return location.pathname === '/';
-    }
-    return location.pathname.startsWith(path);
-  };
+  const isActive = (path: string) => isNavItemActive(path, location.pathname);
 
   // Filter items based on user role
-  const getVisibleItems = (items: any[]) => {
+  const getVisibleItems = (items: NavigationItem[]) => {
     return items.filter(item => {
       if (!item.roles) return true;
-      return item.roles.some((role: string) => user?.role && canAccess(user.role, role));
+      return item.roles.some((role) => user?.role && canAccess(user.role, role));
     });
   };
 
   // Get all visible navigation items for favorites
   const allVisibleItems = useMemo(() => {
-    const items: { path: string; label: string; icon: any }[] = [];
+    const items: { path: string; label: string; icon: NavigationItem["icon"] }[] = [];
     navigationGroups.forEach(group => {
       group.items.forEach(item => {
-        if (!item.roles || (user?.role && item.roles.some((role: string) => canAccess(user.role, role)))) {
+        if (!item.roles || (user?.role && item.roles.some((role) => canAccess(user.role, role)))) {
           items.push({ path: item.path, label: item.label, icon: item.icon });
         }
       });
     });
     return items;
-  }, [user?.role]);
+  }, [user]);
+
+  const lastSyncLabel = formatDistanceToNow(syncAnchor, { addSuffix: true, includeSeconds: true });
 
   return (
-    <TooltipProvider delayDuration={0}>
-      <aside
-        className={cn(
-          'fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300',
-          isCollapsed ? 'w-[72px]' : 'w-[280px]',
-          className
-        )}
-      >
+    <aside
+      className={cn(
+        'fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300',
+        isCollapsed ? 'w-[72px]' : 'w-[280px]',
+        className
+      )}
+    >
         {/* Logo Section */}
         <div className="flex h-[72px] items-center justify-between border-b border-sidebar-border px-4">
           <Link to="/" className="flex items-center gap-3 overflow-hidden">
@@ -219,9 +126,10 @@ export function ImprovedSidebar({ className }: SidebarProps) {
               variant="ghost"
               size="icon"
               className="h-8 w-8 text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent"
+              aria-label="Collapse sidebar"
               onClick={() => setIsCollapsed(true)}
             >
-              <PanelLeft className="h-4 w-4" />
+              <PanelLeftClose data-testid="sidebar-collapse-icon" className="h-4 w-4" />
             </Button>
           )}
         </div>
@@ -270,7 +178,7 @@ export function ImprovedSidebar({ className }: SidebarProps) {
               if (isCollapsed) {
                 // Collapsed mode: Show icons only with tooltip
                 return (
-                  <Tooltip key={group.id}>
+                  <Tooltip key={group.id} delayDuration={0}>
                     <TooltipTrigger asChild>
                       <button
                         className={cn(
@@ -373,15 +281,16 @@ export function ImprovedSidebar({ className }: SidebarProps) {
         {/* Bottom Section */}
         <div className="border-t border-sidebar-border p-3">
           {isCollapsed ? (
-            <Tooltip>
+            <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
                   className="h-10 w-full text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent"
+                  aria-label="Expand sidebar"
                   onClick={() => setIsCollapsed(false)}
                 >
-                  <ChevronRight className="h-4 w-4" />
+                  <PanelLeftOpen data-testid="sidebar-expand-icon" className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="right">Expand sidebar</TooltipContent>
@@ -394,13 +303,12 @@ export function ImprovedSidebar({ className }: SidebarProps) {
                 </div>
                 <div className="flex-1">
                   <p className="text-xs font-medium text-sidebar-foreground">Last sync</p>
-                  <p className="text-[10px] text-muted-foreground">2 minutes ago</p>
+                  <p data-testid="last-sync-value" className="text-[10px] text-muted-foreground">{lastSyncLabel}</p>
                 </div>
               </div>
             </div>
           )}
         </div>
-      </aside>
-    </TooltipProvider>
+    </aside>
   );
 }

@@ -302,7 +302,7 @@ export function Dashboard() {
             <div
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
                 connected
-                  ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+                  ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-500 border-emerald-500/20'
                   : 'bg-destructive/10 text-destructive border-destructive/20 '
               }`}
             >
