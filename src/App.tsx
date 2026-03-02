@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Routes, Route, useNavigate, useParams, Outlet, useMatches } from 'react-router-dom';
+import { Routes, Route, useNavigate, useParams, Outlet, useMatches, type NavigateFunction } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './contexts';
 import { SocketProvider } from './contexts/SocketContext';
@@ -58,12 +58,12 @@ function DashboardLayout() {
   return (
     <div className="flex min-h-screen bg-background text-foreground transition-colors duration-200">
       {/* Desktop Sidebar - fixed position */}
-      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-[280px] z-40">
+      <aside className="hidden md:block fixed left-0 top-0 h-screen md:w-[72px] lg:w-[280px] z-40">
         <Sidebar />
       </aside>
 
       {/* Main Content - margin to account for sidebar */}
-      <main className="flex-1 lg:ml-[280px] min-h-screen flex flex-col">
+      <main className="flex-1 md:ml-[72px] lg:ml-[280px] min-h-screen flex flex-col">
         {/* Header - full width within main content */}
         <Header />
 
@@ -110,7 +110,7 @@ function App() {
 }
 
 // Inner component to access useAuth hook
-function AppContent({ navigate }: { navigate: any }) {
+function AppContent({ navigate }: { navigate: NavigateFunction }) {
   const { isLoading } = useAuth();
   const matches = useMatches();
 

@@ -15,7 +15,7 @@ export interface User {
 }
 
 // AuthContext value interface
-interface AuthContextValue {
+export interface AuthContextValue {
     user: User | null;
     isAuthenticated: boolean;
     isLoading: boolean;

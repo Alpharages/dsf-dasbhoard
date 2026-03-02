@@ -3,12 +3,15 @@
  * Features: Search, notifications, user menu, theme toggle
  */
 
-import { Search, User, LogOut, Settings } from 'lucide-react';
+import { type FC, useState } from 'react';
+import { Search, User, LogOut, Settings, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 import { ThemeToggleCompact } from '@/components/improved/ThemeToggle';
-import { MobileSidebar } from './MobileSidebar';
 import { useAuth } from '@/contexts';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,21 +19,37 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { motion } from 'framer-motion';
+import { MobileSidebar } from './MobileSidebar';
 
-export const Header: React.FC = () => {
+export const Header: FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (
-    <motion.header 
+    <motion.header
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       className="h-16 border-b border-border bg-background/80 backdrop-blur-xl flex items-center justify-between px-6 sticky top-0 z-30 shrink-0"
     >
       {/* Left: Mobile Menu + Search */}
       <div className="flex items-center gap-4 flex-1">
-        <MobileSidebar />
+        <MobileSidebar
+          open={mobileSidebarOpen}
+          onOpenChange={setMobileSidebarOpen}
+          trigger={(
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden h-10 w-10 text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+              aria-label="Open menu"
+            >
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          )}
+        />
+
         <div className="relative w-full max-w-md group hidden sm:block">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <input
@@ -81,21 +100,21 @@ export const Header: React.FC = () => {
               {user?.email}
             </div>
             <DropdownMenuSeparator className="bg-border" />
-            <DropdownMenuItem 
+            <DropdownMenuItem
               onClick={() => navigate('/profile')}
               className="text-foreground focus:bg-muted focus:text-foreground cursor-pointer"
             >
               <User className="mr-2 h-4 w-4" />
               Profile
             </DropdownMenuItem>
-            <DropdownMenuItem 
+            <DropdownMenuItem
               onClick={() => navigate('/settings')}
               className="text-foreground focus:bg-muted focus:text-foreground cursor-pointer"
             >
               <Settings className="mr-2 h-4 w-4" />
               Settings
             </DropdownMenuItem>
-            <DropdownMenuItem 
+            <DropdownMenuItem
               onClick={logout}
               className="text-destructive focus:bg-destructive/10 focus:text-destructive"
             >

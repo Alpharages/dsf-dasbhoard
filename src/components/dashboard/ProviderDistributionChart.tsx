@@ -32,14 +32,14 @@ export function ProviderDistributionChart({ summary }: ProviderDistributionChart
             <ResponsiveContainer width="100%" height="100%" debounce={100}>
               <PieChart>
                 <Pie
-                  data={distribution}
+                  data={distribution as any[]}
                   dataKey="percentage"
                   nameKey="provider"
                   cx="50%"
                   cy="50%"
                   innerRadius={52}
                   outerRadius={86}
-                  label={({ provider, percentage }) => `${provider}: ${Number(percentage).toFixed(1)}%`}
+                  label={(props: any) => `${props.provider}: ${Number(props.percentage).toFixed(1)}%`}
                   labelLine={false}
                 >
                   {distribution.map((entry, index) => (
@@ -47,7 +47,7 @@ export function ProviderDistributionChart({ summary }: ProviderDistributionChart
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: number | string, _name, payload) => {
+                  formatter={(value: any, _name: any, payload: any) => {
                     const count = payload?.payload?.count ?? 0;
                     return [`${Number(value).toFixed(1)}% (${count})`, 'Usage'];
                   }}

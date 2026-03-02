@@ -40,9 +40,9 @@ function makeAuthMock(user: User | null): AuthContext.AuthContextValue {
         user,
         isAuthenticated: user !== null,
         isLoading: false,
-        login: vi.fn<[string, string, boolean], Promise<void>>(),
-        logout: vi.fn<[], Promise<void>>(),
-        refreshToken: vi.fn<[], Promise<void>>(),
+        login: vi.fn<AuthContext.AuthContextValue['login']>(),
+        logout: vi.fn<AuthContext.AuthContextValue['logout']>(),
+        refreshToken: vi.fn<AuthContext.AuthContextValue['refreshToken']>(),
     };
 }
 
