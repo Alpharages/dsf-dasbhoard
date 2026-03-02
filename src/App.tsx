@@ -32,6 +32,7 @@ import { AuditLogsDashboard } from './pages/AuditLogsDashboard';
 import { ObservabilityPage } from './pages/observability';
 import CostAnalysisPage from './pages/CostAnalysisPage';
 import { CapabilityManagementPage } from './pages/CapabilityManagementPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 import { SettingsLayout } from './pages/settings/SettingsLayout';
 import {
   CleanupPanel,
@@ -378,12 +379,12 @@ function AppContent({ navigate }: { navigate: any }) {
               }
             />
 
-            {/* Catch-all redirect to dashboard (protected) */}
+            {/* Catch-all renders a dedicated 404 page (protected) */}
             <Route
               path="*"
               element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <NotFoundPage />
                 </ProtectedRoute>
               }
             />
