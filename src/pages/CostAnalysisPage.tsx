@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { BarChart3, TrendingUp, DollarSign, Wallet } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
@@ -10,10 +9,6 @@ const STAT_CARDS = [
 ];
 
 export default function CostAnalysisPage() {
-    useEffect(() => {
-        document.title = "Cost Analysis — DSF";
-    }, []);
-
     return (
         <div className="container mx-auto py-8 space-y-8 animate-in fade-in duration-700">
             <div className="space-y-1">

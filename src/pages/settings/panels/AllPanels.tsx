@@ -1,5 +1,5 @@
-import { ConfigInput } from '../../../components/settings/ConfigInput';
-import { useSystemConfig } from '../../../hooks/queries/useSystemConfig';
+import { ConfigInput } from '@/components/settings/ConfigInput.tsx';
+import { useSystemConfig } from '@/hooks/queries/useSystemConfig.ts';
 import { toast } from 'react-hot-toast';
 import { Trash2, Activity, Share2, GitMerge, DollarSign, ShieldAlert, HeartPulse } from 'lucide-react';
 
@@ -11,7 +11,7 @@ const usePanelLogic = () => {
         try {
             await updateConfig({ key, value });
             toast.success('Configuration saved');
-        } catch (error) {
+        } catch {
             toast.error('Failed to save configuration');
         }
     };

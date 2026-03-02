@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ArrowLeft, CircleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,10 +10,6 @@ export function NotFoundPage() {
     const path = `${location.pathname}${location.search}${location.hash}`;
     return path || '/';
   }, [location.pathname, location.search, location.hash]);
-
-  useEffect(() => {
-    document.title = '404 Not Found — DSF';
-  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">

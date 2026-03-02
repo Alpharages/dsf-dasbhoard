@@ -1,4 +1,5 @@
-import { Routes, Route, useNavigate, useParams, Outlet } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Routes, Route, useNavigate, useParams, Outlet, useMatches } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './contexts';
 import { SocketProvider } from './contexts/SocketContext';
@@ -111,6 +112,14 @@ function App() {
 // Inner component to access useAuth hook
 function AppContent({ navigate }: { navigate: any }) {
   const { isLoading } = useAuth();
+  const matches = useMatches();
+
+  // Drive document.title from the deepest matched route's handle.title.
+  // All titles are co-located with route definitions below — no per-page hook needed.
+  useEffect(() => {
+    const handle = matches.at(-1)?.handle as { title?: string } | undefined;
+    document.title = handle?.title ?? 'DSF Dashboard';
+  }, [matches]);
 
   // Show global loading overlay during initial auth check
   if (isLoading) {
@@ -129,15 +138,16 @@ function AppContent({ navigate }: { navigate: any }) {
       <TooltipProvider>
         <Routes>
           {/* Public routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register/:inviteToken" element={<RegistrationPage />} />
-          <Route path="/forbidden" element={<ForbiddenPage />} />
+          <Route path="/login" handle={{ title: 'Login — DSF' }} element={<LoginPage />} />
+          <Route path="/register/:inviteToken" handle={{ title: 'Registration — DSF' }} element={<RegistrationPage />} />
+          <Route path="/forbidden" handle={{ title: '403 Forbidden — DSF' }} element={<ForbiddenPage />} />
 
           {/* Protected routes inside DashboardLayout */}
           <Route element={<DashboardLayout />}>
             {/* Dashboard - all authenticated users */}
             <Route
               path="/"
+              handle={{ title: 'PM Dashboard — DSF' }}
               element={
                 <ProtectedRoute>
                   <Dashboard />
@@ -146,6 +156,7 @@ function AppContent({ navigate }: { navigate: any }) {
             />
             <Route
               path="/profile"
+              handle={{ title: 'Profile — DSF' }}
               element={
                 <ProtectedRoute>
                   <ProfilePage />
@@ -155,6 +166,7 @@ function AppContent({ navigate }: { navigate: any }) {
             {/* Conversations - all authenticated users */}
             <Route
               path="/conversations"
+              handle={{ title: 'Conversations — DSF' }}
               element={
                 <ProtectedRoute>
                   <ConversationSearchInterface
@@ -165,6 +177,7 @@ function AppContent({ navigate }: { navigate: any }) {
             />
             <Route
               path="/conversations/upload"
+              handle={{ title: 'Upload Conversation — DSF' }}
               element={
                 <ProtectedRoute>
                   <ConversationUploadForm onSuccess={(id) => navigate(`/conversations/${id}`)} />
@@ -173,6 +186,7 @@ function AppContent({ navigate }: { navigate: any }) {
             />
             <Route
               path="/conversations/:id"
+              handle={{ title: 'Conversation Details — DSF' }}
               element={
                 <ProtectedRoute>
                   <ConversationDetailViewWrapper />
@@ -183,6 +197,7 @@ function AppContent({ navigate }: { navigate: any }) {
             {/* Projects sync - all authenticated users */}
             <Route
               path="/projects/sync"
+              handle={{ title: 'Projects Sync — DSF' }}
               element={
                 <ProtectedRoute>
                   <ProjectsSyncPage />
@@ -193,6 +208,7 @@ function AppContent({ navigate }: { navigate: any }) {
             {/* Decisions - all authenticated users */}
             <Route
               path="/decisions"
+              handle={{ title: 'Decisions — DSF' }}
               element={
                 <ProtectedRoute>
                   <DecisionDashboard />
@@ -201,6 +217,7 @@ function AppContent({ navigate }: { navigate: any }) {
             />
             <Route
               path="/audit-logs"
+              handle={{ title: 'Audit Logs — DSF' }}
               element={
                 <ProtectedRoute requiredRoles={['QA', 'TL', 'ADMIN', 'MANAGER']}>
                   <AuditLogsDashboard />
@@ -209,6 +226,7 @@ function AppContent({ navigate }: { navigate: any }) {
             />
             <Route
               path="/resource-manager"
+              handle={{ title: 'Resource Manager — DSF' }}
               element={
                 <ProtectedRoute requiredRoles={['TL', 'ADMIN', 'MANAGER']}>
                   <ResourceManagerPage />
@@ -217,6 +235,7 @@ function AppContent({ navigate }: { navigate: any }) {
             />
             <Route
               path="/financial-metrics"
+              handle={{ title: 'Financial Metrics — DSF' }}
               element={
                 <ProtectedRoute requiredRole="MANAGER">
                   <FinancialMetricsPage />
@@ -225,6 +244,7 @@ function AppContent({ navigate }: { navigate: any }) {
             />
             <Route
               path="/cost"
+              handle={{ title: 'Cost Analysis — DSF' }}
               element={
                 <ProtectedRoute>
                   <CostAnalysisPage />
@@ -234,6 +254,7 @@ function AppContent({ navigate }: { navigate: any }) {
             {/* Capacity monitor - all authenticated users */}
             <Route
               path="/capacity-monitor"
+              handle={{ title: 'Capacity Monitor — DSF' }}
               element={
                 <ProtectedRoute>
                   <WorkloadCapacityPage />
@@ -242,6 +263,7 @@ function AppContent({ navigate }: { navigate: any }) {
             />
             <Route
               path="/qa-review/dashboard"
+              handle={{ title: 'QA Review — DSF' }}
               element={
                 <ProtectedRoute requiredRoles={['QA', 'TL', 'ADMIN', 'MANAGER']}>
                   <LeadQaReviewDashboardPage />
@@ -250,6 +272,7 @@ function AppContent({ navigate }: { navigate: any }) {
             />
             <Route
               path="/architecture-review/queue"
+              handle={{ title: 'Architecture Queue — DSF' }}
               element={
                 <ProtectedRoute requiredRole="TL">
                   <ArchitectureReviewQueuePage />
@@ -258,6 +281,7 @@ function AppContent({ navigate }: { navigate: any }) {
             />
             <Route
               path="/architecture-review/constraints"
+              handle={{ title: 'Architecture Constraints — DSF' }}
               element={
                 <ProtectedRoute requiredRole="TL">
                   <ConstraintsPage />
@@ -266,6 +290,7 @@ function AppContent({ navigate }: { navigate: any }) {
             />
             <Route
               path="/architecture-review/escalations"
+              handle={{ title: 'Escalations — DSF' }}
               element={
                 <ProtectedRoute requiredRole="TL">
                   <EscalationAnalyticsPage />
@@ -274,6 +299,7 @@ function AppContent({ navigate }: { navigate: any }) {
             />
             <Route
               path="/architecture-review/metrics"
+              handle={{ title: 'Architecture Metrics — DSF' }}
               element={
                 <ProtectedRoute requiredRole="TL">
                   <ArchitectureMetricsPage />
@@ -283,6 +309,7 @@ function AppContent({ navigate }: { navigate: any }) {
             {/* Architecture capabilities - all authenticated users */}
             <Route
               path="/architecture/capabilities"
+              handle={{ title: 'Capabilities — DSF' }}
               element={
                 <ProtectedRoute>
                   <CapabilityManagementPage />
@@ -293,6 +320,7 @@ function AppContent({ navigate }: { navigate: any }) {
             {/* Admin/Manager routes */}
             <Route
               path="/admin/invitations"
+              handle={{ title: 'Invitations — DSF' }}
               element={
                 <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER']}>
                   <InvitationsPage />
@@ -302,6 +330,7 @@ function AppContent({ navigate }: { navigate: any }) {
 
             <Route
               path="/admin/users"
+              handle={{ title: 'Users — DSF' }}
               element={
                 <ProtectedRoute requiredRoles={['ADMIN']}>
                   <UsersPage />
@@ -318,20 +347,21 @@ function AppContent({ navigate }: { navigate: any }) {
                 </ProtectedRoute>
               }
             >
-              <Route path="cleanup" element={<CleanupPanel />} />
-              <Route path="self-healing" element={<SelfHealingPanel />} />
-              <Route path="dependency" element={<DependencyPanel />} />
-              <Route path="auto-merge" element={<AutoMergePanel />} />
-              <Route path="cost" element={<CostPanel />} />
-              <Route path="audit" element={<AuditPanel />} />
-              <Route path="health" element={<HealthPanel />} />
-              <Route path="github/callback" element={<GithubCallback />} />
-              <Route index element={<CleanupPanel />} /> {/* Default to cleanup */}
+              <Route path="cleanup" handle={{ title: 'Settings: Cleanup — DSF' }} element={<CleanupPanel />} />
+              <Route path="self-healing" handle={{ title: 'Settings: Self-Healing — DSF' }} element={<SelfHealingPanel />} />
+              <Route path="dependency" handle={{ title: 'Settings: Dependencies — DSF' }} element={<DependencyPanel />} />
+              <Route path="auto-merge" handle={{ title: 'Settings: Auto-Merge — DSF' }} element={<AutoMergePanel />} />
+              <Route path="cost" handle={{ title: 'Settings: Cost Control — DSF' }} element={<CostPanel />} />
+              <Route path="audit" handle={{ title: 'Settings: Audit — DSF' }} element={<AuditPanel />} />
+              <Route path="health" handle={{ title: 'Settings: Integration Health — DSF' }} element={<HealthPanel />} />
+              <Route path="github/callback" handle={{ title: 'GitHub Auth — DSF' }} element={<GithubCallback />} />
+              <Route index handle={{ title: 'Settings: Cleanup — DSF' }} element={<CleanupPanel />} /> {/* Default to cleanup */}
             </Route>
 
             {/* Production Errors - all authenticated users */}
             <Route
               path="/production-errors"
+              handle={{ title: 'Production Errors — DSF' }}
               element={
                 <ProtectedRoute>
                   <ProductionErrorDashboard />
@@ -342,6 +372,7 @@ function AppContent({ navigate }: { navigate: any }) {
             {/* PM Approval Queue - PM, TL, Manager, Admin */}
             <Route
               path="/approvals"
+              handle={{ title: 'PM Approvals — DSF' }}
               element={
                 <ProtectedRoute requiredRoles={['PM', 'TL', 'MANAGER', 'ADMIN']}>
                   <PmApprovalDashboardPage />
@@ -352,6 +383,7 @@ function AppContent({ navigate }: { navigate: any }) {
             {/* Execution Monitoring - PM, TL, Manager, Admin */}
             <Route
               path="/executions"
+              handle={{ title: 'Execution Monitoring — DSF' }}
               element={
                 <ProtectedRoute requiredRoles={['PM', 'TL', 'MANAGER', 'ADMIN']}>
                   <ExecutionMonitoringDashboard />
@@ -362,6 +394,7 @@ function AppContent({ navigate }: { navigate: any }) {
             {/* Observability Control Panel - PM, TL, QA, Manager, Admin, Operator */}
             <Route
               path="/observability"
+              handle={{ title: 'Observability — DSF' }}
               element={
                 <ProtectedRoute requiredRoles={['PM', 'TL', 'QA', 'MANAGER', 'ADMIN', 'OPERATOR']}>
                   <ObservabilityPage />
@@ -372,6 +405,7 @@ function AppContent({ navigate }: { navigate: any }) {
             {/* Notification Preferences - all authenticated users */}
             <Route
               path="/notifications/preferences"
+              handle={{ title: 'Notification Preferences — DSF' }}
               element={
                 <ProtectedRoute>
                   <NotificationPreferences />
@@ -382,6 +416,7 @@ function AppContent({ navigate }: { navigate: any }) {
             {/* Catch-all renders a dedicated 404 page (protected) */}
             <Route
               path="*"
+              handle={{ title: '404 Not Found — DSF' }}
               element={
                 <ProtectedRoute>
                   <NotFoundPage />
