@@ -79,7 +79,7 @@ export const NotificationCenter = memo(function NotificationCenter({ maxNotifica
   } = useInAppNotifications({ limit: maxNotifications });
 
   // Fetch unread count
-  const { data: unreadCount = 0 } = useUnreadNotificationCount();
+  const { data: unreadCount = 0, isError: countFetchFailed } = useUnreadNotificationCount();
 
   // Mutations
   const markAsRead = useMarkNotificationAsRead();
@@ -118,9 +118,8 @@ export const NotificationCenter = memo(function NotificationCenter({ maxNotifica
     await markAllAsRead.mutateAsync();
   };
 
-  // Format badge count
+  // Format badge count (only called when count > 0)
   const formatBadgeCount = (count: number): string => {
-    if (count === 0) return '';
     if (count > 99) return '99+';
     return String(count);
   };
@@ -137,15 +136,34 @@ export const NotificationCenter = memo(function NotificationCenter({ maxNotifica
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <button className="relative p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-full transition-colors">
+        <button
+          aria-label={
+            countFetchFailed
+              ? 'Notifications (count unavailable)'
+              : unreadCount > 0
+                ? `Notifications, ${unreadCount} unread`
+                : 'Notifications'
+          }
+          className="relative p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-full transition-colors"
+        >
           <Bell className="w-5 h-5" />
-          {unreadCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] flex items-center justify-center px-1 bg-rose-500 text-white text-[10px] font-bold rounded-full border-2 border-slate-900">
+          {countFetchFailed ? (
+            <span
+              aria-hidden="true"
+              className="absolute top-0 right-0 z-10 min-w-[18px] h-[18px] flex items-center justify-center px-1 bg-yellow-500 text-white text-[10px] font-bold rounded-full border-2 border-background"
+            >
+              ?
+            </span>
+          ) : unreadCount > 0 ? (
+            <span className="absolute top-0 right-0 z-10 min-w-[18px] h-[18px] flex items-center justify-center px-1 bg-rose-500 text-white text-[10px] font-bold rounded-full border-2 border-background">
               {formatBadgeCount(unreadCount)}
             </span>
-          )}
+          ) : null}
           {!connected && (
-            <span className="absolute bottom-1 right-1 w-2 h-2 bg-yellow-500 rounded-full border-2 border-slate-900" />
+            <span
+              data-testid="socket-disconnected-indicator"
+              className="absolute bottom-1 right-1 w-2 h-2 bg-yellow-500 rounded-full border-2 border-background"
+            />
           )}
         </button>
       </DropdownMenuTrigger>

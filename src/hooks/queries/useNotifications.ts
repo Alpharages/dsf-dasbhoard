@@ -145,7 +145,7 @@ export function useUnreadNotificationCount(
     queryKey: notificationKeys.unreadCount(),
     queryFn: () => getUnreadNotificationCount().then(r => r.count),
     staleTime: 30 * 1000,
-    refetchInterval: 300_000, // Poll every 5 min (QA-FR12)
+    refetchInterval: 30 * 1000, // Poll every 30 s — matches badge-update window (AC4); count endpoint is lightweight
     refetchOnWindowFocus: false, // Prevent 429 bursts on tab switching (QA-NFR7)
     ...options,
   });
