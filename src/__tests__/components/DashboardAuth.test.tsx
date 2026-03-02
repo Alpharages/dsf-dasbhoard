@@ -13,6 +13,7 @@ import apiClient from '../../api/client';
 vi.mock('../../components/dashboard/StatsGrid', () => ({ StatsGrid: () => <div data-testid="stats-grid" /> }));
 vi.mock('../../components/dashboard/ExecutionKPISection', () => ({ ExecutionKPISection: () => <div data-testid="execution-kpi" /> }));
 vi.mock('../../components/dashboard/FinancialKPISection', () => ({ FinancialKPISection: () => <div data-testid="financial-kpi" /> }));
+vi.mock('../../components/dashboard/ProviderDistributionChart', () => ({ ProviderDistributionChart: () => <div data-testid="provider-distribution" /> }));
 vi.mock('../../components/dashboard/ProjectCard', () => ({ ProjectCard: () => <div data-testid="project-card" /> }));
 vi.mock('../../components/dashboard/NewProjectDialog', () => ({ NewProjectDialog: () => <div data-testid="new-project" /> }));
 vi.mock('../../components/dashboard/ProjectFilterSheet', () => ({ ProjectFilterSheet: () => <div data-testid="filter-sheet" /> }));

@@ -37,6 +37,15 @@ export interface DashboardSummary {
     active_ai_executions?: number;
     queued_ai_executions?: number;
     daily_avg_completion_hours?: number[];
+    pr_merge_rate?: number;
+    qa_first_pass_rate?: number;
+    provider_distribution?: ProviderDistributionItem[];
+}
+
+export interface ProviderDistributionItem {
+    provider: string;
+    percentage: number;
+    count: number;
 }
 
 export interface FinancialSummary {

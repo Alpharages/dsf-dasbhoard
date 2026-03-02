@@ -9,6 +9,7 @@ import { ProjectCard } from '../components/dashboard/ProjectCard';
 import { NewProjectDialog } from '../components/dashboard/NewProjectDialog';
 import { ExecutionKPISection } from '../components/dashboard/ExecutionKPISection';
 import { FinancialKPISection } from '../components/dashboard/FinancialKPISection';
+import { ProviderDistributionChart } from '../components/dashboard/ProviderDistributionChart';
 import type { ProjectFilters } from '../components/dashboard/ProjectFilterSheet';
 import { ProjectFilterSheet } from '../components/dashboard/ProjectFilterSheet';
 import { ReviewModal } from '../components/quality-gate/ReviewModal';
@@ -349,6 +350,7 @@ export function Dashboard() {
       {summary && <ExecutionKPISection summary={summary} />}
       <FinancialKPISection />
       {summary && <StatsGrid summary={summary} />}
+      {summary && <ProviderDistributionChart summary={summary} />}
 
       {/* Recent Conversations Widget */}
       <div className="mb-8">
