@@ -43,6 +43,7 @@ import {
   CostPanel,
   AuditPanel,
   HealthPanel,
+  IntegrationHealthPanel,
 } from './pages/settings/panels/AllPanels';
 import { GithubCallback } from './pages/settings/GithubCallback';
 
@@ -353,7 +354,8 @@ function AppContent({ navigate }: { navigate: NavigateFunction }) {
               <Route path="auto-merge" handle={{ title: 'Settings: Auto-Merge — DSF' }} element={<AutoMergePanel />} />
               <Route path="cost" handle={{ title: 'Settings: Cost Control — DSF' }} element={<CostPanel />} />
               <Route path="audit" handle={{ title: 'Settings: Audit — DSF' }} element={<AuditPanel />} />
-              <Route path="health" handle={{ title: 'Settings: Integration Health — DSF' }} element={<HealthPanel />} />
+              <Route path="health" handle={{ title: 'Settings: Deployment Health — DSF' }} element={<HealthPanel />} />
+              <Route path="integrations" handle={{ title: 'Settings: Integration Health — DSF' }} element={<ProtectedRoute requiredRoles={['ADMIN', 'MANAGER']}><IntegrationHealthPanel /></ProtectedRoute>} />
               <Route path="github/callback" handle={{ title: 'GitHub Auth — DSF' }} element={<GithubCallback />} />
               <Route index handle={{ title: 'Settings: Cleanup — DSF' }} element={<CleanupPanel />} /> {/* Default to cleanup */}
             </Route>

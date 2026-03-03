@@ -1,7 +1,8 @@
 import { ConfigInput } from '@/components/settings/ConfigInput.tsx';
 import { useSystemConfig } from '@/hooks/queries/useSystemConfig.ts';
 import { toast } from 'react-hot-toast';
-import { Trash2, Activity, Share2, GitMerge, DollarSign, ShieldAlert, HeartPulse } from 'lucide-react';
+import { Trash2, Activity, Share2, GitMerge, DollarSign, ShieldAlert, HeartPulse, Blocks, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { useIntegrationHealth } from '@/hooks/queries/useIntegrationHealth';
 
 // Shared logic holder
 const usePanelLogic = () => {
@@ -230,6 +231,79 @@ export const HealthPanel = () => {
                     isSaving={isUpdating}
                 />
             </div>
+        </div>
+    );
+};
+
+// --- PANEL 8: INTEGRATION HEALTH ---
+export const IntegrationHealthPanel = () => {
+    const { data: health, isLoading, isError } = useIntegrationHealth();
+
+    const renderCard = (
+        name: string,
+        isConfigured: boolean | undefined,
+        description: string,
+    ) => {
+        const configured = !!isConfigured;
+        return (
+            <div className="p-4 border border-border rounded-xl bg-card">
+                <div className="flex items-center gap-3 mb-2">
+                    {configured ? (
+                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                    ) : (
+                        <AlertTriangle className="w-5 h-5 text-amber-500" />
+                    )}
+                    <h3 className="font-semibold">{name}</h3>
+                </div>
+                <div className="text-sm text-muted-foreground mb-3">
+                    {description}
+                </div>
+                <div className="text-sm font-medium">
+                    Status: <span className={configured ? "text-emerald-500" : "text-amber-500"}>
+                        {configured ? "Configured" : "Not Configured"}
+                    </span>
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div>
+            <div className="flex items-center gap-3 mb-8">
+                <div className="p-3 bg-indigo-500/10 rounded-xl text-indigo-500"><Blocks className="w-6 h-6" /></div>
+                <div><h1 className="text-2xl font-bold text-foreground">Integration Health</h1><p className="text-muted-foreground">Monitor the status of required third-party services.</p></div>
+            </div>
+            {isLoading ? (
+                <div className="text-muted-foreground flex items-center justify-center p-8">Loading health status...</div>
+            ) : isError ? (
+                <div className="flex items-center gap-3 p-4 border border-destructive/50 rounded-xl bg-destructive/10 text-destructive">
+                    <AlertTriangle className="w-5 h-5 shrink-0" />
+                    <p className="text-sm">Failed to load integration health. You may not have permission to view this data, or the server is unreachable.</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {renderCard(
+                        'Docker',
+                        health?.docker,
+                        'AI agents (Cursor, Claude) require Docker for isolated code execution.'
+                    )}
+                    {renderCard(
+                        'SendGrid',
+                        health?.sendgrid,
+                        'Required for user invitations, password resets, and email alerts.'
+                    )}
+                    {renderCard(
+                        'OpenAI',
+                        health?.openai,
+                        'Required for AI-driven conversation transcription and analysis.'
+                    )}
+                    {renderCard(
+                        'Slack',
+                        health?.slack,
+                        'Required for real-time system alerts and team notifications.'
+                    )}
+                </div>
+            )}
         </div>
     );
 };

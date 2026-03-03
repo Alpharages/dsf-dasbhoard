@@ -6,7 +6,8 @@ import {
     GitMerge,
     DollarSign,
     ShieldAlert,
-    HeartPulse
+    HeartPulse,
+    Blocks
 } from 'lucide-react';
 
 const panels = [
@@ -17,6 +18,7 @@ const panels = [
     { id: 'cost', label: 'Cost & Models', icon: DollarSign },
     { id: 'audit', label: 'Audit & Safety', icon: ShieldAlert },
     { id: 'health', label: 'Health & Rollback', icon: HeartPulse },
+    { id: 'integrations', label: 'Third-Party Integrations', icon: Blocks },
 ];
 
 export const SettingsLayout = () => {
