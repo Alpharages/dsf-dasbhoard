@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Routes, Route, useNavigate, useParams, Outlet, useLocation, type NavigateFunction } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, useParams, Outlet, useLocation, type NavigateFunction } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './contexts';
 import { SocketProvider } from './contexts/SocketContext';
@@ -216,6 +216,9 @@ function AppContent({ navigate }: { navigate: NavigateFunction }) {
                 </ProtectedRoute>
               }
             />
+
+            {/* /projects redirects to /projects/sync */}
+            <Route path="/projects" element={<Navigate to="/projects/sync" replace />} />
 
             {/* Projects sync - all authenticated users */}
             <Route

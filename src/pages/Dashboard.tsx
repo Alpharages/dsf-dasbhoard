@@ -58,7 +58,7 @@ export function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
-  const { socket, connected } = useSocket();
+  const { socket, connected, isConnecting } = useSocket();
   useProjectUpdates(socket, setProjects);
 
   // M3: React Query with staleTime: 60s per Technical Guardrails
@@ -303,13 +303,15 @@ export function Dashboard() {
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
                 connected
                   ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-500 border-emerald-500/20'
-                  : 'bg-destructive/10 text-destructive border-destructive/20 '
+                  : isConnecting
+                    ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+                    : 'bg-destructive/10 text-destructive border-destructive/20'
               }`}
             >
               <div
-                className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-emerald-500 animate-pulse' : 'bg-destructive'}`}
+                className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-emerald-500 animate-pulse' : isConnecting ? 'bg-amber-500 animate-pulse' : 'bg-destructive'}`}
               ></div>
-              {connected ? 'Real-time Live' : 'Offline'}
+              {connected ? 'Real-time Live' : isConnecting ? 'Connecting...' : 'Offline'}
             </div>
           </div>
           <p className="text-muted-foreground font-medium">

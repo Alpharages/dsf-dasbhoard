@@ -175,7 +175,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Login method
     const login = useCallback(async (email: string, password: string, rememberMe: boolean) => {
-        setIsLoading(true);
         try {
             // Call login API
             const response = await apiClient.post('/auth/login', {
@@ -211,8 +210,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             } else {
                 throw new Error('Login failed. Please try again.');
             }
-        } finally {
-            setIsLoading(false);
         }
     }, [setupAutoRefresh]);
 

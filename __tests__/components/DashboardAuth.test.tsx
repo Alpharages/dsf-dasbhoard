@@ -61,6 +61,7 @@ describe('Dashboard Auth & Role Guards', () => {
         vi.spyOn(SocketContext, 'useSocket').mockReturnValue({
             socket: null,
             connected: true,
+            isConnecting: false,
         });
 
         vi.spyOn(ProjectUpdates, 'useProjectUpdates').mockImplementation(() => {});

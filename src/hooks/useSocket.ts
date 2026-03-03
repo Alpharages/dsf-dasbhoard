@@ -15,6 +15,6 @@ export const useSocket = (_token?: string | null, _namespace: string = '/dashboa
     if (isDev && _namespace !== '/dashboard') {
         console.warn(`[useSocket] Namespace "${_namespace}" requested but SocketContext only supports /dashboard.`);
     }
-    const { socket, connected } = useSocketContext();
-    return { socket, connected };
+    const { socket, connected, isConnecting } = useSocketContext();
+    return { socket, connected, isConnecting };
 };

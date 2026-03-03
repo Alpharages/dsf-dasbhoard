@@ -13,7 +13,7 @@ export const PendingTicketsTable: React.FC<Props> = ({ tickets, onDecisionMade }
 
     if (tickets.length === 0) {
         return (
-            <div className="p-8 text-center text-gray-500 bg-white rounded-lg shadow">
+            <div className="p-8 text-center text-muted-foreground bg-card rounded-lg border border-border">
                 No pending tickets found.
             </div>
         );
@@ -21,16 +21,16 @@ export const PendingTicketsTable: React.FC<Props> = ({ tickets, onDecisionMade }
 
     return (
         <>
-            <div className="overflow-x-auto bg-white rounded-lg shadow">
+            <div className="overflow-x-auto bg-card rounded-lg border border-border">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-gray-100 border-b">
-                            <th className="p-4 font-semibold text-gray-700">Ticket ID</th>
-                            <th className="p-4 font-semibold text-gray-700">Project</th>
-                            <th className="p-4 font-semibold text-gray-700">Status</th>
-                            <th className="p-4 font-semibold text-gray-700">Budget / Spend</th>
-                            <th className="p-4 font-semibold text-gray-700">Block Cost</th>
-                            <th className="p-4 font-semibold text-gray-700">Actions</th>
+                        <tr className="bg-muted border-b border-border">
+                            <th className="p-4 font-semibold text-foreground">Ticket ID</th>
+                            <th className="p-4 font-semibold text-foreground">Project</th>
+                            <th className="p-4 font-semibold text-foreground">Status</th>
+                            <th className="p-4 font-semibold text-foreground">Budget / Spend</th>
+                            <th className="p-4 font-semibold text-foreground">Block Cost</th>
+                            <th className="p-4 font-semibold text-foreground">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -45,7 +45,7 @@ export const PendingTicketsTable: React.FC<Props> = ({ tickets, onDecisionMade }
                             const clickupUrl = `https://app.clickup.com/t/${ticket.clickup_task_id}`;
 
                             return (
-                                <tr key={ticket.id} className="border-b hover:bg-gray-50">
+                                <tr key={ticket.id} className="border-b border-border hover:bg-muted/50">
                                     <td className="p-4">
                                         <div className="flex items-center gap-2">
                                             <span className="font-mono text-sm">{ticket.clickup_task_id}</span>
@@ -58,7 +58,7 @@ export const PendingTicketsTable: React.FC<Props> = ({ tickets, onDecisionMade }
                                                 <ExternalLink size={14} />
                                             </a>
                                         </div>
-                                        <div className="text-xs text-gray-500">{ticket.title}</div>
+                                        <div className="text-xs text-muted-foreground">{ticket.title}</div>
                                     </td>
                                     <td className="p-4">{ticket.project.name}</td>
                                     <td className="p-4">
@@ -71,7 +71,7 @@ export const PendingTicketsTable: React.FC<Props> = ({ tickets, onDecisionMade }
                                             <span className="text-sm">
                                                 ${spend.toFixed(2)} / ${budget.toFixed(2)}
                                             </span>
-                                            <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                            <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
                                                 <div
                                                     className={`h-full ${isCritical ? 'bg-red-500' : 'bg-green-500'}`}
                                                     style={{ width: `${Math.min(percent, 100)}%` }}

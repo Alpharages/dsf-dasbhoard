@@ -7,6 +7,7 @@ const isDev = import.meta.env.DEV;
 interface SocketContextValue {
   socket: Socket | null;
   connected: boolean;
+  isConnecting: boolean;
 }
 
 const SocketContext = createContext<SocketContextValue | undefined>(undefined);
@@ -16,6 +17,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // H-1: Use state (not ref) so context consumers re-render when socket changes
   const [socket, setSocket] = useState<Socket | null>(null);
   const [connected, setConnected] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   // H-3: Track active token so we reconnect when it rotates via silent refresh
   const [token, setToken] = useState<string | null>(getAccessToken);
 
@@ -32,10 +34,13 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   useEffect(() => {
     if (!isAuthenticated || !token) {
+      setIsConnecting(false);
       return;
     }
 
     const WS_URL = import.meta.env.VITE_WS_URL || import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+    setIsConnecting(true);
 
     const newSocket = io(`${WS_URL}/dashboard`, {
       auth: { token },
@@ -48,6 +53,11 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     newSocket.on('connect', () => {
       isDev && console.log('[SocketContext] Connected to /dashboard');
       setConnected(true);
+      setIsConnecting(false);
+    });
+
+    newSocket.on('connect_error', () => {
+      setIsConnecting(false);
     });
 
     newSocket.on('disconnect', () => {
@@ -62,11 +72,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       newSocket.disconnect();
       setSocket(null);
       setConnected(false);
+      setIsConnecting(false);
     };
   }, [isAuthenticated, token]);
 
   return (
-    <SocketContext.Provider value={{ socket, connected }}>
+    <SocketContext.Provider value={{ socket, connected, isConnecting }}>
       {children}
     </SocketContext.Provider>
   );
