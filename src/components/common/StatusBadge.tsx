@@ -1,31 +1,59 @@
 import { Badge } from '@/components/ui/badge';
+import { CheckCircle2, XCircle, Clock, AlertCircle } from 'lucide-react';
 
 export interface StatusBadgeProps {
     status: string;
 }
 
 export function StatusBadge({ status }: StatusBadgeProps) {
-    const getStatusBadgeStyles = (s: string) => {
+    const getStatusConfig = (s: string) => {
         const normalized = s.toUpperCase();
         switch (normalized) {
             case 'PENDING':
-                return 'bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500/30';
+                return {
+                    className: 'bg-amber-500/10 text-amber-600 border-amber-500/30 hover:bg-amber-500/20',
+                    icon: Clock,
+                    label: 'Pending'
+                };
             case 'ACCEPTED':
             case 'ACTIVE':
-                return 'bg-green-500/20 text-green-500 hover:bg-green-500/30';
+                return {
+                    className: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30 hover:bg-emerald-500/20',
+                    icon: CheckCircle2,
+                    label: 'Active'
+                };
             case 'EXPIRED':
             case 'INACTIVE':
-                return 'bg-red-500/20 text-red-500 hover:bg-red-500/30';
+                return {
+                    className: 'bg-rose-500/10 text-rose-600 border-rose-500/30 hover:bg-rose-500/20',
+                    icon: XCircle,
+                    label: 'Inactive'
+                };
             case 'REVOKED':
-                return 'bg-slate-500/20 text-slate-500 hover:bg-slate-500/30';
+                return {
+                    className: 'bg-slate-500/10 text-slate-600 border-slate-500/30 hover:bg-slate-500/20',
+                    icon: AlertCircle,
+                    label: 'Revoked'
+                };
             default:
-                return 'bg-slate-500/20 text-slate-500';
+                return {
+                    className: 'bg-slate-500/10 text-slate-600 border-slate-500/30',
+                    icon: AlertCircle,
+                    label: s
+                };
         }
     };
 
+    const config = getStatusConfig(status);
+    const IconComponent = config.icon;
+
     return (
-        <Badge variant="outline" className={`border-0 ${getStatusBadgeStyles(status)}`}>
-            {status}
+        <Badge 
+            variant="outline" 
+            className={`${config.className} font-medium text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 w-fit border`}
+        >
+            <IconComponent className="h-3.5 w-3.5" />
+            {config.label}
         </Badge>
     );
 }

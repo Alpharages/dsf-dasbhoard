@@ -21,7 +21,7 @@ export const resourceManagerKeys = {
 export const useActiveLocks = () => {
   const queryClient = useQueryClient();
   const token = localStorage.getItem('access_token') || sessionStorage.getItem('access_token') || '';
-  const { socket } = useSocket(token, '/orchestrator');
+  const { socket } = useSocket(token, '/dashboard');
 
   // Listen for real-time lock events via socket
   useEffect(() => {
@@ -57,7 +57,7 @@ export const useActiveLocks = () => {
 export const useDependencyGraph = () => {
   const queryClient = useQueryClient();
   const token = localStorage.getItem('access_token') || sessionStorage.getItem('access_token') || '';
-  const { socket } = useSocket(token, '/orchestrator');
+  const { socket } = useSocket(token, '/dashboard');
 
   // Listen for dependency changes via socket
   useEffect(() => {

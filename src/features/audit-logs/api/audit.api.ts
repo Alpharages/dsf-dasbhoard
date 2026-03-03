@@ -28,8 +28,11 @@ export interface AuditSearchFilters {
 }
 
 export const searchAudits = async (filters: AuditSearchFilters): Promise<PaginatedResponse<AIDecisionLog>> => {
+  const params = Object.fromEntries(
+    Object.entries(filters).filter(([, v]) => v !== '' && v !== undefined && v !== null)
+  );
   const response = await apiClient.get<PaginatedResponse<AIDecisionLog>>(`/audit/search`, {
-    params: filters,
+    params,
   });
   return response.data;
 };
