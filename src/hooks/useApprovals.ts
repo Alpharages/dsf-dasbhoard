@@ -4,6 +4,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '../contexts';
 import apiClient from '../api/client';
 import type {
   ApprovalExecution,
@@ -22,6 +23,7 @@ const QUERY_KEYS = {
 
 export const useApprovals = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   /**
    * Fetch all executions awaiting approval
@@ -36,6 +38,7 @@ export const useApprovals = () => {
         return (data.executions || data.data || data) as ApprovalExecution[];
       },
       refetchInterval: 30000, // Poll every 30 seconds (AC#3, was 15s)
+      enabled: !!user,
     });
   };
 
@@ -84,7 +87,7 @@ export const useApprovals = () => {
           qaResult,
         } as ApprovalDetailData & { qaResult: unknown };
       },
-      enabled: !!executionId,
+      enabled: !!executionId && !!user,
     });
   };
 
@@ -118,6 +121,7 @@ export const useApprovals = () => {
         }
       },
       refetchInterval: 30000,
+      enabled: !!user,
     });
   };
 

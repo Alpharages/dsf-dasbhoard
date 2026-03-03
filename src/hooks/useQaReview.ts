@@ -1,18 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '../contexts';
 import apiClient from '../api/client';
 import type { QaReviewSample, QaSampleDetail, QaReviewDecision, QaWorkloadSummary } from '../types/qa-review';
 import { toast } from 'react-hot-toast';
 
 export const useQaReview = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
-  const useQueue = (filters: any = {}) => {
+  const useQueue = (filters: Record<string, unknown> = {}) => {
     return useQuery({
       queryKey: ['qa-review-queue', filters],
       queryFn: async () => {
         const { data } = await apiClient.get('/qa-review/samples', { params: filters });
         return data.data as QaReviewSample[];
       },
+      enabled: !!user,
     });
   };
 
@@ -24,7 +27,7 @@ export const useQaReview = () => {
         const { data } = await apiClient.get(`/qa-review/samples/${id}`);
         return data.data as QaSampleDetail;
       },
-      enabled: !!id,
+      enabled: !!id && !!user,
     });
   };
 
@@ -35,6 +38,7 @@ export const useQaReview = () => {
         const { data } = await apiClient.get('/qa-workload/summary', { params: { period } });
         return data as QaWorkloadSummary;
       },
+      enabled: !!user,
     });
   };
 
@@ -48,8 +52,9 @@ export const useQaReview = () => {
         queryClient.invalidateQueries({ queryKey: ['qa-review-queue'] });
         toast.success('Review decision submitted successfully');
       },
-      onError: (error: any) => {
-        toast.error(error.response?.data?.message || 'Failed to submit decision');
+      onError: (error: unknown) => {
+        const err = error as { response?: { data?: { message?: string } } };
+        toast.error(err.response?.data?.message || 'Failed to submit decision');
       },
     });
   };

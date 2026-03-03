@@ -9,6 +9,7 @@ import {
   useQueryClient,
   type UseQueryOptions 
 } from '@tanstack/react-query';
+import { useAuth } from '@/contexts';
 import { toast } from 'react-hot-toast';
 import {
   getNotificationPreferences,
@@ -47,12 +48,14 @@ export const notificationKeys = {
 export function useNotificationPreferences(
   options?: Omit<UseQueryOptions<NotificationPreference[], Error>, 'queryKey' | 'queryFn'>
 ) {
+  const { user } = useAuth();
   return useQuery({
     queryKey: notificationKeys.preferences(),
     queryFn: () => getNotificationPreferences().then(r => r.preferences),
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false, // Prevent 429 bursts on tab switching (QA-FR12)
     ...options,
+    enabled: !!user,
   });
 }
 
@@ -125,6 +128,7 @@ export function useInAppNotifications(
   options?: { unreadOnly?: boolean; limit?: number },
   queryOptions?: Omit<UseQueryOptions<InAppNotification[], Error>, 'queryKey' | 'queryFn'>
 ) {
+  const { user } = useAuth();
   return useQuery({
     queryKey: [...notificationKeys.inApp(), options],
     queryFn: () => getInAppNotifications(options).then(r => r.notifications),
@@ -132,6 +136,7 @@ export function useInAppNotifications(
     refetchInterval: 300_000, // Poll every 5 min as fallback (QA-FR12: prevent 429 bursts)
     refetchOnWindowFocus: false, // Prevent 429 bursts when switching tabs (QA-NFR7)
     ...queryOptions,
+    enabled: !!user,
   });
 }
 
@@ -141,6 +146,7 @@ export function useInAppNotifications(
 export function useUnreadNotificationCount(
   options?: Omit<UseQueryOptions<number, Error>, 'queryKey' | 'queryFn'>
 ) {
+  const { user } = useAuth();
   return useQuery({
     queryKey: notificationKeys.unreadCount(),
     queryFn: () => getUnreadNotificationCount().then(r => r.count),
@@ -148,6 +154,7 @@ export function useUnreadNotificationCount(
     refetchInterval: 30 * 1000, // Poll every 30 s — matches badge-update window (AC4); count endpoint is lightweight
     refetchOnWindowFocus: false, // Prevent 429 bursts on tab switching (QA-NFR7)
     ...options,
+    enabled: !!user,
   });
 }
 

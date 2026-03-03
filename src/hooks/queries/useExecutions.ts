@@ -9,6 +9,7 @@ import {
   useQueryClient,
   type UseQueryOptions 
 } from '@tanstack/react-query';
+import { useAuth } from '@/contexts';
 import { toast } from 'react-hot-toast';
 import {
   getActiveExecutions,
@@ -58,12 +59,14 @@ export function useActiveExecutions(
   filters?: ExecutionFilters,
   options?: Omit<UseQueryOptions<Execution[], Error>, 'queryKey' | 'queryFn'>
 ) {
+  const { user } = useAuth();
   return useQuery({
     queryKey: executionKeys.activeFiltered(filters),
     queryFn: () => getActiveExecutions(filters).then(r => r.executions),
     staleTime: 30 * 1000, // 30 seconds
     refetchInterval: 30 * 1000, // Poll every 30s as fallback
     ...options,
+    enabled: !!user,
   });
 }
 
@@ -74,12 +77,13 @@ export function useExecution(
   executionId: string,
   options?: Omit<UseQueryOptions<Execution, Error>, 'queryKey' | 'queryFn'>
 ) {
+  const { user } = useAuth();
   return useQuery({
     queryKey: executionKeys.detail(executionId),
     queryFn: () => getExecution(executionId),
-    enabled: !!executionId,
     staleTime: 30 * 1000,
     ...options,
+    enabled: !!executionId && !!user,
   });
 }
 
@@ -91,12 +95,13 @@ export function useExecutionLogs(
   filters?: LogFilters,
   options?: Omit<UseQueryOptions<ExecutionLog[], Error>, 'queryKey' | 'queryFn'>
 ) {
+  const { user } = useAuth();
   return useQuery({
     queryKey: executionKeys.logsFiltered(executionId, filters),
     queryFn: () => getExecutionLogs(executionId, filters).then(r => r.logs),
-    enabled: !!executionId,
     staleTime: 60 * 1000, // 1 minute
     ...options,
+    enabled: !!executionId && !!user,
   });
 }
 
@@ -108,12 +113,13 @@ export function useExecutionActivities(
   filters?: ActivityFilters,
   options?: Omit<UseQueryOptions<ExecutionActivity[], Error>, 'queryKey' | 'queryFn'>
 ) {
+  const { user } = useAuth();
   return useQuery({
     queryKey: executionKeys.activitiesFiltered(executionId, filters),
     queryFn: () => getExecutionActivities(executionId, filters).then(r => r.activities),
-    enabled: !!executionId,
     staleTime: 60 * 1000, // 1 minute
     ...options,
+    enabled: !!executionId && !!user,
   });
 }
 
@@ -125,12 +131,13 @@ export function useLatestExecutionActivities(
   limit = 20,
   options?: Omit<UseQueryOptions<ExecutionActivity[], Error>, 'queryKey' | 'queryFn'>
 ) {
+  const { user } = useAuth();
   return useQuery({
     queryKey: [...executionKeys.activities(executionId), 'latest', limit] as const,
     queryFn: () => getLatestExecutionActivities(executionId, limit).then(r => r.activities),
-    enabled: !!executionId,
     staleTime: 60 * 1000,
     ...options,
+    enabled: !!executionId && !!user,
   });
 }
 

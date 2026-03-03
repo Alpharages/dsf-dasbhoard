@@ -6,13 +6,11 @@
  * - Redirects to /login if not authenticated
  * - Redirects to /forbidden if authenticated but insufficient role
  * - Supports role hierarchy (ADMIN > MANAGER > TL > PM > QA > VIEWER)
- * - Shows loading spinner during initial auth check
  */
 
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { canAccess } from '../../utils/roleHelpers';
-import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
@@ -23,18 +21,6 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children, requiredRole, requiredRoles }: ProtectedRouteProps) {
     const auth = useAuth();
     const location = useLocation();
-
-    // Show loading spinner during initial auth check
-    if (auth.isLoading) {
-        return (
-            <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-                <div className="text-center">
-                    <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto" />
-                    <p className="text-slate-400 mt-4">Checking authentication...</p>
-                </div>
-            </div>
-        );
-    }
 
     // Redirect to login if not authenticated
     if (!auth.isAuthenticated || !auth.user) {
