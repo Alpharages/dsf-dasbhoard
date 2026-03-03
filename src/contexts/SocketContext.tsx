@@ -17,7 +17,10 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // H-1: Use state (not ref) so context consumers re-render when socket changes
   const [socket, setSocket] = useState<Socket | null>(null);
   const [connected, setConnected] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
+  // Initialize isConnecting to true if we already have a token so the UI shows
+  // "Connecting…" instead of "Offline" during the brief window before the socket
+  // effect runs and the WebSocket handshake completes.
+  const [isConnecting, setIsConnecting] = useState(() => !!getAccessToken());
   // H-3: Track active token so we reconnect when it rotates via silent refresh
   const [token, setToken] = useState<string | null>(getAccessToken);
 

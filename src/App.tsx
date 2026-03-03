@@ -220,6 +220,10 @@ function AppContent({ navigate }: { navigate: NavigateFunction }) {
             {/* /projects redirects to /projects/sync */}
             <Route path="/projects" element={<Navigate to="/projects/sync" replace />} />
 
+            {/* Alias redirects for legacy/external links */}
+            <Route path="/users" element={<Navigate to="/admin/users" replace />} />
+            <Route path="/qa-review" element={<Navigate to="/qa-review/dashboard" replace />} />
+
             {/* Projects sync - all authenticated users */}
             <Route
               path="/projects/sync"

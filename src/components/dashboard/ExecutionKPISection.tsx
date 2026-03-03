@@ -20,6 +20,10 @@ export function ExecutionKPISection({ summary }: ExecutionKPISectionProps) {
   const [activeExecutions, setActiveExecutions] = useState(0);
   const [queuedExecutions, setQueuedExecutions] = useState(0);
 
+  // Defer sparkline rendering until after first paint to prevent recharts -1 dimension errors
+  const [chartMounted, setChartMounted] = useState(false);
+  useEffect(() => { setChartMounted(true); }, []);
+
   useEffect(() => {
     if (summary) {
       setActiveExecutions(summary.active_ai_executions || 0);
@@ -123,25 +127,27 @@ export function ExecutionKPISection({ summary }: ExecutionKPISectionProps) {
             Based on historical data
           </p>
           <div className="h-[60px] w-full mt-2">
-            {/* Recharts with min-w-0 for responsive guardrail */}
+            {/* Recharts with min-w-0 for responsive guardrail; defer until mounted */}
             <div className="w-full h-full min-w-0">
-              <ResponsiveContainer width="100%" height="100%" debounce={100}>
-                <LineChart data={sparklineData}>
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#8884d8"
-                    strokeWidth={2}
-                    dot={false}
-                    isAnimationActive={false}
-                  />
-                  <RechartsTooltip 
-                    contentStyle={{ fontSize: '12px', background: 'hsl(var(--background))', border: '1px solid hsl(var(--border))' }}
-                    formatter={(value: number | undefined) => [`${(value || 0).toFixed(1)}h`, 'Time']}
-                    labelStyle={{ display: 'none' }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              {chartMounted && (
+                <ResponsiveContainer width="100%" height="100%" debounce={100}>
+                  <LineChart data={sparklineData}>
+                    <Line
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#8884d8"
+                      strokeWidth={2}
+                      dot={false}
+                      isAnimationActive={false}
+                    />
+                    <RechartsTooltip
+                      contentStyle={{ fontSize: '12px', background: 'hsl(var(--background))', border: '1px solid hsl(var(--border))' }}
+                      formatter={(value: number | undefined) => [`${(value || 0).toFixed(1)}h`, 'Time']}
+                      labelStyle={{ display: 'none' }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </div>
         </CardContent>
