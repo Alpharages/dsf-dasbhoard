@@ -1,12 +1,12 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { FinancialKPISection } from '../../../components/dashboard/FinancialKPISection';
-import apiClient from '../../../api/client';
-import { useAuth } from '../../../contexts/AuthContext';
+import { FinancialKPISection } from '@/components/dashboard/FinancialKPISection';
+import apiClient from '@/api/client';
+import { useAuth } from '@/contexts/AuthContext';
 
-vi.mock('../../../api/client');
-vi.mock('../../../contexts/AuthContext', () => ({
+vi.mock('@/api/client');
+vi.mock('@/contexts/AuthContext', () => ({
   useAuth: vi.fn(),
 }));
 

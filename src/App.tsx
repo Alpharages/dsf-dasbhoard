@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Routes, Route, useNavigate, useParams, Outlet, useMatches, type NavigateFunction } from 'react-router-dom';
+import { Routes, Route, useNavigate, useParams, Outlet, useLocation, type NavigateFunction } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './contexts';
 import { SocketProvider } from './contexts/SocketContext';
@@ -112,14 +112,44 @@ function App() {
 // Inner component to access useAuth hook
 function AppContent({ navigate }: { navigate: NavigateFunction }) {
   const { isLoading } = useAuth();
-  const matches = useMatches();
+  const location = useLocation();
 
-  // Drive document.title from the deepest matched route's handle.title.
-  // All titles are co-located with route definitions below — no per-page hook needed.
+  // Drive document.title from the current pathname via a static lookup.
+  // useMatches() requires a data router (createBrowserRouter); useLocation() works with BrowserRouter.
   useEffect(() => {
-    const handle = matches.at(-1)?.handle as { title?: string } | undefined;
-    document.title = handle?.title ?? 'DSF Dashboard';
-  }, [matches]);
+    const routeTitles: [string, string][] = [
+      ['/login', 'Login — DSF'],
+      ['/register', 'Registration — DSF'],
+      ['/forbidden', '403 Forbidden — DSF'],
+      ['/profile', 'Profile — DSF'],
+      ['/conversations/upload', 'Upload Conversation — DSF'],
+      ['/conversations', 'Conversations — DSF'],
+      ['/projects/sync', 'Projects Sync — DSF'],
+      ['/decisions', 'Decisions — DSF'],
+      ['/audit-logs', 'Audit Logs — DSF'],
+      ['/resource-manager', 'Resource Manager — DSF'],
+      ['/financial-metrics', 'Financial Metrics — DSF'],
+      ['/cost', 'Cost Analysis — DSF'],
+      ['/capacity-monitor', 'Capacity Monitor — DSF'],
+      ['/qa-review/dashboard', 'QA Review — DSF'],
+      ['/architecture-review/queue', 'Architecture Queue — DSF'],
+      ['/architecture-review/constraints', 'Architecture Constraints — DSF'],
+      ['/architecture-review/escalations', 'Escalations — DSF'],
+      ['/architecture-review/metrics', 'Architecture Metrics — DSF'],
+      ['/architecture/capabilities', 'Capabilities — DSF'],
+      ['/admin/invitations', 'Invitations — DSF'],
+      ['/admin/users', 'Users — DSF'],
+      ['/settings', 'Settings — DSF'],
+      ['/production-errors', 'Production Errors — DSF'],
+      ['/approvals', 'PM Approvals — DSF'],
+      ['/executions', 'Execution Monitoring — DSF'],
+      ['/observability', 'Observability — DSF'],
+      ['/notifications/preferences', 'Notification Preferences — DSF'],
+    ];
+    const path = location.pathname;
+    const match = routeTitles.find(([key]) => path === key || path.startsWith(key + '/'));
+    document.title = match ? match[1] : path === '/' ? 'PM Dashboard — DSF' : 'DSF Dashboard';
+  }, [location.pathname]);
 
   // Suppress render during initial auth check (AppContent returns null; AuthContext initializes isLoading: true)
   if (isLoading) {

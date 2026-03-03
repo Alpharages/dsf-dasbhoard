@@ -32,7 +32,7 @@ describe('Settings Panels', () => {
     describe('CleanupPanel', () => {
         it('renders cleanup configuration inputs', () => {
             render(<CleanupPanel />);
-            expect(screen.getByText('File Retention Policy')).toBeInTheDocument();
+            expect(screen.getByText('Retention Period (Days)')).toBeInTheDocument();
             // const input = screen.getByLabelText('Retention Period (Days)'); // Removed unused
             // expect(input).toBeInTheDocument();
         });

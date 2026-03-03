@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { ConstraintsList } from '../../../components/architecture-review/ConstraintsList';
-import type { ArchitectureConstraint } from '../../../types/architectureConstraint';
+import { ConstraintsList } from '@/components/architecture-review/ConstraintsList';
+import type { ArchitectureConstraint } from '@/types/architectureConstraint';
 
 const mockConstraints: ArchitectureConstraint[] = [
     {
@@ -41,8 +41,8 @@ describe('ConstraintsList', () => {
 
         render(<ConstraintsList constraints={mockConstraints} onEdit={onEdit} onDelete={onDelete} />);
 
-        expect(screen.getByText('GLOBAL')).toBeInTheDocument();
-        expect(screen.getByText('ALLOWED_TECH')).toBeInTheDocument();
+        expect(screen.getByText('Global')).toBeInTheDocument();
+        expect(screen.getByText('Allowed Tech')).toBeInTheDocument();
         expect(screen.getByText(/2 packages/i)).toBeInTheDocument();
         expect(screen.getByText(/Regex: \^\[A-Z\]/i)).toBeInTheDocument();
     });

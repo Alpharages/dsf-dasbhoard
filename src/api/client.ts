@@ -44,11 +44,16 @@ const processQueue = (error: AxiosError | null) => {
     failedQueue = [];
 };
 
-// Interceptor to add auth token to requests
+// Interceptor to add auth token and fix Content-Type for bodyless requests
 apiClient.interceptors.request.use((config) => {
     const token = getAccessToken();
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+    }
+    // Fastify rejects DELETE requests that send Content-Type: application/json with no body.
+    // Remove Content-Type when the request has no body to avoid 400 errors.
+    if (config.method?.toUpperCase() === 'DELETE' && !config.data) {
+        delete config.headers['Content-Type'];
     }
     return config;
 });

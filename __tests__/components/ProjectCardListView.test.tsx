@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { ProjectCardListView } from '../../components/dashboard/ProjectCardListView';
-import type { Project } from '../../types';
+import { ProjectCardListView } from '@/components/dashboard/ProjectCardListView';
+import type { Project } from '@/types';
 
 vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal() as typeof import('react-router-dom');

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { filterProjects } from '../../utils/projectFilters';
-import type { Project } from '../../types';
+import { filterProjects } from '@/utils/projectFilters';
+import type { Project } from '@/types';
 
 const makeProject = (overrides: Partial<Project> = {}): Project => ({
   id: '1',

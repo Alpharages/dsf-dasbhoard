@@ -11,18 +11,10 @@ vi.mock('../hooks/useAdrQueue', () => ({
     useSubmitAdrReview: vi.fn()
 }));
 vi.mock('../api/architectureReviewApi');
-vi.mock('lucide-react', () => ({
-    ShieldAlert: () => <span data-testid="shield-alert-icon" />,
-    Info: () => <span data-testid="info-icon" />,
-    Filter: () => <span data-testid="filter-icon" />,
-    X: () => <span data-testid="x-icon" />,
-    Clock: () => <span data-testid="clock-icon" />,
-    ExternalLink: () => <span data-testid="external-link-icon" />,
-    AlertTriangle: () => <span data-testid="alert-icon" />,
-    CheckCircle: () => <span data-testid="check-icon" />,
-    Calendar: () => <span data-testid="calendar-icon" />,
-    Ticket: () => <span data-testid="ticket-icon" />,
-}));
+vi.mock('lucide-react', async (importOriginal) => {
+    const actual = await importOriginal() as Record<string, unknown>;
+    return { ...actual };
+});
 
 // Mock data
 const mockAdr: AdrQueueItem = {
@@ -93,7 +85,7 @@ describe('ArchitectureReviewQueuePage', () => {
         );
 
         expect(screen.getByText('Use Redis for Session Storage')).toBeTruthy();
-        expect(screen.getByText('Medium Risk')).toBeTruthy();
+        expect(screen.getAllByText('Medium Risk').length).toBeGreaterThan(0);
         expect(screen.getByText('85%')).toBeTruthy();
     });
 

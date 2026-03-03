@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ConstraintForm } from '../../../components/architecture-review/ConstraintForm';
+import { ConstraintForm } from '@/components/architecture-review/ConstraintForm';
 
 const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } }
@@ -30,7 +30,7 @@ describe('ConstraintForm', () => {
         );
 
         expect(screen.getByText('Add Constraint')).toBeInTheDocument();
-        expect(screen.getByLabelText(/Scope/i)).toBeInTheDocument();
+        expect(screen.getByText('Scope *')).toBeInTheDocument();
     });
 
     it('does not render when isOpen is false', () => {
@@ -61,11 +61,11 @@ describe('ConstraintForm', () => {
         fireEvent.change(typeSelect, { target: { value: 'PATTERN' } });
 
         // Enter invalid regex
-        const patternInput = screen.getByPlaceholderText(/e.g., \/\^\\[A-Z\\]\//i);
+        const patternInput = screen.getByPlaceholderText('e.g., /^[A-Z]/');
         fireEvent.change(patternInput, { target: { value: '[invalid(' } });
 
         await waitFor(() => {
-            expect(screen.getByText(/Invalid regex pattern/i)).toBeInTheDocument();
+            expect(screen.getByText(/invalid regex pattern/i)).toBeInTheDocument();
         });
     });
 

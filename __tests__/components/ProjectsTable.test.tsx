@@ -1,12 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { ProjectsTable } from '../../components/projects/ProjectsTable';
-import type { ProjectRowData } from '../../components/projects/ProjectsTable';
-import apiClient from '../../api/client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ProjectsTable } from '@/components/projects/ProjectsTable';
+import type { ProjectRowData } from '@/components/projects/ProjectsTable';
+import apiClient from '@/api/client';
 import { toast } from 'react-hot-toast';
 
 // Mock apiClient
-vi.mock('../../api/client', () => ({
+vi.mock('@/api/client', () => ({
     default: {
         patch: vi.fn(),
         post: vi.fn()
@@ -71,7 +72,12 @@ describe('ProjectsTable', () => {
     });
 
     it('expands row when chevron is clicked', async () => {
-        render(<ProjectsTable projects={mockProjects} />);
+        const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+        render(
+            <QueryClientProvider client={queryClient}>
+                <ProjectsTable projects={mockProjects} />
+            </QueryClientProvider>
+        );
 
         // Get all buttons - there are 2 per row: sync button + chevron button
         const allButtons = screen.getAllByRole('button');

@@ -64,7 +64,7 @@ describe('ClickUpImportModal', () => {
 
         // Should skip Organization step and show Spaces
         expect(screen.getByText('Select List')).toBeInTheDocument();
-        expect(screen.getByText('Available Spaces (Org One)')).toBeInTheDocument();
+        expect(screen.getByText('Space One')).toBeInTheDocument();
     });
 
     it('back button behavior for single org returns to provider', () => {

@@ -5,6 +5,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import apiClient from '../../api/client';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
+// Mock AuthContext so useAuth() doesn't throw outside provider
+vi.mock('../../contexts/AuthContext', () => ({
+    useAuth: vi.fn(() => ({ user: { id: 'user1', role: 'ADMIN' } })),
+    getAccessToken: vi.fn(() => 'test-token'),
+}));
+
 // Mock apiClient
 vi.mock('../../api/client');
 const mockedApiClient = apiClient as any;

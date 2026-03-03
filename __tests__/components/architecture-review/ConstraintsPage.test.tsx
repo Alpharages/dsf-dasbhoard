@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ConstraintsPage } from '../../../pages/architecture-review/constraints/ConstraintsPage';
-import * as hooks from '../../../hooks/api/useArchitectureConstraints';
+import { ConstraintsPage } from '@/pages/architecture-review/constraints/ConstraintsPage';
+import * as hooks from '@/hooks/api/useArchitectureConstraints';
 
 const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } }

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { vi } from 'vitest';
-import { ProjectFilterSheet } from '../../components/dashboard/ProjectFilterSheet';
+import { ProjectFilterSheet } from '@/components/dashboard/ProjectFilterSheet';
 
 describe('ProjectFilterSheet', () => {
   const defaultFilters = {

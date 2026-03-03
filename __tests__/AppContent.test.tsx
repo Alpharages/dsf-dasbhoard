@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { ReactNode } from 'react';
-import App from '../App';
+import App from '../src/App';
 import * as contexts from '@/contexts';
 
 // Mock AuthProvider (passthrough) and useAuth to avoid real auth side effects

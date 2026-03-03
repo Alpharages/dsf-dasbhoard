@@ -2,28 +2,28 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Dashboard } from '../../pages/Dashboard';
-import * as AuthContext from '../../contexts/AuthContext';
-import type { User } from '../../contexts/AuthContext';
-import * as SocketContext from '../../hooks/useSocket';
-import * as ProjectUpdates from '../../hooks/useProjectUpdates';
-import apiClient from '../../api/client';
+import { Dashboard } from '@/pages/Dashboard';
+import * as AuthContext from '@/contexts/AuthContext';
+import type { User } from '@/contexts/AuthContext';
+import * as SocketContext from '@/hooks/useSocket';
+import * as ProjectUpdates from '@/hooks/useProjectUpdates';
+import apiClient from '@/api/client';
 
 // Mock all complex children and context hooks that are irrelevant to this test
-vi.mock('../../components/dashboard/StatsGrid', () => ({ StatsGrid: () => <div data-testid="stats-grid" /> }));
-vi.mock('../../components/dashboard/ExecutionKPISection', () => ({ ExecutionKPISection: () => <div data-testid="execution-kpi" /> }));
-vi.mock('../../components/dashboard/FinancialKPISection', () => ({ FinancialKPISection: () => <div data-testid="financial-kpi" /> }));
-vi.mock('../../components/dashboard/ProviderDistributionChart', () => ({ ProviderDistributionChart: () => <div data-testid="provider-distribution" /> }));
-vi.mock('../../components/dashboard/ProjectCard', () => ({ ProjectCard: () => <div data-testid="project-card" /> }));
-vi.mock('../../components/dashboard/NewProjectDialog', () => ({ NewProjectDialog: () => <div data-testid="new-project" /> }));
-vi.mock('../../components/dashboard/ProjectFilterSheet', () => ({ ProjectFilterSheet: () => <div data-testid="filter-sheet" /> }));
-vi.mock('../../components/quality-gate/ReviewModal', () => ({ ReviewModal: () => <div data-testid="review-modal" /> }));
-vi.mock('../../components/conversations/ConversationListWidget', () => ({ ConversationListWidget: () => <div data-testid="conversations" /> }));
-vi.mock('../../components/financial/FinancialMetricsSection', () => ({ FinancialMetricsSection: () => <div data-testid="financial-metrics" /> }));
-vi.mock('../../components/ux/CommandPalette', () => ({ CommandPalette: () => <div data-testid="command-palette" /> }));
-vi.mock('../../components/ux/HelpModal', () => ({ HelpModal: () => <div data-testid="help-modal" /> }));
-vi.mock('../../components/dashboard/ProjectCardListView', () => ({ ProjectCardListView: () => <div data-testid="project-list" /> }));
-vi.mock('../../api/client');
+vi.mock('@/components/dashboard/StatsGrid', () => ({ StatsGrid: () => <div data-testid="stats-grid" /> }));
+vi.mock('@/components/dashboard/ExecutionKPISection', () => ({ ExecutionKPISection: () => <div data-testid="execution-kpi" /> }));
+vi.mock('@/components/dashboard/FinancialKPISection', () => ({ FinancialKPISection: () => <div data-testid="financial-kpi" /> }));
+vi.mock('@/components/dashboard/ProviderDistributionChart', () => ({ ProviderDistributionChart: () => <div data-testid="provider-distribution" /> }));
+vi.mock('@/components/dashboard/ProjectCard', () => ({ ProjectCard: () => <div data-testid="project-card" /> }));
+vi.mock('@/components/dashboard/NewProjectDialog', () => ({ NewProjectDialog: () => <div data-testid="new-project" /> }));
+vi.mock('@/components/dashboard/ProjectFilterSheet', () => ({ ProjectFilterSheet: () => <div data-testid="filter-sheet" /> }));
+vi.mock('@/components/quality-gate/ReviewModal', () => ({ ReviewModal: () => <div data-testid="review-modal" /> }));
+vi.mock('@/components/conversations/ConversationListWidget', () => ({ ConversationListWidget: () => <div data-testid="conversations" /> }));
+vi.mock('@/components/financial/FinancialMetricsSection', () => ({ FinancialMetricsSection: () => <div data-testid="financial-metrics" /> }));
+vi.mock('@/components/ux/CommandPalette', () => ({ CommandPalette: () => <div data-testid="command-palette" /> }));
+vi.mock('@/components/ux/HelpModal', () => ({ HelpModal: () => <div data-testid="help-modal" /> }));
+vi.mock('@/components/dashboard/ProjectCardListView', () => ({ ProjectCardListView: () => <div data-testid="project-list" /> }));
+vi.mock('@/api/client');
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider

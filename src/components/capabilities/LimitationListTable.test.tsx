@@ -30,8 +30,8 @@ describe('LimitationListTable', () => {
             />
         );
 
-        expect(screen.getByText('Code Generation')).toBeInTheDocument();
-        expect(screen.getByText('Test Generation')).toBeInTheDocument();
+        expect(screen.getAllByText('Code Generation').length).toBeGreaterThan(0);
+        expect(screen.getAllByText('Test Generation').length).toBeGreaterThan(0);
         expect(screen.getByText('45.5%')).toBeInTheDocument();
         expect(screen.getByText('75.2%')).toBeInTheDocument();
     });

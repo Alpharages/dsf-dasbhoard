@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { NewProjectDialog } from '../../components/dashboard/NewProjectDialog';
+import { NewProjectDialog } from '@/components/dashboard/NewProjectDialog';
 
 // Mock hooks and api
-vi.mock('../../contexts', () => ({
+vi.mock('@/contexts', () => ({
     useAuth: vi.fn()
 }));
 
-vi.mock('../../api/projectsApi', () => ({
+vi.mock('@/api/projectsApi', () => ({
     createProject: vi.fn()
 }));
 
@@ -19,8 +19,8 @@ vi.mock('react-hot-toast', () => ({
     }
 }));
 
-import { useAuth } from '../../contexts';
-import { createProject } from '../../api/projectsApi';
+import { useAuth } from '@/contexts';
+import { createProject } from '@/api/projectsApi';
 import { toast } from 'react-hot-toast';
 
 const createWrapper = () => {

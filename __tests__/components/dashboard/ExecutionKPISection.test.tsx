@@ -1,10 +1,10 @@
 import { render, screen, act } from '@testing-library/react';
-import { ExecutionKPISection } from '../../../components/dashboard/ExecutionKPISection';
+import { ExecutionKPISection } from '@/components/dashboard/ExecutionKPISection';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { useSocket } from '../../../hooks/useSocket';
+import { useSocket } from '@/hooks/useSocket';
 import type { DashboardSummary } from '@/types';
 
-vi.mock('../../../hooks/useSocket', () => ({
+vi.mock('@/hooks/useSocket', () => ({
   useSocket: vi.fn(),
 }));
 

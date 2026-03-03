@@ -3,32 +3,32 @@ import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WorkloadCapacityPage } from '../../pages/WorkloadCapacityPage';
-import { workloadApi } from '../../api/workloadApi';
+import { WorkloadCapacityPage } from '@/pages/WorkloadCapacityPage';
+import { workloadApi } from '@/api/workloadApi';
 
 // Mock dependencies
-vi.mock('../../contexts/AuthContext', () => ({
+vi.mock('@/contexts/AuthContext', () => ({
     useAuth: vi.fn(),
     useHasRole: vi.fn(),
     getAccessToken: vi.fn(() => 'mock-token'),
 }));
-vi.mock('../../hooks/useSocket', () => ({
+vi.mock('@/hooks/useSocket', () => ({
     useSocket: vi.fn(() => ({ socket: null })),
 }));
-vi.mock('../../api/workloadApi');
-vi.mock('../../components/workload/UtilizationGauge', () => ({
+vi.mock('@/api/workloadApi');
+vi.mock('@/components/workload/UtilizationGauge', () => ({
     UtilizationGauge: () => <div data-testid="utilization-gauge" />,
 }));
-vi.mock('../../components/workload/WorkloadTrendsChart', () => ({
+vi.mock('@/components/workload/WorkloadTrendsChart', () => ({
     WorkloadTrendsChart: () => <div data-testid="trends-chart" />,
 }));
-vi.mock('../../components/workload/TeamCapacityChart', () => ({
+vi.mock('@/components/workload/TeamCapacityChart', () => ({
     TeamCapacityChart: () => <div data-testid="team-capacity-chart" />,
 }));
-vi.mock('../../components/workload/ReassignmentModal', () => ({
+vi.mock('@/components/workload/ReassignmentModal', () => ({
     ReassignmentModal: () => null,
 }));
-vi.mock('../../components/workload/CapacitySettingsModal', () => ({
+vi.mock('@/components/workload/CapacitySettingsModal', () => ({
     CapacitySettingsModal: () => null,
 }));
 vi.mock('lucide-react', () => ({
@@ -41,7 +41,7 @@ vi.mock('react-hot-toast', () => ({
     toast: { error: vi.fn(), success: vi.fn() },
 }));
 
-import { useAuth, useHasRole } from '../../contexts/AuthContext';
+import { useAuth, useHasRole } from '@/contexts/AuthContext';
 
 const mockUser = {
     id: 'user-uuid-1',

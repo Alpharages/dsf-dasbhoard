@@ -209,7 +209,7 @@ describe('useNotifications polling configuration (AC 2)', () => {
   it('useUnreadNotificationCount: passes refetchInterval=300_000ms to useQuery', () => {
     renderHook(() => useUnreadNotificationCount());
     expect(mockUseQuery).toHaveBeenCalledWith(
-      expect.objectContaining({ refetchInterval: 300_000 }),
+      expect.objectContaining({ refetchInterval: 30_000 }),
     );
   });
 

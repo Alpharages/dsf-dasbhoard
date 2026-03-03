@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ClickUpImportModal } from '../../components/projects/ClickUpImportModal';
+import { ClickUpImportModal } from '@/components/projects/ClickUpImportModal';
 
 // Mock hooks
-vi.mock('../../hooks/useClickUpHierarchy', () => ({
+vi.mock('@/hooks/useClickUpHierarchy', () => ({
     useClickUpHierarchy: vi.fn()
 }));
 
-vi.mock('../../hooks/useImportProject', () => ({
+vi.mock('@/hooks/useImportProject', () => ({
     useImportProject: vi.fn()
 }));
 
@@ -20,8 +20,8 @@ vi.mock('react-hot-toast', () => ({
     }
 }));
 
-import { useClickUpHierarchy } from '../../hooks/useClickUpHierarchy';
-import { useImportProject } from '../../hooks/useImportProject';
+import { useClickUpHierarchy } from '@/hooks/useClickUpHierarchy';
+import { useImportProject } from '@/hooks/useImportProject';
 
 const createWrapper = () => {
     const queryClient = new QueryClient({
@@ -36,13 +36,19 @@ const createWrapper = () => {
 
 describe('ClickUpImportModal', () => {
     const mockHierarchyData = {
-        spaces: [
+        organizations: [
             {
-                id: 'space1',
-                name: 'Test Space',
-                lists: [
-                    { id: 'list1', name: 'List 1' },
-                    { id: 'list2', name: 'List 2' }
+                id: 'org1',
+                name: 'Test Org',
+                spaces: [
+                    {
+                        id: 'space1',
+                        name: 'Test Space',
+                        lists: [
+                            { id: 'list1', name: 'List 1' },
+                            { id: 'list2', name: 'List 2' }
+                        ]
+                    }
                 ]
             }
         ]
@@ -69,7 +75,7 @@ describe('ClickUpImportModal', () => {
             { wrapper: createWrapper() }
         );
 
-        expect(screen.getByText('Select Integration Provider')).toBeInTheDocument();
+        expect(screen.getByText('Import Project')).toBeInTheDocument();
         expect(screen.getByText('CLICKUP')).toBeInTheDocument();
         expect(screen.getByText('JIRA')).toBeInTheDocument();
         expect(screen.getByText('ASANA')).toBeInTheDocument();
@@ -95,7 +101,7 @@ describe('ClickUpImportModal', () => {
         fireEvent.click(clickupButton);
 
         await waitFor(() => {
-            expect(screen.getByText('Browse ClickUp Workspace')).toBeInTheDocument();
+            expect(screen.getByText('Select List')).toBeInTheDocument();
         });
     });
 
@@ -129,7 +135,7 @@ describe('ClickUpImportModal', () => {
         const clickupButton = screen.getByRole('button', { name: /CLICKUP/i });
         fireEvent.click(clickupButton);
 
-        expect(screen.getByText('Loading ClickUp workspace...')).toBeInTheDocument();
+        expect(screen.getByText('Loading Organizations...')).toBeInTheDocument();
     });
 
     it('enables import button when list is selected', async () => {

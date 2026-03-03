@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { StatsGrid } from '../../../components/dashboard/StatsGrid';
+import { StatsGrid } from '@/components/dashboard/StatsGrid';
 import type { DashboardSummary } from '@/types';
 
 describe('StatsGrid', () => {
