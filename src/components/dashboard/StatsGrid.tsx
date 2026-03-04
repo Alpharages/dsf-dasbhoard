@@ -1,6 +1,6 @@
 /**
  * Enhanced Stats Grid Component
- * Uses StatsCard with sparklines, trends, and animations
+ * Premium design with glassmorphism, gradients, and animations
  */
 
 import {
@@ -30,7 +30,7 @@ const generateSparkline = (baseValue: number, points: number = 10): number[] => 
 
 const formatPercentageFromRatio = (value?: number): string => {
   if (typeof value !== 'number' || Number.isNaN(value) || value <= 0) {
-    return 'No data yet';
+    return 'No data';
   }
   return `${Math.round(value * 100)}%`;
 };
@@ -41,7 +41,6 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
     active_projects: { value: 8, type: 'increase' as const },
     utilization: { value: 5, type: 'decrease' as const },
     blocked: { value: 2, type: 'increase' as const },
-    // No historical trend data available for these new KPIs yet — omit to avoid misleading display
     pr_merge_rate: null as { value: number; type: 'increase' | 'decrease' } | null,
     qa_first_pass_rate: null as { value: number; type: 'increase' | 'decrease' } | null,
   };
@@ -51,7 +50,8 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
       label: 'Total Projects',
       value: summary?.total_projects || 0,
       icon: BarChart3,
-      color: 'blue' as const,
+      gradient: 'from-blue-500 to-cyan-400',
+      glowColor: 'rgba(59, 130, 246, 0.3)',
       change: trends.total_projects,
       sparklineData: generateSparkline(summary?.total_projects || 30),
     },
@@ -59,7 +59,8 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
       label: 'Active Projects',
       value: summary?.active_projects || 0,
       icon: Users,
-      color: 'emerald' as const,
+      gradient: 'from-emerald-500 to-teal-400',
+      glowColor: 'rgba(16, 185, 129, 0.3)',
       change: trends.active_projects,
       sparklineData: generateSparkline(summary?.active_projects || 20),
     },
@@ -67,7 +68,8 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
       label: 'Team Utilization',
       value: `${summary?.utilization_percent || 0}%`,
       icon: Clock,
-      color: 'purple' as const,
+      gradient: 'from-purple-500 to-pink-400',
+      glowColor: 'rgba(139, 92, 246, 0.3)',
       change: trends.utilization,
       sparklineData: generateSparkline(summary?.utilization_percent || 75),
     },
@@ -75,7 +77,8 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
       label: 'Blocked Tickets',
       value: summary?.blocked_tickets || 0,
       icon: AlertTriangle,
-      color: 'rose' as const,
+      gradient: 'from-rose-500 to-orange-400',
+      glowColor: 'rgba(239, 68, 68, 0.3)',
       change: trends.blocked,
       sparklineData: generateSparkline(summary?.blocked_tickets || 5),
     },
@@ -83,7 +86,8 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
       label: 'PR Merge Rate',
       value: formatPercentageFromRatio(summary?.pr_merge_rate),
       icon: GitPullRequest,
-      color: 'amber' as const,
+      gradient: 'from-amber-500 to-yellow-400',
+      glowColor: 'rgba(245, 158, 11, 0.3)',
       change: trends.pr_merge_rate,
       sparklineData: generateSparkline((summary?.pr_merge_rate || 0) * 100 || 40),
     },
@@ -91,7 +95,8 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
       label: 'QA First-Pass Rate',
       value: formatPercentageFromRatio(summary?.qa_first_pass_rate),
       icon: ShieldCheck,
-      color: 'cyan' as const,
+      gradient: 'from-cyan-500 to-blue-400',
+      glowColor: 'rgba(6, 182, 212, 0.3)',
       change: trends.qa_first_pass_rate,
       sparklineData: generateSparkline((summary?.qa_first_pass_rate || 0) * 100 || 35),
     },
@@ -99,11 +104,11 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-8">
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div
             key={i}
-            className="h-32 rounded-2xl border border-border bg-card animate-pulse"
+            className="h-32 rounded-2xl border border-[var(--card-border)] bg-[var(--surface-1)] animate-pulse"
           />
         ))}
       </div>
@@ -111,74 +116,47 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-10">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-8">
       {stats.map((stat, index) => {
         const Icon = stat.icon;
         const TrendIcon = stat.change?.type === 'increase' ? TrendingUp : TrendingDown;
         const trendColor = stat.change?.type === 'increase' ? 'text-emerald-400' : 'text-rose-400';
-        const trendBg = stat.change?.type === 'increase' ? 'bg-emerald-500/10' : 'bg-rose-500/10';
-
-        const colorClasses = {
-          blue: {
-            text: 'text-blue-400',
-            iconBg: 'bg-blue-500/20',
-            gradient: 'from-blue-500 to-blue-600',
-          },
-          emerald: {
-            text: 'text-emerald-400',
-            iconBg: 'bg-emerald-500/20',
-            gradient: 'from-emerald-500 to-emerald-600',
-          },
-          purple: {
-            text: 'text-purple-400',
-            iconBg: 'bg-purple-500/20',
-            gradient: 'from-purple-500 to-purple-600',
-          },
-          rose: {
-            text: 'text-rose-400',
-            iconBg: 'bg-rose-500/20',
-            gradient: 'from-rose-500 to-rose-600',
-          },
-          amber: {
-            text: 'text-amber-400',
-            iconBg: 'bg-amber-500/20',
-            gradient: 'from-amber-500 to-amber-600',
-          },
-          cyan: {
-            text: 'text-cyan-400',
-            iconBg: 'bg-cyan-500/20',
-            gradient: 'from-cyan-500 to-cyan-600',
-          },
-        };
-
-        const colors = colorClasses[stat.color];
+        const trendBg = stat.change?.type === 'increase' 
+          ? 'bg-emerald-500/10 border-emerald-500/20' 
+          : 'bg-rose-500/10 border-rose-500/20';
 
         return (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.08 }}
-            whileHover={{ y: -2 }}
-            className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 transition-all hover:border-border/80 hover:shadow-lg"
+            transition={{ delay: index * 0.05 }}
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="group relative overflow-hidden rounded-2xl border border-[var(--card-border)] bg-[var(--surface-2)] backdrop-blur-sm transition-all duration-300 hover:border-[var(--border-hover)] hover:shadow-xl p-5"
           >
-            <div className="absolute bottom-0 left-0 right-0 h-16 opacity-20">
+            {/* Background Gradient Glow */}
+            <div 
+              className={`absolute -right-20 -top-20 h-40 w-40 rounded-full bg-gradient-to-br ${stat.gradient} opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-20`}
+            />
+            
+            {/* Sparkline Background */}
+            <div className="absolute bottom-0 left-0 right-0 h-20 opacity-10">
               <svg
                 viewBox="0 0 100 40"
                 preserveAspectRatio="none"
                 className="h-full w-full"
               >
                 <defs>
-                  <linearGradient id={`gradient-${index}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="currentColor" stopOpacity="0.5" />
+                  <linearGradient id={`sparkline-gradient-${index}`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="currentColor" stopOpacity="0.6" />
                     <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
                   </linearGradient>
                 </defs>
                 <polyline
-                  fill={`url(#gradient-${index})`}
+                  fill={`url(#sparkline-gradient-${index})`}
                   stroke="currentColor"
-                  strokeWidth="2"
-                  className={colors.text}
+                  strokeWidth="1.5"
+                  className="text-foreground"
                   points={
                     stat.sparklineData
                       .map(
@@ -191,42 +169,41 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
               </svg>
             </div>
 
-            <div
-              className={`absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br ${colors.gradient} opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-20`}
-            />
-
             <div className="relative z-10">
               <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                <div className="flex-1">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
                     {stat.label}
                   </p>
-                  <h4 className="mt-1 text-3xl font-black tracking-tight text-foreground">
+                  <h4 className="text-2xl font-bold tracking-tight text-foreground">
                     {stat.value}
                   </h4>
+                  
+                  {stat.change && (
+                    <div className="mt-3 flex items-center gap-2">
+                      <div
+                        className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold border ${trendBg} ${trendColor}`}
+                      >
+                        <TrendIcon className="h-3 w-3" />
+                        {Math.abs(stat.change.value)}%
+                      </div>
+                      <span className="text-[10px] text-muted-foreground">vs last week</span>
+                    </div>
+                  )}
                 </div>
+                
                 <div
-                  className={`flex h-12 w-12 items-center justify-center rounded-xl ${colors.iconBg} ${colors.text}`}
+                  className={`flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${stat.gradient} shadow-lg transition-transform duration-300 group-hover:scale-110`}
+                  style={{ boxShadow: `0 4px 15px ${stat.glowColor}` }}
                 >
-                  <Icon className="h-6 w-6" />
+                  <Icon className="h-5 w-5 text-white" />
                 </div>
               </div>
-
-              {stat.change && (
-                <div className="mt-4 flex items-center gap-2">
-                  <div
-                    className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold ${trendBg} ${trendColor}`}
-                  >
-                    <TrendIcon className="h-3 w-3" />
-                    {Math.abs(stat.change.value)}%
-                  </div>
-                  <span className="text-xs text-muted-foreground">vs last week</span>
-                </div>
-              )}
             </div>
 
+            {/* Bottom Gradient Line */}
             <div
-              className={`absolute bottom-0 left-0 h-0.5 w-0 bg-gradient-to-r ${colors.gradient} transition-all duration-500 group-hover:w-full`}
+              className={`absolute bottom-0 left-0 h-0.5 w-0 bg-gradient-to-r ${stat.gradient} transition-all duration-500 group-hover:w-full`}
             />
           </motion.div>
         );

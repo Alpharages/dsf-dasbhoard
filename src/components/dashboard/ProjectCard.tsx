@@ -3,119 +3,170 @@ import {
     ExternalLink,
     MoreVertical,
     ChevronRight,
-    CheckCircle
+    CheckCircle,
+    AlertCircle,
+    Clock
 } from 'lucide-react';
 import type { Project } from '../../types';
+import { motion } from 'framer-motion';
 
 interface ProjectCardProps {
     project: Project;
     onReview?: (project: Project) => void;
 }
 
-const statusColors: Record<string, string> = {
-    active: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
-    'on-hold': 'bg-amber-500/10 text-amber-500 border-amber-500/20',
-    paused: 'bg-slate-500/10 text-slate-500 border-slate-500/20',
-    completed: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+const statusConfig: Record<string, { bg: string; text: string; border: string; glow: string; label: string }> = {
+    active: { 
+        bg: 'bg-emerald-500/10', 
+        text: 'text-emerald-400', 
+        border: 'border-emerald-500/20',
+        glow: 'shadow-emerald-500/10',
+        label: 'Active'
+    },
+    'on-hold': { 
+        bg: 'bg-amber-500/10', 
+        text: 'text-amber-400', 
+        border: 'border-amber-500/20',
+        glow: 'shadow-amber-500/10',
+        label: 'On Hold'
+    },
+    paused: { 
+        bg: 'bg-slate-500/10', 
+        text: 'text-slate-400', 
+        border: 'border-slate-500/20',
+        glow: 'shadow-slate-500/10',
+        label: 'Paused'
+    },
+    completed: { 
+        bg: 'bg-blue-500/10', 
+        text: 'text-blue-400', 
+        border: 'border-blue-500/20',
+        glow: 'shadow-blue-500/10',
+        label: 'Completed'
+    },
 };
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onReview }) => {
+    const status = statusConfig[project.status] || statusConfig.paused;
+    const progress = Math.round((project.tickets.completed / project.tickets.total) * 100) || 0;
+    
     return (
-        <div className="bg-card border border-border rounded-2xl p-6 hover:shadow-2xl hover:shadow-primary/5 transition-all group relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
-
-            <div className="flex justify-between items-start mb-6">
-                <div>
-                    <div className="flex items-center gap-3 mb-1">
-                        <h3 className="text-lg font-bold text-card-foreground group-hover:text-primary transition-colors">
-                            {project.name}
-                        </h3>
-                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${statusColors[project.status]}`}>
-                            {project.status}
-                        </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground flex items-center gap-1.5">
-                        Client: <span className="text-foreground/80 font-medium">{project.client_name}</span>
-                    </p>
-                </div>
-                <div className="flex gap-3 items-center">
-                    {project.tickets.awaiting_approval > 0 && (
-                        <div className="flex flex-col items-end gap-1">
-                            <span className="bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded text-[10px] font-bold animate-pulse">
-                                APPROVAL REQUIRED
-                            </span>
-                            <span className="text-[10px] text-slate-500 font-medium">
-                                {project.tickets.awaiting_approval} ticket(s)
+        <motion.div 
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="group relative overflow-hidden rounded-2xl border border-[var(--card-border)] bg-[var(--surface-2)] backdrop-blur-sm transition-all duration-300 hover:border-[var(--border-hover)] hover:shadow-xl"
+        >
+            {/* Left accent line */}
+            <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-transparent via-[var(--primary)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            
+            {/* Glow effect on hover */}
+            <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            
+            <div className="relative p-5">
+                {/* Header */}
+                <div className="flex justify-between items-start mb-4">
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-base font-bold text-foreground group-hover:text-primary transition-colors truncate">
+                                {project.name}
+                            </h3>
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${status.bg} ${status.text} ${status.border} ${status.glow}`}>
+                                {status.label}
                             </span>
                         </div>
-                    )}
-                    <button className="text-muted-foreground hover:text-foreground transition-colors">
-                        <MoreVertical className="w-5 h-5" />
-                    </button>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mb-8">
-                <div className="bg-secondary/30 rounded-xl p-3 border border-border/50">
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Tickets</p>
-                    <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-bold text-foreground">{project.tickets.total}</span>
-                        <span className="text-[10px] text-muted-foreground">Total</span>
+                        <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                            <span className="truncate">Client: <span className="text-foreground/80 font-medium">{project.client_name}</span></span>
+                        </p>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                        {project.tickets.awaiting_approval > 0 && (
+                            <div className="flex flex-col items-end gap-1">
+                                <span className="bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-md text-[10px] font-bold animate-pulse flex items-center gap-1">
+                                    <AlertCircle className="w-3 h-3" />
+                                    APPROVAL
+                                </span>
+                                <span className="text-[10px] text-muted-foreground">
+                                    {project.tickets.awaiting_approval} ticket(s)
+                                </span>
+                            </div>
+                        )}
+                        <button className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-[var(--surface-1)] transition-colors">
+                            <MoreVertical className="w-4 h-4" />
+                        </button>
                     </div>
                 </div>
-                <div className="bg-secondary/30 rounded-xl p-3 border border-border/50">
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Blocked</p>
-                    <div className="flex items-baseline gap-2">
-                        <span className={`text-2xl font-bold ${project.tickets.blocked > 0 ? 'text-destructive' : 'text-foreground'}`}>
-                            {project.tickets.blocked}
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div className="bg-[var(--surface-1)] rounded-xl p-3 border border-[var(--card-border)]">
+                        <div className="flex items-center gap-1.5 mb-1">
+                            <CheckCircle className="w-3.5 h-3.5 text-muted-foreground" />
+                            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Tickets</p>
+                        </div>
+                        <div className="flex items-baseline gap-1.5">
+                            <span className="text-xl font-bold text-foreground">{project.tickets.total}</span>
+                            <span className="text-[10px] text-muted-foreground">total</span>
+                        </div>
+                    </div>
+                    
+                    <div className="bg-[var(--surface-1)] rounded-xl p-3 border border-[var(--card-border)]">
+                        <div className="flex items-center gap-1.5 mb-1">
+                            <AlertCircle className={`w-3.5 h-3.5 ${project.tickets.blocked > 0 ? 'text-rose-400' : 'text-muted-foreground'}`} />
+                            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Blocked</p>
+                        </div>
+                        <div className="flex items-baseline gap-1.5">
+                            <span className={`text-xl font-bold ${project.tickets.blocked > 0 ? 'text-rose-400' : 'text-foreground'}`}>
+                                {project.tickets.blocked}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground">tickets</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="space-y-2 mb-4">
+                    <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider">
+                        <span className="text-muted-foreground flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            Progress
                         </span>
-                        <span className="text-[10px] text-muted-foreground">Tickets</span>
+                        <span className="text-foreground">{progress}%</span>
                     </div>
-                </div>
-            </div>
-
-            <div className="space-y-4">
-                {/* Progress Bar Simplified */}
-                <div className="space-y-1.5">
-                    <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                        <span>Execution Progress</span>
-                        <span>{Math.round((project.tickets.completed / project.tickets.total) * 100) || 0}%</span>
-                    </div>
-                    <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
-                        <div
-                            className="h-full bg-primary rounded-full shadow-[0_0_8px_rgba(37,99,235,0.5)] transition-all duration-1000"
-                            style={{ width: `${(project.tickets.completed / project.tickets.total) * 100 || 0}%` }}
-                        ></div>
+                    <div className="h-1.5 w-full bg-[var(--surface-1)] rounded-full overflow-hidden">
+                        <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${progress}%` }}
+                            transition={{ duration: 0.8, ease: 'easeOut' }}
+                            className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400"
+                            style={{ boxShadow: '0 0 8px rgba(59, 130, 246, 0.5)' }}
+                        />
                     </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-border/50 mt-4">
+                {/* Footer Actions */}
+                <div className="flex items-center justify-between pt-3 border-t border-[var(--border)]">
                     <div className="flex gap-2">
                         <a
                             href={project.github_repository_url}
                             target="_blank"
                             rel="noreferrer"
-                            className="p-2 bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground rounded-lg transition-all"
-                            title="Open GitHub Repository (Shortcut: G)"
-                            aria-keyshortcuts="G"
+                            className="p-2 rounded-lg bg-[var(--surface-1)] border border-[var(--card-border)] text-muted-foreground hover:text-foreground hover:border-[var(--border-hover)] transition-all"
+                            title="Open GitHub Repository"
                         >
                             <Github className="w-4 h-4" />
                         </a>
+                        
                         {project.tickets.awaiting_approval > 0 ? (
                             <button
                                 onClick={() => onReview?.(project)}
-                                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 transition-all shadow-lg shadow-blue-500/20"
-                                title="Review Execution (Shortcut: R)"
-                                aria-keyshortcuts="R"
+                                className="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all shadow-lg shadow-blue-500/20"
                             >
                                 <CheckCircle className="w-3.5 h-3.5" />
                                 Review
                             </button>
                         ) : (
                             <button
-                                className="px-3 py-1.5 bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all"
-                                title="View Details (Shortcut: D)"
-                                aria-keyshortcuts="D"
+                                className="px-3 py-1.5 bg-[var(--surface-1)] border border-[var(--card-border)] text-muted-foreground hover:text-foreground hover:border-[var(--border-hover)] text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all"
                             >
                                 <ExternalLink className="w-3.5 h-3.5" />
                                 Details
@@ -124,15 +175,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onReview }) =
                     </div>
 
                     <button
-                        className="text-xs font-bold text-primary hover:text-primary/80 flex items-center gap-1 py-1 px-2 hover:bg-primary/5 rounded-lg transition-all"
-                        title="Open Dashboard (Shortcut: Enter)"
-                        aria-keyshortcuts="Enter"
+                        className="text-xs font-semibold text-primary hover:text-primary/80 flex items-center gap-1 py-1.5 px-2 hover:bg-primary/5 rounded-lg transition-all group/btn"
                     >
-                        Open Dashboard
-                        <ChevronRight className="w-3.5 h-3.5" />
+                        Open
+                        <ChevronRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-0.5" />
                     </button>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };

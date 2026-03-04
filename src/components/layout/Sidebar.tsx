@@ -1,20 +1,18 @@
 /**
  * Sidebar Component
- * Tablet: icon-only with per-item tooltip
- * Desktop: full grouped navigation
+ * Premium glassmorphism design with grouped navigation
  */
 
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Briefcase, Clock, Pin, Star } from 'lucide-react';
+import { Clock, Pin, Star, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 import { useAuth } from '@/contexts';
 import { canAccess } from '@/utils/roleHelpers';
 import { cn } from '@/lib/utils';
 import { navigationGroups, isNavItemActive } from '@/config/navigation';
 import { ScrollArea } from '@/components/ui/scroll-area';
-// TooltipProvider is already mounted at the app root (App.tsx).
-// Individual Tooltip components override delayDuration directly.
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface SidebarProps {
@@ -55,26 +53,27 @@ export function Sidebar({ className }: SidebarProps) {
   };
 
   return (
-    // Width is controlled by the parent <aside> in App.tsx (md:w-[72px] lg:w-[280px]).
-    // Sidebar uses w-full so it fills whatever container it is placed in.
     <aside
       className={cn(
-        'flex h-full w-full flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 ease-in-out',
+        'flex h-full w-full flex-col border-r border-[var(--sidebar-border)] bg-[var(--sidebar)] backdrop-blur-xl transition-all duration-300 ease-in-out',
         className
       )}
       data-testid="sidebar"
     >
       {/* Logo Section */}
-      <div className="flex h-[72px] items-center justify-center border-b border-sidebar-border px-3 lg:justify-start lg:px-4">
+      <div className="flex h-[72px] items-center justify-center border-b border-[var(--sidebar-border)] px-3 lg:justify-start lg:px-4">
         <Link to="/" className="flex items-center gap-3 overflow-hidden">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 shadow-lg shadow-blue-500/20">
-            <Briefcase className="h-5 w-5 text-white" />
-          </div>
+          <motion.div 
+            whileHover={{ scale: 1.05 }}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 shadow-lg shadow-blue-500/25"
+          >
+            <Sparkles className="h-5 w-5 text-white" />
+          </motion.div>
           <div className="hidden lg:flex flex-col">
-            <span className="whitespace-nowrap text-lg font-bold tracking-tight text-sidebar-foreground">
+            <span className="whitespace-nowrap text-lg font-bold tracking-tight text-[var(--sidebar-foreground)]">
               DSF
             </span>
-            <span className="whitespace-nowrap text-[10px] font-medium text-sidebar-foreground/60">
+            <span className="whitespace-nowrap text-[10px] font-medium text-muted-foreground">
               Dark Software Factory
             </span>
           </div>
@@ -83,8 +82,8 @@ export function Sidebar({ className }: SidebarProps) {
 
       {/* Favorites Section - Desktop only */}
       {favorites.length > 0 && (
-        <div className="hidden lg:block border-b border-sidebar-border px-4 py-3">
-          <p className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-sidebar-foreground/50">
+        <div className="hidden lg:block border-b border-[var(--sidebar-border)] px-4 py-3">
+          <p className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
             <Pin className="h-3 w-3" />
             Favorites
           </p>
@@ -99,10 +98,10 @@ export function Sidebar({ className }: SidebarProps) {
                   to={path}
                   aria-current={active ? 'page' : undefined}
                   className={cn(
-                    'flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors',
+                    'flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition-all duration-200',
                     active
-                      ? 'bg-sidebar-primary/10 text-sidebar-primary'
-                      : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                      ? 'bg-[var(--sidebar-primary)]/10 text-[var(--sidebar-primary)]'
+                      : 'text-muted-foreground hover:bg-[var(--sidebar-accent)] hover:text-[var(--sidebar-accent-foreground)]'
                   )}
                 >
                   <item.icon className="h-4 w-4" />
@@ -128,10 +127,10 @@ export function Sidebar({ className }: SidebarProps) {
                     aria-label={item.label}
                     aria-current={active ? 'page' : undefined}
                     className={cn(
-                      'flex h-10 w-full items-center justify-center rounded-lg transition-colors',
+                      'flex h-10 w-full items-center justify-center rounded-lg transition-all duration-200',
                       active
-                        ? 'bg-sidebar-primary/10 text-sidebar-primary'
-                        : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                        ? 'bg-[var(--sidebar-primary)]/10 text-[var(--sidebar-primary)]'
+                        : 'text-muted-foreground hover:bg-[var(--sidebar-accent)] hover:text-[var(--sidebar-accent-foreground)]'
                     )}
                     data-testid={getTabletItemTestId(item.path)}
                   >
@@ -145,11 +144,11 @@ export function Sidebar({ className }: SidebarProps) {
         </div>
 
         {/* Desktop navigation: grouped expanded menu */}
-        <div className="hidden lg:block space-y-2">
+        <div className="hidden lg:block space-y-1">
           {visibleNavigationGroups.map((group) => {
             return (
-              <div key={group.id}>
-                <h3 className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-sidebar-foreground/50">
+              <div key={group.id} className="mb-4">
+                <h3 className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   {group.label}
                 </h3>
 
@@ -162,17 +161,17 @@ export function Sidebar({ className }: SidebarProps) {
                         to={item.path}
                         aria-current={active ? 'page' : undefined}
                         className={cn(
-                          'group flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-all',
+                          'group flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
                           active
-                            ? 'bg-sidebar-primary/10 text-sidebar-primary'
-                            : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                            ? 'bg-[var(--sidebar-primary)]/10 text-[var(--sidebar-primary)]'
+                            : 'text-muted-foreground hover:bg-[var(--sidebar-accent)] hover:text-[var(--sidebar-accent-foreground)]'
                         )}
                       >
                         <div className="flex items-center gap-3">
                           <item.icon
                             className={cn(
                               'h-4 w-4 transition-colors',
-                              active ? 'text-sidebar-primary' : 'text-sidebar-foreground/50 group-hover:text-sidebar-foreground/80'
+                              active ? 'text-[var(--sidebar-primary)]' : 'text-muted-foreground group-hover:text-foreground'
                             )}
                           />
                           <span>{item.label}</span>
@@ -180,16 +179,16 @@ export function Sidebar({ className }: SidebarProps) {
                         <button
                           onClick={(e) => toggleFavorite(item.path, e)}
                           className={cn(
-                            'opacity-0 transition-opacity group-hover:opacity-100',
+                            'opacity-0 transition-opacity group-hover:opacity-100 p-1 rounded hover:bg-[var(--sidebar-accent)]',
                             favorites.includes(item.path) && 'opacity-100'
                           )}
                         >
                           <Star
                             className={cn(
-                              'h-3.5 w-3.5',
+                              'h-3 w-3',
                               favorites.includes(item.path)
                                 ? 'fill-amber-400 text-amber-400'
-                                : 'text-sidebar-foreground/50'
+                                : 'text-muted-foreground'
                             )}
                           />
                         </button>
@@ -203,14 +202,15 @@ export function Sidebar({ className }: SidebarProps) {
         </div>
       </ScrollArea>
 
-      <div className="hidden lg:block border-t border-sidebar-border p-3">
-        <div className="rounded-xl border border-sidebar-border bg-sidebar-accent/50 p-3">
+      {/* Footer - Last sync info */}
+      <div className="hidden lg:block border-t border-[var(--sidebar-border)] p-3">
+        <div className="rounded-xl border border-[var(--sidebar-border)] bg-[var(--sidebar-accent)]/50 p-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary/10">
-              <Clock className="h-4 w-4 text-sidebar-primary" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--sidebar-primary)]/10">
+              <Clock className="h-4 w-4 text-[var(--sidebar-primary)]" />
             </div>
             <div className="flex-1">
-              <p className="text-xs font-medium text-sidebar-foreground">Last sync</p>
+              <p className="text-xs font-medium text-[var(--sidebar-foreground)]">Last sync</p>
               <p className="text-[10px] text-muted-foreground">2 minutes ago</p>
             </div>
           </div>
