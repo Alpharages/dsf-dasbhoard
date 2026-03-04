@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Copy, CheckCircle, Download, BookOpen } from 'lucide-react';
+import { Copy, CheckCircle, Download, BookOpen, AlertCircle, Lightbulb, FileText } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import type { Limitation } from '../../types/capabilities';
 import { TASK_TYPE_LABELS } from '../../types/capabilities';
@@ -37,27 +37,40 @@ export const PublicLimitationsView: React.FC<PublicLimitationsViewProps> = ({ li
         }
     };
 
+    const getFailureRateBadge = (rate: number) => {
+        if (rate >= 50) return { color: 'rose', label: 'Critical' };
+        if (rate >= 30) return { color: 'amber', label: 'Warning' };
+        return { color: 'emerald', label: 'Low' };
+    };
+
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-5">
-                <div className="flex items-start gap-3">
-                    <BookOpen className="w-6 h-6 text-blue-400 flex-shrink-0 mt-0.5" />
+            {/* Header Banner */}
+            <div className="card-theme rounded-2xl p-6 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                
+                <div className="relative flex items-start gap-4">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/20">
+                        <BookOpen className="w-6 h-6 text-blue-400" />
+                    </div>
                     <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-white mb-1">
+                        <h3 className="text-lg font-bold text-[var(--color-text-primary)] mb-1">
                             AI Limitations Knowledge Base
                         </h3>
-                        <p className="text-sm text-slate-300 mb-3">
+                        <p className="text-sm text-[var(--color-text-secondary)] mb-3">
                             Review known AI limitations and recommended workarounds before assigning tasks.
                         </p>
-                        <p className="text-xs text-slate-400">
-                            💡 Contact your Technical Lead to update limitations or request changes.
-                        </p>
+                        <div className="flex items-center gap-2 text-xs text-[var(--color-text-tertiary)]">
+                            <Lightbulb className="w-4 h-4" />
+                            <span>Contact your Technical Lead to update limitations or request changes.</span>
+                        </div>
                     </div>
                     {knowledgeBaseMd && (
                         <button
                             onClick={handleDownloadPdf}
-                            className="px-3 py-2 rounded-lg text-sm font-medium bg-blue-500/10 text-blue-300 hover:bg-blue-500/20 border border-blue-500/20 transition-colors flex items-center gap-2"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium 
+                                bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/20 
+                                transition-all hover:shadow-lg hover:shadow-blue-500/10"
                         >
                             <Download className="w-4 h-4" />
                             Download
@@ -68,71 +81,97 @@ export const PublicLimitationsView: React.FC<PublicLimitationsViewProps> = ({ li
 
             {/* Limitations List */}
             {limitations.length === 0 ? (
-                <div className="bg-slate-800/30 rounded-xl p-12 text-center border border-slate-700/50">
-                    <BookOpen className="w-12 h-12 text-slate-500 mx-auto mb-3" />
-                    <p className="text-slate-400">No documented limitations yet</p>
+                <div className="card-theme rounded-xl p-12 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--color-bg-secondary)] flex items-center justify-center">
+                        <FileText className="w-8 h-8 text-[var(--color-text-muted)]" />
+                    </div>
+                    <p className="text-[var(--color-text-secondary)] font-medium">No documented limitations yet</p>
+                    <p className="text-sm text-[var(--color-text-tertiary)] mt-1">Check back later for updates</p>
                 </div>
             ) : (
                 <div className="space-y-4">
-                    {limitations.map((lim, index) => (
-                        <div
-                            key={lim.taskType}
-                            className={`bg-slate-800/30 rounded-xl p-6 border ${lim.isDisabled ? 'border-red-500/30' : 'border-slate-700/50'
-                                }`}
-                        >
-                            <div className="flex items-start justify-between mb-4">
-                                <div className="flex items-center gap-3">
-                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-500/10 text-blue-300 border border-blue-500/20">
-                                        {TASK_TYPE_LABELS[lim.taskType]}
-                                    </span>
-                                    {lim.isDisabled && (
-                                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-300 border border-red-500/20">
-                                            🚫 AI Disabled
+                    {limitations.map((lim, index) => {
+                        const severity = getFailureRateBadge(lim.failureRate);
+                        
+                        return (
+                            <div
+                                key={lim.taskType}
+                                className={`
+                                    card-theme rounded-2xl p-6 transition-all duration-300 hover:shadow-lg
+                                    ${lim.isDisabled ? 'border-l-4 border-l-rose-500' : ''}
+                                `}
+                            >
+                                {/* Header Row */}
+                                <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
+                                    <div className="flex items-center gap-3 flex-wrap">
+                                        <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                            {TASK_TYPE_LABELS[lim.taskType]}
                                         </span>
-                                    )}
+                                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-${severity.color}-500/10 text-${severity.color}-400 border border-${severity.color}-500/20`}>
+                                            <AlertCircle className="w-3.5 h-3.5" />
+                                            {lim.failureRate.toFixed(1)}% failure rate
+                                        </span>
+                                        {lim.isDisabled && (
+                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
+                                                AI Disabled
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
-                                <span className="text-sm text-slate-400">
-                                    {lim.failureRate.toFixed(1)}% failure rate
-                                </span>
+
+                                {/* Known Issues */}
+                                {lim.knownIssues && (
+                                    <div className="mb-5">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <AlertCircle className="w-4 h-4 text-amber-400" />
+                                            <h4 className="text-sm font-semibold text-[var(--color-text-primary)]">Known Issues</h4>
+                                        </div>
+                                        <div className="bg-[var(--color-bg-secondary)] rounded-xl p-4 border border-[var(--color-border)] prose prose-sm max-w-none">
+                                            <div className="text-[var(--color-text-secondary)]">
+                                                <ReactMarkdown>{lim.knownIssues}</ReactMarkdown>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Workaround */}
+                                {lim.workaround && (
+                                    <div>
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center gap-2">
+                                                <Lightbulb className="w-4 h-4 text-emerald-400" />
+                                                <h4 className="text-sm font-semibold text-emerald-400">Recommended Workaround</h4>
+                                            </div>
+                                            <button
+                                                onClick={() => handleCopyWorkaround(lim.workaround!, index)}
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium 
+                                                    bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20 
+                                                    transition-all hover:shadow-lg hover:shadow-emerald-500/10"
+                                            >
+                                                {copiedIndex === index ? (
+                                                    <>
+                                                        <CheckCircle className="w-3.5 h-3.5" />
+                                                        Copied
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Copy className="w-3.5 h-3.5" />
+                                                        Copy
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+                                        <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4 prose prose-sm max-w-none">
+                                            <div className="text-[var(--color-text-secondary)]">
+                                                <ReactMarkdown>{lim.workaround}</ReactMarkdown>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-
-                            {lim.knownIssues && (
-                                <div className="mb-4">
-                                    <h4 className="text-sm font-semibold text-slate-300 mb-2">Known Issues</h4>
-                                    <div className="bg-slate-900/50 rounded-lg p-4 prose prose-invert prose-sm max-w-none">
-                                        <ReactMarkdown>{lim.knownIssues}</ReactMarkdown>
-                                    </div>
-                                </div>
-                            )}
-
-                            {lim.workaround && (
-                                <div>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="text-sm font-semibold text-green-400">Recommended Workaround</h4>
-                                        <button
-                                            onClick={() => handleCopyWorkaround(lim.workaround!, index)}
-                                            className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium bg-green-500/10 text-green-300 hover:bg-green-500/20 border border-green-500/20 transition-colors"
-                                        >
-                                            {copiedIndex === index ? (
-                                                <>
-                                                    <CheckCircle className="w-3 h-3" />
-                                                    Copied
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Copy className="w-3 h-3" />
-                                                    Copy
-                                                </>
-                                            )}
-                                        </button>
-                                    </div>
-                                    <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-4 prose prose-invert prose-sm max-w-none">
-                                        <ReactMarkdown>{lim.workaround}</ReactMarkdown>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
         </div>

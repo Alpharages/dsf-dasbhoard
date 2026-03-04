@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { RefreshCcw } from 'lucide-react';
 import { Button } from '../../components/ui/button';
-import { useAdrMetrics, useAdrTrends } from '../../hooks/api/useAdrMetrics';
+import { useAdrMetrics, useAdrTrends } from '@/hooks/api/useAdrMetrics.ts';
 import { MetricsFilters } from '../../components/architecture-review/metrics/MetricsFilters';
 import { MetricsSummaryGrid } from '../../components/architecture-review/metrics/MetricsSummaryGrid';
 import { ApprovalRateChart } from '../../components/architecture-review/metrics/charts/ApprovalRateChart';
@@ -10,9 +10,9 @@ import { RiskDistributionChart } from '../../components/architecture-review/metr
 import { RejectionReasonsChart } from '../../components/architecture-review/metrics/charts/RejectionReasonsChart';
 import { WorkloadByProjectChart } from '../../components/architecture-review/metrics/charts/WorkloadByProjectChart';
 import { AiInsightsGallery } from '../../components/architecture-review/metrics/AiInsightsGallery';
-import { exportMetricsToCsv } from '../../lib/metrics-utils';
-import { cn } from '../../lib/utils';
-import type { AdrMetricsFilters } from '../../types/architectureReview';
+import { exportMetricsToCsv } from '@/lib/metrics-utils.ts';
+import { cn } from '@/lib/utils.ts';
+import type { AdrMetricsFilters } from '@/types/architectureReview.ts';
 
 export default function ArchitectureMetricsPage() {
     const queryClient = useQueryClient();
@@ -74,25 +74,25 @@ export default function ArchitectureMetricsPage() {
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                 <ApprovalRateChart
-                    data={metrics?.trends.approvalRate || trends?.approvalRate} // Depending on API response structure
+                    data={metrics?.trends?.approvalRate || trends?.approvalRate} // Depending on API response structure
                     isLoading={isLoading}
                 />
 
                 {/* Risk Distribution & Rejections & Workload */}
                 <div className="col-span-2 lg:col-span-2 flex flex-col gap-4">
                     <RiskDistributionChart
-                        data={metrics?.trends.riskDistribution}
+                        data={metrics?.trends?.riskDistribution}
                         isLoading={isLoadingMetrics}
                     />
                     <RejectionReasonsChart
-                        data={metrics?.trends.rejectionReasons}
+                        data={metrics?.trends?.rejectionReasons}
                         isLoading={isLoadingMetrics}
                     />
                 </div>
 
                 <div className="col-span-2 lg:col-span-3">
                     <WorkloadByProjectChart
-                        data={metrics?.trends.workloadByProject}
+                        data={metrics?.trends?.workloadByProject}
                         isLoading={isLoadingMetrics}
                     />
                 </div>
