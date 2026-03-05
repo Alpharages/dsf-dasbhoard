@@ -126,6 +126,90 @@ Navigate to `/production-errors` from the sidebar menu. Requires authentication.
 - Story 9-U-5: Production Error Dashboard Backend APIs
 - Story 10-U-1: Socket.IO Real-Time Infrastructure
 
+## Production Deployment (Docker)
+
+### Prerequisites
+
+- Docker + Docker Compose installed on the server
+- The server may already have nginx running — the container binds to a **configurable host port** to avoid conflicts
+
+### Steps
+
+**1. Clone the repo on the server**
+
+```bash
+git clone <repo-url>
+cd dsf-dashboard
+```
+
+**2. Create the production env file**
+
+```bash
+cp .env.production.example .env.production
+```
+
+Edit `.env.production` with real values:
+
+```env
+APP_PORT=3001                              # Host port — change if 3001 is already in use
+
+VITE_API_BASE_URL=https://api.yourdomain.com
+VITE_WS_URL=https://api.yourdomain.com
+```
+
+> **Important:** `VITE_*` variables are baked into the JS bundle at **build time**, not read at runtime.
+> Changing them requires a rebuild.
+
+**3. Build and start**
+
+```bash
+docker compose --env-file .env.production up -d --build
+```
+
+The dashboard will be available at `http://your-server-ip:<APP_PORT>`.
+
+### Updating to a new version
+
+```bash
+git pull
+docker compose --env-file .env.production up -d --build
+```
+
+### Useful commands
+
+```bash
+# View logs
+docker compose logs -f dsf-dashboard
+
+# Stop the container
+docker compose down
+
+# Rebuild without cache
+docker compose --env-file .env.production build --no-cache
+docker compose --env-file .env.production up -d
+```
+
+### Reverse proxy with existing nginx
+
+If the server already runs nginx, proxy requests from your domain to the container:
+
+```nginx
+server {
+    listen 80;
+    server_name dashboard.yourdomain.com;
+
+    location / {
+        proxy_pass http://localhost:3001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+```
+
+Replace `3001` with whatever `APP_PORT` you set in `.env.production`.
+
 ## License
 
 Proprietary - Dark Software Factory

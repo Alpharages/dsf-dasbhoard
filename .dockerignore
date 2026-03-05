@@ -1,0 +1,21 @@
+node_modules
+dist
+.git
+.gitignore
+.env
+.env.local
+.env.*.local
+.env.production
+__tests__
+*.test.ts
+*.test.tsx
+*.md
+.eslintcache
+
+# AI tools
+.agent/
+.agents/
+.claude/
+
+#IDE
+.idea/
