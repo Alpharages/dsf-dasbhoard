@@ -10,6 +10,17 @@ export interface PmIntegration {
     workspaceName?: string;
     createdAt: string;
     updatedAt: string;
+    pollingEnabled?: boolean;
+    pollingIntervalMin?: number;
+    pollingLastRunAt?: string;
+    webhookEnabled?: boolean;
+    webhookId?: string;
+}
+
+export interface SyncSettingsUpdate {
+    polling_enabled: boolean;
+    polling_interval_min: number;
+    webhook_enabled: boolean;
 }
 
 /**
@@ -34,4 +45,12 @@ export async function getPmConnectUrl(provider: string, projectId: string): Prom
 export async function deletePmIntegration(projectId: string, provider: string): Promise<{ success: boolean }> {
     const { data } = await api.delete(`/integrations/${provider.toLowerCase()}`, { params: { project_id: projectId } });
     return data;
+}
+
+/**
+ * Updates sync settings for a PM integration
+ */
+export async function updateSyncSettings(integrationId: string, data: SyncSettingsUpdate): Promise<PmIntegration> {
+    const response = await api.patch(`/integrations/${integrationId}/sync-settings`, data);
+    return response.data;
 }
