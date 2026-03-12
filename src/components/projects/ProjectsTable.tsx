@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Switch } from '../ui/switch';
-import { ChevronDown, ChevronUp, Cloud, Database, RefreshCw, Trash2, Loader2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Cloud, Database, RefreshCw, Trash2, Loader2, Settings } from 'lucide-react';
 import apiClient from '../../api/client';
 import { toast } from 'react-hot-toast';
 import { GithubRepoSelector } from '../../features/projects/components/GithubRepoSelector';
@@ -196,6 +197,13 @@ export function ProjectsTable({ projects, onProjectUpdated }: ProjectsTableProps
                                                     {isDeleting === project.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
                                                     Delete Project
                                                 </button>
+                                                <Link
+                                                    to={`/projects/${project.id}/settings`}
+                                                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 rounded-lg text-xs font-bold transition-colors"
+                                                >
+                                                    <Settings className="w-3 h-3" />
+                                                    Project Settings
+                                                </Link>
                                             </div>
                                         </div>
                                     </TableCell>

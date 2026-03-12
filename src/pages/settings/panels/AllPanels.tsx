@@ -3,6 +3,7 @@ import { useSystemConfig } from '@/hooks/queries/useSystemConfig.ts';
 import { toast } from 'react-hot-toast';
 import { Trash2, Activity, Share2, GitMerge, DollarSign, ShieldAlert, HeartPulse, Blocks, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { useIntegrationHealth } from '@/hooks/queries/useIntegrationHealth';
+export { PmIntegrationPanel } from './PmIntegrationPanel';
 
 // Shared logic holder
 const usePanelLogic = () => {

@@ -43,8 +43,10 @@ import {
   AuditPanel,
   HealthPanel,
   IntegrationHealthPanel,
+  PmIntegrationPanel,
 } from './pages/settings/panels/AllPanels';
 import { GithubCallback } from './pages/settings/GithubCallback';
+import { PmIntegrationCallback } from './pages/settings/PmIntegrationCallback';
 
 import { ConversationUploadForm } from './components/conversations/ConversationUploadForm';
 import { ConversationDetailView } from './components/conversations/ConversationDetailView';
@@ -144,6 +146,7 @@ function AppContent({ navigate }: { navigate: NavigateFunction }) {
       ['/approvals', 'PM Approvals — DSF'],
       ['/executions', 'Execution Monitoring — DSF'],
       ['/observability', 'Observability — DSF'],
+      ['/settings/pm-callback', 'PM Integration — DSF'],
       ['/notifications/preferences', 'Notification Preferences — DSF'],
     ];
     const path = location.pathname;
@@ -386,6 +389,7 @@ function AppContent({ navigate }: { navigate: NavigateFunction }) {
               <Route path="health" handle={{ title: 'Settings: Deployment Health — DSF' }} element={<HealthPanel />} />
               <Route path="integrations" handle={{ title: 'Settings: Integration Health — DSF' }} element={<ProtectedRoute requiredRoles={['ADMIN', 'MANAGER']}><IntegrationHealthPanel /></ProtectedRoute>} />
               <Route path="github/callback" handle={{ title: 'GitHub Auth — DSF' }} element={<GithubCallback />} />
+              <Route path="pm-callback" handle={{ title: 'PM Integration — DSF' }} element={<PmIntegrationCallback />} />
               <Route index handle={{ title: 'Settings: Cleanup — DSF' }} element={<CleanupPanel />} /> {/* Default to cleanup */}
             </Route>
 
@@ -443,6 +447,20 @@ function AppContent({ navigate }: { navigate: NavigateFunction }) {
                 </ProtectedRoute>
               }
             />
+
+            {/* Project-Specific Settings */}
+            <Route
+              path="/projects/:id/settings"
+              element={
+                <ProtectedRoute>
+                  <SettingsLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="integrations" handle={{ title: 'Project Settings: Integrations — DSF' }} element={<ProtectedRoute requiredRoles={['ADMIN', 'PM']}><PmIntegrationPanel /></ProtectedRoute>} />
+              <Route path="general" handle={{ title: 'Project Settings: General — DSF' }} element={<div>General project settings coming soon...</div>} />
+              <Route index element={<Navigate to="integrations" replace />} />
+            </Route>
 
             {/* Catch-all renders a dedicated 404 page (protected) */}
             <Route

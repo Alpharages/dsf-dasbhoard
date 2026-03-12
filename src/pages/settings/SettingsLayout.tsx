@@ -1,4 +1,4 @@
-import { Outlet, NavLink, Navigate, useLocation } from 'react-router-dom';
+import { Outlet, NavLink, Navigate, useLocation, useParams } from 'react-router-dom';
 import {
     Trash2,
     Activity,
@@ -7,7 +7,8 @@ import {
     DollarSign,
     ShieldAlert,
     HeartPulse,
-    Blocks
+    Blocks,
+    Settings
 } from 'lucide-react';
 
 const panels = [
@@ -21,12 +22,22 @@ const panels = [
     { id: 'integrations', label: 'Third-Party Integrations', icon: Blocks },
 ];
 
+const projectPanels = [
+    { id: 'integrations', label: 'PM Tool Integration', icon: Blocks },
+    { id: 'general', label: 'General Settings', icon: Settings },
+];
+
 export const SettingsLayout = () => {
+    const { id: projectId } = useParams<{ id: string }>();
     const location = useLocation();
 
-    // Redirect /settings to /settings/cleanup
-    if (location.pathname === '/settings') {
-        return <Navigate to="/settings/cleanup" replace />;
+    const currentPanels = projectId ? projectPanels : panels;
+    const basePath = projectId ? `/projects/${projectId}/settings` : '/settings';
+    const headerTitle = projectId ? 'Project Configuration' : 'System Configuration';
+
+    // Redirect /settings to /settings/cleanup or /projects/:id/settings to /projects/:id/settings/integrations
+    if (location.pathname === basePath) {
+        return <Navigate to={`${basePath}/${currentPanels[0].id}`} replace />;
     }
 
     return (
@@ -34,12 +45,12 @@ export const SettingsLayout = () => {
             {/* Settings Navigation */}
             <div className="col-span-12 lg:col-span-3">
                 <div className="bg-muted/30 border border-border rounded-2xl p-4">
-                    <h2 className="text-lg font-semibold text-foreground mb-4 px-2">System Configuration</h2>
+                    <h2 className="text-lg font-semibold text-foreground mb-4 px-2">{headerTitle}</h2>
                     <nav className="space-y-1">
-                        {panels.map((panel) => (
+                        {currentPanels.map((panel) => (
                             <NavLink
                                 key={panel.id}
-                                to={`/settings/${panel.id}`}
+                                to={`${basePath}/${panel.id}`}
                                 className={({ isActive }) =>
                                     `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive
                                         ? 'bg-primary text-primary-foreground'
