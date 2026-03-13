@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Boxes, Link2, Unlink2, CheckCircle2, Loader2, AlertTriangle, Zap, RefreshCw, Copy, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getPmIntegrations, getPmConnectUrl, deletePmIntegration, updateSyncSettings, type PmIntegration, type SyncSettingsUpdate } from '@/api/integrationsApi';
+import { getPmIntegrations, getPmConnectUrl, deletePmIntegration, updateSyncSettings, getSyncConfig, updateSyncConfig, getIntegrationStatuses, type PmIntegration, type SyncSettingsUpdate, type SyncConfigResponse, type UpdateSyncConfig } from '@/api/integrationsApi';
 import { toast } from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { Switch } from '@/components/ui/switch';
@@ -212,6 +212,187 @@ const SyncSettingsSection: React.FC<{ integration: PmIntegration; projectId: str
     );
 };
 
+// AC5: StatusConfigSection component
+export const StatusConfigSection: React.FC<{ integration: PmIntegration; projectId: string }> = ({ integration, projectId }) => {
+    const queryClient = useQueryClient();
+    const [listId, setListId] = useState('');
+    const [selectedStatus, setSelectedStatus] = useState('');
+    const [shouldFetchStatuses, setShouldFetchStatuses] = useState(false);
+    const syncConfigLoaded = useRef(false);
+
+    const { data: syncConfig, isLoading: configLoading } = useQuery({
+        queryKey: ['pm-sync-config', projectId],
+        queryFn: () => getSyncConfig(projectId),
+        staleTime: 60000,
+        enabled: !!projectId,
+    });
+
+    useEffect(() => {
+        if (syncConfig && !syncConfigLoaded.current) {
+            syncConfigLoaded.current = true;
+            setListId(syncConfig.container_id ?? '');
+            setSelectedStatus(syncConfig.ai_trigger_status ?? '');
+            if (syncConfig.container_id) {
+                setShouldFetchStatuses(true);
+            }
+        }
+    }, [syncConfig]);
+
+    const {
+        data: statuses,
+        isLoading: statusesLoading,
+        isError: statusesError,
+    } = useQuery({
+        queryKey: ['pm-statuses', integration.id, listId],
+        queryFn: () => getIntegrationStatuses(integration.id, listId),
+        enabled: shouldFetchStatuses && !!listId,
+        staleTime: 300000,
+    });
+
+    const updateMutation = useMutation({
+        mutationFn: (data: UpdateSyncConfig) => updateSyncConfig(projectId, data),
+        onMutate: async (newData) => {
+            await queryClient.cancelQueries({ queryKey: ['pm-sync-config', projectId] });
+            const previousConfig = queryClient.getQueryData<SyncConfigResponse>(['pm-sync-config', projectId]);
+            queryClient.setQueryData<SyncConfigResponse>(['pm-sync-config', projectId], (old) => {
+                if (!old) return old;
+                return {
+                    ...old,
+                    ai_trigger_status: newData.ai_trigger_status !== undefined ? newData.ai_trigger_status : old.ai_trigger_status,
+                    container_id: newData.container_id !== undefined ? newData.container_id : old.container_id,
+                };
+            });
+            return { previousConfig };
+        },
+        onError: (_err, _newData, context) => {
+            queryClient.setQueryData(['pm-sync-config', projectId], context?.previousConfig);
+            toast.error('Failed to update trigger status');
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['pm-sync-config', projectId] });
+            toast.success('AI trigger status updated');
+        },
+    });
+
+    if (configLoading) return <Skeleton className="h-48 w-full" />;
+
+    const handleListIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setListId(e.target.value);
+        setShouldFetchStatuses(false);
+    };
+
+    const handleLoadStatuses = () => {
+        if (!listId.trim()) {
+            toast.error('Enter a ClickUp list ID first');
+            return;
+        }
+        setShouldFetchStatuses(true);
+    };
+
+    const handleSave = () => {
+        updateMutation.mutate({
+            ai_trigger_status: selectedStatus || null,
+            container_id: listId || null,
+        });
+    };
+
+    return (
+        <div className="space-y-4 text-left" data-testid="status-config-section">
+            {syncConfig && syncConfig.ai_trigger_status === null && (
+                <Alert variant="default" className="bg-warning/10 border-warning/20 text-warning" data-testid="no-status-alert">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Warning</AlertTitle>
+                    <AlertDescription>
+                        No trigger status set — all incoming tasks will be skipped until configured.
+                    </AlertDescription>
+                </Alert>
+            )}
+
+            <div className="space-y-1.5">
+                <Label className="text-sm font-medium">ClickUp List ID</Label>
+                <div className="flex gap-2">
+                    <Input
+                        value={listId}
+                        onChange={handleListIdChange}
+                        placeholder="e.g. 901234567"
+                        className="h-9"
+                        data-testid="list-id-input"
+                    />
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-9 whitespace-nowrap"
+                        onClick={handleLoadStatuses}
+                        disabled={statusesLoading}
+                        data-testid="load-statuses-btn"
+                    >
+                        {statusesLoading ? (
+                            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                        ) : (
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                        )}
+                        Load Statuses
+                    </Button>
+                </div>
+                <p className="text-[10px] text-muted-foreground">Find this in your ClickUp list URL</p>
+            </div>
+
+            {statusesError && (
+                <Alert variant="destructive" data-testid="statuses-error">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>
+                        Could not load statuses — check your connection settings
+                    </AlertDescription>
+                </Alert>
+            )}
+
+            <div className="space-y-1.5">
+                <Label className="text-sm font-medium">Trigger Status</Label>
+                <Select
+                    value={selectedStatus}
+                    onValueChange={setSelectedStatus}
+                    disabled={!statuses || statuses.length === 0}
+                >
+                    <SelectTrigger className="h-9" data-testid="status-select-trigger">
+                        <SelectValue placeholder="Select trigger status..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {statuses?.map((status) => (
+                            <SelectItem key={status.id} value={status.name}>
+                                <div className="flex items-center gap-2">
+                                    {status.color && (
+                                        <span
+                                            aria-hidden="true"
+                                            className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
+                                            style={{ backgroundColor: status.color }}
+                                        />
+                                    )}
+                                    <span>{status.name}</span>
+                                </div>
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+
+            <Button
+                className="w-full bg-[var(--brand-500)] hover:bg-[var(--brand-600)]"
+                size="sm"
+                onClick={handleSave}
+                disabled={updateMutation.isPending}
+            >
+                {updateMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : (
+                    <Save className="w-4 h-4 mr-2" />
+                )}
+                Update Trigger Status
+            </Button>
+        </div>
+    );
+};
+
 export const PmIntegrationPanel: React.FC = () => {
     const { id: projectId } = useParams<{ id: string }>();
     const queryClient = useQueryClient();
@@ -310,6 +491,17 @@ export const PmIntegrationPanel: React.FC = () => {
                                 Disconnect
                             </Button>
                             <SyncSettingsSection integration={integration} projectId={projectId!} />
+                            {provider.id === 'CLICKUP' && (
+                                <>
+                                    <div className="pt-4 border-t border-[var(--card-border)] mt-4">
+                                        <div className="flex items-center gap-2 mb-4">
+                                            <Zap className="w-4 h-4 text-[var(--brand-500)]" />
+                                            <Label className="text-sm font-bold">AI Trigger Status</Label>
+                                        </div>
+                                        <StatusConfigSection integration={integration} projectId={projectId!} />
+                                    </div>
+                                </>
+                            )}
                         </div>
                     ) : (
                         <Button
