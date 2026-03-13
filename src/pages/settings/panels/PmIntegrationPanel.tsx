@@ -227,6 +227,7 @@ export const StatusConfigSection: React.FC<{ integration: PmIntegration; project
         enabled: !!projectId,
     });
 
+    /* eslint-disable react-hooks/set-state-in-effect */
     useEffect(() => {
         if (syncConfig && !syncConfigLoaded.current) {
             syncConfigLoaded.current = true;
@@ -237,6 +238,7 @@ export const StatusConfigSection: React.FC<{ integration: PmIntegration; project
             }
         }
     }, [syncConfig]);
+    /* eslint-enable react-hooks/set-state-in-effect */
 
     const {
         data: statuses,
