@@ -4,7 +4,7 @@ import type { Project } from '../types';
 
 export const useProjectUpdates = (
     socket: Socket | null,
-    setProjects: React.Dispatch<React.SetStateAction<Project[]>>
+    setProjects: React.Dispatch<React.SetStateAction<Project[]>>,
 ) => {
     useEffect(() => {
         if (!socket) return;
@@ -23,9 +23,27 @@ export const useProjectUpdates = (
             );
         });
 
+        // CS3-4: pm-sync-failed event — increment sync_pending count on affected project
+        socket.on('pm-sync-failed', (data: {
+            projectId: string;
+            ticketId: string;
+            provider: string;
+            reason: string;
+            missingFields: unknown[];
+        }) => {
+            setProjects((prev) =>
+                prev.map((p) =>
+                    p.id === data.projectId
+                        ? { ...p, tickets: { ...p.tickets, sync_pending: (p.tickets.sync_pending ?? 0) + 1 } }
+                        : p
+                )
+            );
+        });
+
         return () => {
             socket.off('project-updated');
             socket.off('ticket-updated');
+            socket.off('pm-sync-failed');
         };
     }, [socket, setProjects]);
 };

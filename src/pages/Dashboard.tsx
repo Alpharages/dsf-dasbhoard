@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Filter, Grid, List, SortAsc, Plus, RefreshCw, XCircle, ChevronDown, Check, Zap, LayoutDashboard } from 'lucide-react';
 import { useHotkeys } from 'react-hotkeys-hook';
-// import { toast } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import { StatsGrid } from '../components/dashboard/StatsGrid';
 import { ProjectCard } from '../components/dashboard/ProjectCard';
 import { NewProjectDialog } from '../components/dashboard/NewProjectDialog';
@@ -63,6 +63,20 @@ export function Dashboard() {
   const { user } = useAuth();
   const { socket, connected, isConnecting } = useSocket();
   useProjectUpdates(socket, setProjects);
+
+  // CS3-4: Toast alert when PM tool sync fails (best-effort, separate from state update in useProjectUpdates)
+  useEffect(() => {
+    if (!socket) return;
+    socket.on('pm-sync-failed', (data: { provider: string }) => {
+      toast(`PM tool update needed — ${data.provider} sync failed`, {
+        icon: '⚠️',
+        style: { background: '#92400e', color: '#fef3c7' },
+      });
+    });
+    return () => {
+      socket.off('pm-sync-failed');
+    };
+  }, [socket]);
 
   // M3: React Query with staleTime: 60s per Technical Guardrails
   const { data: summaryData, refetch: refetchSummary, isLoading: summaryLoading } = useQuery<DashboardSummary>({

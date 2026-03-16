@@ -6,6 +6,7 @@ export interface TicketCounts {
     completed: number;
     blocked: number;
     awaiting_approval: number;
+    sync_pending: number;
 }
 
 export interface Project {
@@ -40,6 +41,7 @@ export interface DashboardSummary {
     pr_merge_rate?: number;
     qa_first_pass_rate?: number;
     provider_distribution?: ProviderDistributionItem[];
+    sync_pending_tickets: number;
 }
 
 export interface ProviderDistributionItem {
