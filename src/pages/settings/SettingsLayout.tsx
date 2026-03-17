@@ -8,7 +8,8 @@ import {
     ShieldAlert,
     HeartPulse,
     Blocks,
-    Settings
+    Settings,
+    AppWindow
 } from 'lucide-react';
 
 const panels = [
@@ -20,6 +21,7 @@ const panels = [
     { id: 'audit', label: 'Audit & Safety', icon: ShieldAlert },
     { id: 'health', label: 'Health & Rollback', icon: HeartPulse },
     { id: 'integrations', label: 'Third-Party Integrations', icon: Blocks },
+    { id: 'connected-apps', label: 'Connected Apps', icon: AppWindow },
 ];
 
 const projectPanels = [

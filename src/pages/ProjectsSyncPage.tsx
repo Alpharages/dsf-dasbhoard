@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Plus, RefreshCw } from 'lucide-react';
 import { ProjectsTable } from '../components/projects/ProjectsTable';
 import { ClickUpImportModal } from '../components/projects/ClickUpImportModal';
@@ -10,6 +11,18 @@ import type { ProjectRowData } from '../components/projects/ProjectsTable';
 export function ProjectsSyncPage() {
     const [isImportModalOpen, setIsImportModalOpen] = useState(false);
     const [activeFilter, setActiveFilter] = useState<string>('all');
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+
+    // Auto-open import modal when redirected back from ClickUp OAuth
+    useEffect(() => {
+        if (searchParams.get('openImport') === 'true') {
+            setIsImportModalOpen(true);
+            localStorage.removeItem('dsf:pendingImport');
+            navigate('/projects/sync', { replace: true });
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // intentional: run once on mount only
 
     const { data: projects = [], isLoading, refetch } = useQuery<ProjectRowData[]>({
         queryKey: ['projects', activeFilter],

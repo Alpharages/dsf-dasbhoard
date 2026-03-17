@@ -1,35 +1,29 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
-import { 
-    Cloud, 
-    ChevronRight, 
-    Loader2, 
-    FolderOpen, 
-    List, 
-    Check, 
-    Building2, 
-    Sparkles, 
-    ArrowLeft, 
-    Zap, 
-    Layers, 
+import {
+    Cloud,
+    ChevronRight,
+    Loader2,
+    FolderOpen,
+    List,
+    Check,
+    Building2,
+    ArrowLeft,
+    Layers,
     Boxes,
     ArrowRight,
     Plus,
-    GitBranch,
-    Rocket,
-    Clock,
     Search,
     X,
-    RefreshCw,
-    CheckCircle2,
-    AlertCircle
+    AlertCircle,
+    RefreshCw
 } from 'lucide-react';
-import { useClickUpHierarchy } from '../../hooks/useClickUpHierarchy';
-import type { Organization, Space, ListItem } from '../../types/integrations';
+import { useConnectedApps, useAppHierarchy } from '../../hooks/queries/useConnectedApps';
+import type { Organization, Space, ListItem, ConnectedApp } from '../../types/integrations';
 import { useImportProject } from '../../hooks/useImportProject';
+import { connectedAppsApi } from '../../api/connectedAppsApi';
 import { toast } from 'react-hot-toast';
 import { cn } from '../../lib/utils';
 import confetti from 'canvas-confetti';
@@ -40,45 +34,10 @@ interface ClickUpImportModalProps {
     onImportSuccess?: () => void;
 }
 
-interface ApiErrorResponse {
-    message?: string;
-    error?: string;
-}
+type Step = 'account' | 'organization' | 'hierarchy';
 
-interface RecentlyImported {
-    id: string;
-    name: string;
-    provider: string;
-    importedAt: string;
-}
-
-type Provider = 'CLICKUP' | 'JIRA' | 'ASANA';
-type Step = 'provider' | 'organization' | 'hierarchy';
-
-// Brand colors for each provider
-const providerStyles: Record<Provider, { bg: string; icon: string; glow: string; border: string; gradient: string }> = {
-    CLICKUP: {
-        bg: 'from-violet-500/20 via-purple-500/10 to-fuchsia-500/5',
-        icon: 'from-violet-500 to-fuchsia-600',
-        glow: 'shadow-violet-500/30',
-        border: 'border-violet-500/30',
-        gradient: 'from-violet-500 via-purple-500 to-fuchsia-500'
-    },
-    JIRA: {
-        bg: 'from-blue-500/20 via-cyan-500/10 to-teal-500/5',
-        icon: 'from-blue-500 to-cyan-600',
-        glow: 'shadow-blue-500/30',
-        border: 'border-blue-500/30',
-        gradient: 'from-blue-500 via-cyan-500 to-teal-500'
-    },
-    ASANA: {
-        bg: 'from-rose-500/20 via-pink-500/10 to-orange-500/5',
-        icon: 'from-rose-500 to-orange-600',
-        glow: 'shadow-rose-500/30',
-        border: 'border-rose-500/30',
-        gradient: 'from-rose-500 via-pink-500 to-orange-500'
-    }
-};
+// Brand colors for ClickUp
+const brandColors = ['#7c3aed', '#a855f7', '#c084fc'];
 
 // --- Sub-components ---
 
@@ -147,8 +106,8 @@ const CountBadge = ({ count, label }: { count: number; label: string }) => {
 // --- Main Component ---
 
 export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUpImportModalProps) {
-    const [step, setStep] = useState<Step>('provider');
-    const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
+    const [step, setStep] = useState<Step>('account');
+    const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
     const [selectedOrganization, setSelectedOrganization] = useState<Organization | null>(null);
     const [selectedSpace, setSelectedSpace] = useState<Space | null>(null);
     const [selectedList, setSelectedList] = useState<ListItem | null>(null);
@@ -158,33 +117,31 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
     const [orgSearch, setOrgSearch] = useState('');
     const [spaceSearch, setSpaceSearch] = useState('');
     const [listSearch, setListSearch] = useState('');
-    
-    // Recently imported
-    const [recentImports, setRecentImports] = useState<RecentlyImported[]>([]);
 
-    const { data: hierarchyData, isLoading: isLoadingHierarchy } = useClickUpHierarchy(
-        selectedProvider === 'CLICKUP' && step !== 'provider',
-        selectedOrganization?.id
+    const {
+        data: connectedApps,
+        isLoading: isLoadingAccounts,
+        isError: isAccountsError,
+        refetch: refetchAccounts,
+    } = useConnectedApps();
+
+    const { data: hierarchyData, isLoading: isLoadingHierarchy } = useAppHierarchy(
+        selectedAccountId,
+        selectedOrganization?.id,
+        step !== 'account' && !!selectedAccountId
     );
 
-    // Load recent imports from localStorage
+    const clickUpAccounts = useMemo(() => 
+        connectedApps?.filter(app => app.provider === 'clickup') || [],
+    [connectedApps]);
+
+    // Auto-select account if only one exists — show confirmed state, do NOT advance step
     useEffect(() => {
-        const saved = localStorage.getItem('recentImports');
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved) as RecentlyImported[];
-                // Filter to last 7 days
-                const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-                const filtered = parsed.filter((r) => 
-                    new Date(r.importedAt).getTime() > weekAgo
-                ).slice(0, 3);
-                // Use a microtask to avoid setState in effect warning
-                Promise.resolve().then(() => setRecentImports(filtered));
-            } catch {
-                Promise.resolve().then(() => setRecentImports([]));
-            }
+        if (clickUpAccounts.length === 1 && !selectedAccountId && step === 'account') {
+            setSelectedAccountId(clickUpAccounts[0].id);
         }
-    }, []);
+    }, [clickUpAccounts, selectedAccountId, step]);
+
 
     // Auto-select organization if only one exists
     if (!selectedOrganization && hierarchyData?.organizations?.length === 1 && step === 'organization') {
@@ -200,15 +157,11 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
 
     // Confetti trigger
     const triggerConfetti = useCallback(() => {
-        const colors = selectedProvider ? 
-            ['#7c3aed', '#a855f7', '#c084fc'] : // ClickUp purples
-            ['#3b82f6', '#06b6d4', '#14b8a6'];  // Default blues
-        
         confetti({
             particleCount: 150,
             spread: 80,
             origin: { y: 0.6 },
-            colors,
+            colors: brandColors,
             disableForReducedMotion: true,
             zIndex: 9999
         });
@@ -219,13 +172,13 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                 particleCount: 50,
                 spread: 100,
                 origin: { y: 0.7 },
-                colors,
+                colors: brandColors,
                 angle: 120,
                 disableForReducedMotion: true,
                 zIndex: 9999
             });
         }, 150);
-    }, [selectedProvider]);
+    }, []);
 
     const { mutate: importProject, isPending: isImporting } = useImportProject({
         onSuccess: () => {
@@ -235,32 +188,18 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                 icon: '🚀'
             });
             
-            // Save to recent imports
-            if (selectedProvider && selectedList) {
-                const newImport: RecentlyImported = {
-                    id: selectedList.id,
-                    name: selectedList.name || 'Unknown',
-                    provider: selectedProvider,
-                    importedAt: new Date().toISOString()
-                };
-                const updated = [newImport, ...recentImports].slice(0, 5);
-                setRecentImports(updated);
-                localStorage.setItem('recentImports', JSON.stringify(updated));
-            }
-            
             handleClose();
             onImportSuccess?.();
         },
-        onError: (error: unknown) => {
-            const apiError = error as { response?: { data?: ApiErrorResponse } };
-            const errorMessage = apiError.response?.data?.message || apiError.response?.data?.error || 'Failed to import project';
+        onError: (error: any) => {
+            const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Failed to import project';
             toast.error(errorMessage, { icon: '❌' });
         }
     });
 
     const handleClose = useCallback(() => {
-        setStep('provider');
-        setSelectedProvider(null);
+        setStep('account');
+        setSelectedAccountId(null);
         setSelectedOrganization(null);
         setSelectedSpace(null);
         setSelectedList(null);
@@ -271,13 +210,21 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
         onClose();
     }, [onClose]);
 
-    const handleProviderSelect = (provider: Provider) => {
-        if (provider !== 'CLICKUP') {
-            toast('Coming soon! 🔜', { icon: '🚧' });
-            return;
+    // Clear any stale pending import flag when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            localStorage.removeItem('dsf:pendingImport');
         }
-        setSelectedProvider(provider);
-        setStep('organization');
+    }, [isOpen]);
+
+    const handleConnectClickUp = async () => {
+        try {
+            localStorage.setItem('dsf:pendingImport', JSON.stringify({ returnedFromOAuth: true }));
+            const { url } = await connectedAppsApi.getClickUpConnectUrl('import');
+            window.location.href = url;
+        } catch (error) {
+            toast.error('Failed to initiate ClickUp connection');
+        }
     };
 
     const handleBack = useCallback(() => {
@@ -289,26 +236,27 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                 setStep('organization');
                 setSelectedOrganization(null);
             } else {
-                handleClose();
+                setStep('account');
+                // Don't clear selectedAccountId if we auto-picked it
             }
         } else if (step === 'organization') {
-            setStep('provider');
-            setSelectedProvider(null);
+            setStep('account');
             setOrgSearch('');
         }
-    }, [step, hasMultipleOrgs, handleClose]);
+    }, [step, hasMultipleOrgs]);
 
     const handleImport = useCallback(() => {
-        if (!selectedProvider || !selectedList) {
+        if (!selectedAccountId || !selectedList) {
             toast.error('Please select a list to import');
             return;
         }
 
         importProject({
-            provider: selectedProvider,
-            resourceId: selectedList.id
+            provider: 'CLICKUP',
+            resourceId: selectedList.id,
+            accountId: selectedAccountId
         });
-    }, [selectedProvider, selectedList, importProject]);
+    }, [selectedAccountId, selectedList, importProject]);
 
     // Keyboard navigation
     useEffect(() => {
@@ -334,29 +282,6 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isOpen, step, selectedList, isImporting, selectedSpace, handleImport, handleClose, handleBack]);
 
-    const providers = useMemo(() => [
-        { 
-            name: 'CLICKUP' as Provider, 
-            icon: Cloud, 
-            available: true, 
-            description: 'Sync tasks, lists, and projects seamlessly',
-            features: ['Real-time sync', 'Task tracking', 'Team collaboration']
-        },
-        { 
-            name: 'JIRA' as Provider, 
-            icon: GitBranch, 
-            available: false, 
-            description: 'Import issues, epics, and sprint data',
-            features: ['Issue tracking', 'Sprint planning', 'Agile workflows']
-        },
-        { 
-            name: 'ASANA' as Provider, 
-            icon: Layers, 
-            available: false, 
-            description: 'Connect projects, tasks, and timelines',
-            features: ['Project timelines', 'Task automation', 'Portfolio view']
-        }
-    ], []);
 
     // Filtered data
     const filteredOrganizations = useMemo(() => {
@@ -388,7 +313,7 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
 
     const getStepIcon = () => {
         switch (step) {
-            case 'provider': return <Sparkles className="w-5 h-5 text-white" />;
+            case 'account': return <Cloud className="w-5 h-5 text-white" />;
             case 'organization': return <Building2 className="w-5 h-5 text-white" />;
             case 'hierarchy': return <Layers className="w-5 h-5 text-white" />;
         }
@@ -396,7 +321,7 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
 
     const getStepTitle = () => {
         switch (step) {
-            case 'provider': return 'Import Project';
+            case 'account': return 'Select Account';
             case 'organization': return 'Choose Workspace';
             case 'hierarchy': return 'Select Location';
         }
@@ -404,8 +329,8 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
 
     const getStepDescription = () => {
         switch (step) {
-            case 'provider':
-                return 'Connect your favorite tools and start syncing projects in seconds.';
+            case 'account':
+                return 'Choose a connected ClickUp account or add a new one.';
             case 'organization':
                 return 'Select the ClickUp workspace you want to import from.';
             case 'hierarchy':
@@ -429,8 +354,8 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                 <DialogHeader className="relative z-10 p-6 sm:p-8 pb-4 flex-shrink-0">
                     {/* Progress Steps */}
                     <div className="flex items-center gap-2 mb-5">
-                        {(['provider', 'organization', 'hierarchy'] as Step[]).map((s, i) => {
-                            const stepIndex = ['provider', 'organization', 'hierarchy'].indexOf(step);
+                        {(['account', 'organization', 'hierarchy'] as Step[]).map((s, i) => {
+                            const stepIndex = ['account', 'organization', 'hierarchy'].indexOf(step);
                             const isActive = i === stepIndex;
                             const isCompleted = i < stepIndex;
                             
@@ -470,9 +395,10 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                                     {getStepTitle()}
                                 </DialogTitle>
                                 {step === 'organization' && <ConnectionStatus />}
-                                {step !== 'provider' && (
+                                {step !== 'account' && (
                                     <button
                                         onClick={handleBack}
+                                        aria-label="Back"
                                         className="p-1.5 sm:p-2 rounded-lg hover:bg-muted transition-all text-muted-foreground hover:text-foreground hover:scale-105 active:scale-95"
                                     >
                                         <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -488,158 +414,112 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
 
                 {/* Content */}
                 <div className="relative z-10 px-6 sm:px-8 pb-4 flex-1 overflow-y-auto custom-scrollbar min-h-0">
-                    {step === 'provider' && (
-                        <StepTransition stepKey="provider">
+                    {step === 'account' && (
+                        <StepTransition stepKey="account">
                             <div className="space-y-4">
-                                {/* Recently Imported Section */}
-                                {recentImports.length > 0 && (
-                                    <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/20 border border-border/30">
-                                        <div className="flex items-center gap-2 mb-3">
-                                            <RefreshCw className="w-4 h-4 text-primary" />
-                                            <span className="text-sm font-semibold text-foreground">Recently Imported</span>
-                                        </div>
-                                        <div className="flex flex-wrap gap-2">
-                                            {recentImports.map((item) => (
-                                                <button
-                                                    key={item.id}
-                                                    onClick={() => {
-                                                        setSelectedProvider(item.provider as Provider);
-                                                        setStep('organization');
-                                                    }}
-                                                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-background border border-border/50 hover:border-primary/40 hover:shadow-md transition-all text-left group"
-                                                >
-                                                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                                                    <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors truncate max-w-[150px]">
-                                                        {item.name}
-                                                    </span>
-                                                    <span className="text-[10px] text-muted-foreground">
-                                                        {new Date(item.importedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                                                    </span>
-                                                </button>
-                                            ))}
-                                        </div>
+                                {/* Loading skeleton */}
+                                {isLoadingAccounts && <SkeletonCard count={2} />}
+
+                                {/* Error state */}
+                                {isAccountsError && (
+                                    <div className="p-4 rounded-xl border border-destructive/30 bg-destructive/10">
+                                        <p className="text-sm text-destructive mb-3">Failed to load connected accounts.</p>
+                                        <Button variant="outline" size="sm" onClick={() => refetchAccounts()}>
+                                            <RefreshCw className="w-4 h-4 mr-2" /> Retry
+                                        </Button>
                                     </div>
                                 )}
 
-                                {providers.map((provider, index) => {
-                                    const styles = providerStyles[provider.name];
-                                    return (
-                                        <button
-                                            key={provider.name}
-                                            onClick={() => handleProviderSelect(provider.name)}
-                                            disabled={!provider.available}
-                                            className={cn(
-                                                "group relative flex items-center w-full p-4 sm:p-5 rounded-xl sm:rounded-2xl border transition-all duration-300 outline-none overflow-hidden",
-                                                provider.available
-                                                    ? "bg-gradient-to-r from-card/80 to-background border-border/50 hover:border-primary/40 cursor-pointer hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-0.5"
-                                                    : "bg-muted/30 border-border/30 cursor-not-allowed opacity-70"
-                                            )}
-                                            style={{ animationDelay: `${index * 100}ms` }}
-                                        >
-                                            {/* Background glow on hover */}
-                                            {provider.available && (
-                                                <div className={cn(
-                                                    "absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-500",
-                                                    styles.bg
-                                                )} />
-                                            )}
-                                            
-                                            {/* Left accent line */}
-                                            <div className={cn(
-                                                "absolute left-0 top-4 bottom-4 w-1 rounded-full transition-all duration-300",
-                                                provider.available 
-                                                    ? cn("bg-gradient-to-b opacity-0 group-hover:opacity-100", styles.icon)
-                                                    : "bg-muted-foreground/20"
-                                            )} />
-                                            
-                                            <div className="flex items-center gap-3 sm:gap-5 relative z-10 w-full min-w-0">
-                                                {/* Icon Container */}
-                                                <div className={cn(
-                                                    "shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-300 shadow-lg",
-                                                    provider.available
-                                                        ? cn("bg-gradient-to-br shadow-inner", styles.icon, styles.glow)
-                                                        : "bg-muted text-muted-foreground"
-                                                )}>
-                                                    <provider.icon className={cn(
-                                                        "w-6 h-6 sm:w-8 sm:h-8 transition-transform duration-300 text-white",
-                                                        provider.available && "group-hover:scale-110 group-hover:rotate-3"
-                                                    )} />
+                                {!isLoadingAccounts && !isAccountsError && (
+                                    <>
+                                        {/* Zero accounts — inline OAuth empty state */}
+                                        {clickUpAccounts.length === 0 && (
+                                            <div className="flex flex-col items-center gap-4 py-8 text-center border-2 border-dashed border-border/30 rounded-2xl">
+                                                <Cloud className="w-12 h-12 text-muted-foreground/50" />
+                                                <div>
+                                                    <p className="font-semibold text-foreground">No ClickUp accounts connected</p>
+                                                    <p className="text-sm text-muted-foreground mt-1">Connect your ClickUp account to start importing</p>
                                                 </div>
-                                                
-                                                {/* Content */}
-                                                <div className="flex-1 text-left min-w-0">
-                                                    <div className="flex items-center gap-2 sm:gap-3 mb-1 flex-wrap">
-                                                        <span className={cn(
-                                                            "font-bold text-base sm:text-lg transition-colors",
-                                                            provider.available && "group-hover:text-primary"
-                                                        )}>
-                                                            {provider.name}
-                                                        </span>
-                                                        {!provider.available && (
-                                                            <Badge 
-                                                                variant="secondary" 
-                                                                className="bg-gradient-to-r from-amber-500/20 to-orange-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 px-2 py-0.5 text-[10px] sm:text-xs font-semibold"
-                                                            >
-                                                                <Clock className="w-3 h-3 mr-1" />
-                                                                Soon
-                                                            </Badge>
-                                                        )}
-                                                        {provider.available && (
-                                                            <Badge 
-                                                                variant="secondary" 
-                                                                className="bg-gradient-to-r from-emerald-500/20 to-green-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-2 py-0.5 text-[10px] sm:text-xs font-semibold"
-                                                            >
-                                                                <Zap className="w-3 h-3 mr-1" />
-                                                                Available
-                                                            </Badge>
-                                                        )}
-                                                    </div>
-                                                    <p className="text-xs sm:text-sm text-muted-foreground mb-2">
-                                                        {provider.description}
-                                                    </p>
-                                                    {/* Feature tags */}
-                                                    <div className="hidden sm:flex items-center gap-2 flex-wrap">
-                                                        {provider.features.map((feature, fi) => (
-                                                            <span 
-                                                                key={fi}
-                                                                className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground/70 font-medium"
-                                                            >
-                                                                {feature}
+                                                <Button onClick={handleConnectClickUp}>Connect ClickUp</Button>
+                                            </div>
+                                        )}
+
+                                        {/* One or more accounts */}
+                                        {clickUpAccounts.length > 0 && (
+                                            <div className="space-y-4">
+                                                <div className="flex items-center justify-between px-1">
+                                                    <span className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider">
+                                                        Connected Accounts
+                                                    </span>
+                                                    <CountBadge count={clickUpAccounts.length} label="accounts" />
+                                                </div>
+
+                                                {/* Single account — collapsed confirmed state */}
+                                                {clickUpAccounts.length === 1 && (
+                                                    <div className="p-4 rounded-xl border border-primary/30 bg-primary/5 flex items-center gap-3">
+                                                        <div className="relative shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 via-primary/10 to-background flex items-center justify-center border border-primary/20 shadow-inner">
+                                                            <span className="text-lg font-bold text-primary">
+                                                                {clickUpAccounts[0].bot_username?.[0]?.toUpperCase() || 'C'}
                                                             </span>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                                
-                                                {/* Arrow */}
-                                                {provider.available ? (
-                                                    <div className={cn(
-                                                        "shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-300",
-                                                        "bg-muted/50 group-hover:bg-primary group-hover:shadow-lg group-hover:shadow-primary/30 group-hover:scale-110"
-                                                    )}>
-                                                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground group-hover:text-primary-foreground transition-all duration-300 group-hover:translate-x-0.5" />
-                                                    </div>
-                                                ) : (
-                                                    <div className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center bg-muted/30">
-                                                        <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground/50" />
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="font-semibold text-foreground truncate">{clickUpAccounts[0].workspace_name}</p>
+                                                            <p className="text-xs text-muted-foreground">{clickUpAccounts[0].bot_username || 'Unknown'}</p>
+                                                        </div>
+                                                        <Check className="w-5 h-5 text-primary shrink-0" />
                                                     </div>
                                                 )}
+
+                                                {/* Multiple accounts — radio cards (select only, advance via Next) */}
+                                                {clickUpAccounts.length > 1 && (
+                                                    <div className="grid grid-cols-1 gap-3 sm:gap-4 max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
+                                                        {clickUpAccounts.map((account: ConnectedApp, index: number) => (
+                                                            <button
+                                                                key={account.id}
+                                                                onClick={() => setSelectedAccountId(account.id)}
+                                                                className={cn(
+                                                                    "group flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-2xl border transition-all text-left w-full focus:outline-none focus:ring-2 focus:ring-primary/20",
+                                                                    selectedAccountId === account.id
+                                                                        ? "border-primary/50 bg-primary/10"
+                                                                        : "border-border/50 bg-gradient-to-br from-card/80 to-background hover:from-muted/80 hover:to-muted/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
+                                                                )}
+                                                                style={{ animationDelay: `${index * 50}ms` }}
+                                                            >
+                                                                <div className="relative shrink-0">
+                                                                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-background flex items-center justify-center border border-primary/20 transition-all shadow-inner">
+                                                                        <span className="text-lg sm:text-xl font-bold text-primary">
+                                                                            {account.bot_username?.[0]?.toUpperCase() || 'C'}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="absolute -bottom-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-background border border-border flex items-center justify-center shadow-lg">
+                                                                        <img src="/integrations/clickup.svg" alt="ClickUp" className="w-3 h-3 sm:w-4 sm:h-4" />
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <span className="font-bold text-foreground block truncate text-base sm:text-lg">
+                                                                        {account.bot_username || account.workspace_name}
+                                                                    </span>
+                                                                    <p className="text-xs sm:text-sm text-muted-foreground/80 mt-0.5">{account.workspace_name}</p>
+                                                                </div>
+                                                                {selectedAccountId === account.id && (
+                                                                    <Check className="w-5 h-5 text-primary shrink-0" />
+                                                                )}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+
+                                                {/* Connect another account */}
+                                                <button
+                                                    onClick={handleConnectClickUp}
+                                                    className="w-full text-sm text-primary hover:underline py-2 text-center"
+                                                >
+                                                    + Connect another ClickUp account
+                                                </button>
                                             </div>
-                                        </button>
-                                    );
-                                })}
-                                
-                                {/* Bottom hint */}
-                                <div className="flex items-center gap-3 mt-5 sm:mt-6 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 border border-border/30">
-                                    <div className="shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                                        <Rocket className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-xs sm:text-sm font-medium text-foreground">More integrations on the way</p>
-                                        <p className="text-[10px] sm:text-xs text-muted-foreground">
-                                            We&apos;re working on adding more providers. <button className="text-primary hover:underline font-medium">Request one</button> if you need it.
-                                        </p>
-                                    </div>
-                                </div>
+                                        )}
+                                    </>
+                                )}
                             </div>
                         </StepTransition>
                     )}
@@ -975,19 +855,32 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
 
                 {/* Footer */}
                 <div className="relative z-10 flex items-center justify-between p-5 sm:p-6 bg-gradient-to-r from-muted/30 via-muted/20 to-muted/30 border-t border-border/30 flex-shrink-0">
-                    <Button
-                        variant="ghost"
-                        onClick={selectedSpace ? () => {
-                            setSelectedSpace(null);
-                            setSelectedList(null);
-                            setListSearch('');
-                        } : handleBack}
-                        className="text-muted-foreground hover:text-foreground hover:bg-muted/80 px-4 sm:px-5 font-medium transition-all text-xs sm:text-sm"
-                        size="sm"
-                    >
-                        {selectedSpace ? 'Change Space' : 'Back'}
-                    </Button>
-                    
+                    {step !== 'account' && (
+                        <Button
+                            variant="ghost"
+                            onClick={selectedSpace ? () => {
+                                setSelectedSpace(null);
+                                setSelectedList(null);
+                                setListSearch('');
+                            } : handleBack}
+                            className="text-muted-foreground hover:text-foreground hover:bg-muted/80 px-4 sm:px-5 font-medium transition-all text-xs sm:text-sm"
+                            size="sm"
+                        >
+                            {selectedSpace ? 'Change Space' : 'Back'}
+                        </Button>
+                    )}
+
+                    {step === 'account' && (
+                        <Button
+                            onClick={() => selectedAccountId && setStep('organization')}
+                            disabled={!selectedAccountId}
+                            className="ml-auto relative overflow-hidden bg-gradient-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary hover:to-primary/85 text-primary-foreground px-5 sm:px-7 py-2 sm:py-2.5 rounded-xl font-semibold shadow-xl shadow-primary/25 hover:shadow-primary/40 transition-all hover:-translate-y-0.5 active:translate-y-0 text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                            size="sm"
+                        >
+                            Next <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1.5 sm:ml-2" />
+                        </Button>
+                    )}
+
                     {step === 'hierarchy' && selectedList && (
                         <Button
                             onClick={handleImport}

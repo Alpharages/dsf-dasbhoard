@@ -308,3 +308,4 @@ export const IntegrationHealthPanel = () => {
         </div>
     );
 };
+export { ConnectedAppsPanel } from './ConnectedAppsPanel';

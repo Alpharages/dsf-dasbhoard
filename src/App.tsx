@@ -44,6 +44,7 @@ import {
   HealthPanel,
   IntegrationHealthPanel,
   PmIntegrationPanel,
+  ConnectedAppsPanel,
 } from './pages/settings/panels/AllPanels';
 import { GithubCallback } from './pages/settings/GithubCallback';
 import { PmIntegrationCallback } from './pages/settings/PmIntegrationCallback';
@@ -147,6 +148,7 @@ function AppContent({ navigate }: { navigate: NavigateFunction }) {
       ['/executions', 'Execution Monitoring — DSF'],
       ['/observability', 'Observability — DSF'],
       ['/settings/pm-callback', 'PM Integration — DSF'],
+      ['/settings/connected-apps', 'Connected Apps — DSF'],
       ['/notifications/preferences', 'Notification Preferences — DSF'],
     ];
     const path = location.pathname;
@@ -390,6 +392,11 @@ function AppContent({ navigate }: { navigate: NavigateFunction }) {
               <Route path="integrations" handle={{ title: 'Settings: Integration Health — DSF' }} element={<ProtectedRoute requiredRoles={['ADMIN', 'MANAGER']}><IntegrationHealthPanel /></ProtectedRoute>} />
               <Route path="github/callback" handle={{ title: 'GitHub Auth — DSF' }} element={<GithubCallback />} />
               <Route path="pm-callback" handle={{ title: 'PM Integration — DSF' }} element={<PmIntegrationCallback />} />
+              <Route path="connected-apps" element={
+                <ProtectedRoute requiredRoles={['PM', 'MANAGER', 'ADMIN']}>
+                  <ConnectedAppsPanel />
+                </ProtectedRoute>
+              } />
               <Route index handle={{ title: 'Settings: Cleanup — DSF' }} element={<CleanupPanel />} /> {/* Default to cleanup */}
             </Route>
 

@@ -15,6 +15,12 @@ export interface ListItem {
     name: string;
 }
 
-export interface HierarchyResponse {
-    organizations: Organization[];
+export interface ConnectedApp {
+    id: string;
+    provider: 'clickup' | 'jira' | 'asana';
+    workspace_id: string;
+    workspace_name: string;
+    bot_user_id: string;
+    bot_username: string;
+    created_at: string;
 }

@@ -4,6 +4,7 @@ import apiClient from '../api/client';
 interface ImportProjectRequest {
     provider: 'CLICKUP' | 'JIRA' | 'ASANA';
     resourceId: string;
+    accountId?: string;
 }
 
 interface ImportProjectResponse {

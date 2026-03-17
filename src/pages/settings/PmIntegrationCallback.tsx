@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Loader2, Boxes, CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'react-hot-toast';
+import { connectedAppsKeys } from '@/hooks/queries/useConnectedApps';
 
 type CallbackStatus = 'processing' | 'connected' | 'error';
 
@@ -15,23 +16,40 @@ export const PmIntegrationCallback: React.FC = () => {
 
     useEffect(() => {
         const integrationStatus = searchParams.get('integration');
+        const returnTo = searchParams.get('returnTo');
         const projectId = searchParams.get('state');
 
         const handleCallback = async () => {
             if (integrationStatus === 'connected') {
                 setStatus('connected');
-                toast.success('PM Tool connected successfully!');
-                await queryClient.invalidateQueries({ queryKey: ['pm-integrations'] });
-                const destination = projectId
-                    ? `/projects/${projectId}/settings/integrations`
-                    : '/dashboard';
-                setTimeout(() => navigate(destination, { replace: true }), 1200);
+                toast.success('Account connected successfully!');
+                
+                if (returnTo === 'settings') {
+                    await queryClient.invalidateQueries({ queryKey: connectedAppsKeys.all });
+                    setTimeout(() => navigate('/settings/connected-apps', { replace: true }), 1200);
+                } else if (returnTo === 'import') {
+                    setStatus('connected');
+                    toast.success('Account connected! Resuming import...');
+                    await queryClient.invalidateQueries({ queryKey: connectedAppsKeys.all });
+                    setTimeout(() => navigate('/projects/sync?openImport=true', { replace: true }), 1200);
+                } else if (projectId) {
+                    await queryClient.invalidateQueries({ queryKey: ['pm-integrations'] });
+                    setTimeout(() => navigate(`/projects/${projectId}/settings/integrations`, { replace: true }), 1200);
+                } else {
+                    setTimeout(() => navigate('/dashboard', { replace: true }), 1200);
+                }
             } else if (integrationStatus === 'error') {
                 setStatus('error');
-                toast.error('Failed to connect PM Tool.');
-                const destination = projectId
-                    ? `/projects/${projectId}/settings/integrations`
-                    : '/dashboard';
+                toast.error('Failed to connect account.');
+                
+                const destination = returnTo === 'settings'
+                    ? '/settings/connected-apps'
+                    : returnTo === 'import'
+                        ? '/projects/sync'
+                        : projectId
+                            ? `/projects/${projectId}/settings/integrations`
+                            : '/dashboard';
+                
                 setTimeout(() => navigate(destination, { replace: true }), 1500);
             } else {
                 toast.error('Invalid integration callback state.');
