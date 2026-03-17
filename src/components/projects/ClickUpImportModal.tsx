@@ -181,9 +181,14 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
     }, []);
 
     const { mutate: importProject, isPending: isImporting } = useImportProject({
-        onSuccess: () => {
+        onSuccess: (data) => {
             triggerConfetti();
-            toast.success('Project imported successfully! 🎉', {
+            
+            const message = data.integrationCreated 
+                ? `Project "${data.project.name}" imported and integration created! 🎉`
+                : `Project "${data.project.name}" imported successfully! 🎉`;
+
+            toast.success(message, {
                 duration: 4000,
                 icon: '🚀'
             });

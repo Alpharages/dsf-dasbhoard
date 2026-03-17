@@ -8,11 +8,14 @@ interface ImportProjectRequest {
 }
 
 interface ImportProjectResponse {
-    id: string;
-    name: string;
-    provider: string;
-    github_repository_url: string;
-    monitor_tasks: boolean;
+    project: {
+        id: string;
+        name: string;
+        provider: string;
+        github_repository_url: string;
+        monitor_tasks: boolean;
+    };
+    integrationCreated: boolean;
 }
 
 interface UseImportProjectOptions {
