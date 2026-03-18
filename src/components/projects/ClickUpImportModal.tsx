@@ -131,8 +131,8 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
         step !== 'account' && !!selectedAccountId
     );
 
-    const clickUpAccounts = useMemo(() => 
-        connectedApps?.filter(app => app.provider === 'clickup') || [],
+    const clickUpAccounts = useMemo(() =>
+        connectedApps?.filter(app => app.provider?.toLowerCase() === 'clickup') || [],
     [connectedApps]);
 
     // Auto-select account if only one exists — show confirmed state, do NOT advance step
@@ -464,12 +464,16 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                                                     <div className="p-4 rounded-xl border border-primary/30 bg-primary/5 flex items-center gap-3">
                                                         <div className="relative shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 via-primary/10 to-background flex items-center justify-center border border-primary/20 shadow-inner">
                                                             <span className="text-lg font-bold text-primary">
-                                                                {clickUpAccounts[0].bot_username?.[0]?.toUpperCase() || 'C'}
+                                                                {(clickUpAccounts[0].bot_username || clickUpAccounts[0].workspace_name)?.[0]?.toUpperCase() || 'C'}
                                                             </span>
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="font-semibold text-foreground truncate">{clickUpAccounts[0].workspace_name}</p>
-                                                            <p className="text-xs text-muted-foreground">{clickUpAccounts[0].bot_username || 'Unknown'}</p>
+                                                            <p className="font-semibold text-foreground truncate">
+                                                                {clickUpAccounts[0].workspace_name || 'ClickUp Account'}
+                                                            </p>
+                                                            {clickUpAccounts[0].bot_username && (
+                                                                <p className="text-xs text-muted-foreground">{clickUpAccounts[0].bot_username}</p>
+                                                            )}
                                                         </div>
                                                         <Check className="w-5 h-5 text-primary shrink-0" />
                                                     </div>
@@ -493,7 +497,7 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                                                                 <div className="relative shrink-0">
                                                                     <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-background flex items-center justify-center border border-primary/20 transition-all shadow-inner">
                                                                         <span className="text-lg sm:text-xl font-bold text-primary">
-                                                                            {account.bot_username?.[0]?.toUpperCase() || 'C'}
+                                                                            {(account.bot_username || account.workspace_name)?.[0]?.toUpperCase() || 'C'}
                                                                         </span>
                                                                     </div>
                                                                     <div className="absolute -bottom-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-background border border-border flex items-center justify-center shadow-lg">

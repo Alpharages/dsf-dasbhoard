@@ -16,7 +16,7 @@ export const connectedAppsApi = {
    * Fetch all connected provider accounts for the current user
    */
   getConnectedApps: async (): Promise<ConnectedApp[]> => {
-    const response = await apiClient.get<ConnectedApp[]>('/api/v1/apps/connected');
+    const response = await apiClient.get<ConnectedApp[]>('apps/connected');
     return response.data;
   },
 
@@ -29,7 +29,7 @@ export const connectedAppsApi = {
     if (returnTo) params.append('returnTo', returnTo);
     
     const response = await apiClient.get<{ url: string }>(
-      `/api/v1/apps/clickup/connect${params.toString() ? `?${params.toString()}` : ''}`
+      `apps/clickup/connect${params.toString() ? `?${params.toString()}` : ''}`
     );
     return response.data;
   },
@@ -39,7 +39,7 @@ export const connectedAppsApi = {
    * @param id The ID of the ConnectedApp record
    */
   disconnectApp: async (id: string): Promise<void> => {
-    await apiClient.delete(`/api/v1/apps/${id}`);
+    await apiClient.delete(`apps/${id}`);
   },
 
   /**
@@ -48,7 +48,7 @@ export const connectedAppsApi = {
    * @param teamId Optional teamId for ClickUp
    */
   getAppHierarchy: async (id: string, teamId?: string): Promise<HierarchyResponse> => {
-    const response = await apiClient.get<HierarchyResponse>(`/api/v1/apps/${id}/hierarchy`, {
+    const response = await apiClient.get<HierarchyResponse>(`apps/${id}/hierarchy`, {
       params: { teamId }
     });
     return response.data;

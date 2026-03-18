@@ -20,9 +20,9 @@ import { connectedAppsApi } from '@/api/connectedAppsApi';
 import { toast } from 'react-hot-toast';
 
 const PROVIDERS = [
-  { id: 'CLICKUP', name: 'ClickUp', icon: Boxes, comingSoon: false },
-  { id: 'JIRA', name: 'Jira', icon: Boxes, comingSoon: true },
-  { id: 'ASANA', name: 'Asana', icon: Boxes, comingSoon: true },
+  { id: 'clickup', name: 'ClickUp', icon: Boxes, comingSoon: false },
+  { id: 'jira', name: 'Jira', icon: Boxes, comingSoon: true },
+  { id: 'asana', name: 'Asana', icon: Boxes, comingSoon: true },
 ];
 
 export const ConnectedAppsPanel = () => {
@@ -31,7 +31,7 @@ export const ConnectedAppsPanel = () => {
   const [disconnectingApp, setDisconnectingApp] = useState<any>(null);
 
   const handleConnect = async (provider: string) => {
-    if (provider === 'CLICKUP') {
+    if (provider === 'clickup') {
       try {
         const { url } = await connectedAppsApi.getClickUpConnectUrl('settings');
         window.location.href = url;
@@ -42,16 +42,14 @@ export const ConnectedAppsPanel = () => {
   };
 
   const renderAccountCard = (app: any) => {
-    const botUsername = (app.metadata?.botUsername as string) || 'Unknown';
-    
     return (
       <div key={app.id} className="glass-card p-4 flex items-center justify-between group transition-all hover:border-primary/30">
         <div className="flex flex-col gap-1">
-          <div className="font-bold text-foreground">{app.workspaceName}</div>
+          <div className="font-bold text-foreground">{app.workspace_name || 'ClickUp Account'}</div>
           <div className="text-sm text-muted-foreground flex items-center gap-2">
-            <span>Bot: {botUsername}</span>
-            <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <span>Connected {formatDistanceToNow(new Date(app.connectedAt), { addSuffix: true })}</span>
+            {app.bot_username && <span>Bot: {app.bot_username}</span>}
+            {app.bot_username && <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />}
+            <span>Connected {formatDistanceToNow(new Date(app.created_at), { addSuffix: true })}</span>
           </div>
         </div>
         
@@ -155,9 +153,9 @@ export const ConnectedAppsPanel = () => {
       <AlertDialog open={!!disconnectingApp} onOpenChange={(open) => !open && setDisconnectingApp(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Remove {disconnectingApp?.workspaceName}?</AlertDialogTitle>
+            <AlertDialogTitle>Remove {disconnectingApp?.workspace_name}?</AlertDialogTitle>
             <AlertDialogDescription>
-              Remove {disconnectingApp?.workspaceName} from your connected accounts? Your existing projects will continue syncing. To stop sync on a project, go to that project's settings.
+              Remove {disconnectingApp?.workspace_name} from your connected accounts? Your existing projects will continue syncing. To stop sync on a project, go to that project's settings.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
