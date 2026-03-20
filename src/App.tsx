@@ -45,6 +45,7 @@ import {
   IntegrationHealthPanel,
   PmIntegrationPanel,
   ConnectedAppsPanel,
+  GeneralSettingsPanel,
 } from './pages/settings/panels/AllPanels';
 import { GithubCallback } from './pages/settings/GithubCallback';
 import { PmIntegrationCallback } from './pages/settings/PmIntegrationCallback';
@@ -465,7 +466,7 @@ function AppContent({ navigate }: { navigate: NavigateFunction }) {
               }
             >
               <Route path="integrations" handle={{ title: 'Project Settings: Integrations — DSF' }} element={<ProtectedRoute requiredRoles={['ADMIN', 'PM']}><PmIntegrationPanel /></ProtectedRoute>} />
-              <Route path="general" handle={{ title: 'Project Settings: General — DSF' }} element={<div>General project settings coming soon...</div>} />
+              <Route path="general" handle={{ title: 'Project Settings: General — DSF' }} element={<ProtectedRoute requiredRoles={['ADMIN', 'PM']}><GeneralSettingsPanel /></ProtectedRoute>} />
               <Route index element={<Navigate to="integrations" replace />} />
             </Route>
 

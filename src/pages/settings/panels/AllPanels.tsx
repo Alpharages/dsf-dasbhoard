@@ -309,3 +309,4 @@ export const IntegrationHealthPanel = () => {
     );
 };
 export { ConnectedAppsPanel } from './ConnectedAppsPanel';
+export { GeneralSettingsPanel } from './GeneralSettingsPanel';

@@ -14,6 +14,12 @@ export interface CreateProjectPayload {
   github_repository_url?: string;
 }
 
+export interface UpdateProjectPayload {
+  name?: string;
+  client_name?: string;
+  default_branch?: string;
+}
+
 const BASE_URL = '/projects';
 
 /**
@@ -45,6 +51,14 @@ export async function getAllProjects(): Promise<Project[]> {
  */
 export async function getProject(projectId: string): Promise<Project> {
   const response = await apiClient.get(`${BASE_URL}/${projectId}`);
+  return response.data;
+}
+
+/**
+ * Update project details (name, client name, default branch)
+ */
+export async function updateProject(projectId: string, payload: UpdateProjectPayload): Promise<Project> {
+  const response = await apiClient.patch<Project>(`${BASE_URL}/${projectId}`, payload);
   return response.data;
 }
 

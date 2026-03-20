@@ -152,7 +152,7 @@ export function GithubRepoSelector({ project }: GithubRepoSelectorProps) {
               variant="outline"
               size="sm"
               className="text-xs h-8"
-              onClick={() => window.open('/settings/github', '_blank')}
+              onClick={() => window.open('/profile', '_blank')}
             >
               Connect Account
               <ExternalLink className="ml-1.5 h-3 w-3" />
@@ -168,7 +168,7 @@ export function GithubRepoSelector({ project }: GithubRepoSelectorProps) {
                 </label>
                 <button
                   type="button"
-                  onClick={() => window.open('/settings/github', '_blank')}
+                  onClick={() => window.open('/profile', '_blank')}
                   className="text-xs text-primary hover:underline flex items-center gap-1"
                 >
                   <Plus className="h-3 w-3" />
