@@ -310,3 +310,5 @@ export const IntegrationHealthPanel = () => {
 };
 export { ConnectedAppsPanel } from './ConnectedAppsPanel';
 export { GeneralSettingsPanel } from './GeneralSettingsPanel';
+export { GlobalAiRoutingPanel } from './GlobalAiRoutingPanel';
+export { ProjectAiRoutingPanel } from './ProjectAiRoutingPanel';
