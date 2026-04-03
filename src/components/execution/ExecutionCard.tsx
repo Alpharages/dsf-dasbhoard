@@ -6,6 +6,7 @@ import {
   Terminal, 
   Loader2,
   AlertTriangle,
+  ShieldAlert,
   MoreVertical,
   ChevronRight,
   Activity
@@ -38,6 +39,7 @@ import {
 interface ExecutionCardProps {
   execution: Execution;
   onViewLogs?: (executionId: string) => void;
+  onResolve?: (executionId: string) => void;
   socket?: ReturnType<typeof import('@/lib/socket/useSocketIO').useSocketIO>['socket'];
 }
 
@@ -95,13 +97,19 @@ const statusConfig: Record<ExecutionStatus, {
     bgColor: 'bg-blue-500/10',
     borderColor: 'border-blue-500/30'
   },
+  'QA_FAILED': {
+    label: 'QA Failed',
+    color: 'text-rose-500',
+    bgColor: 'bg-rose-500/10',
+    borderColor: 'border-rose-500/30',
+  },
 };
 
 // Lazy-load the activity timeline to avoid bloating the initial card bundle
 import { lazy, Suspense } from 'react';
 const ContainerActivityTimeline = lazy(() => import('./ContainerActivityTimeline'));
 
-export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs, socket }: ExecutionCardProps) {
+export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs, onResolve, socket }: ExecutionCardProps) {
   const { user } = useAuth();
   const controlMutation = useControlExecution();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -213,10 +221,10 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
           <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
              <div 
                className={`h-full rounded-full transition-all duration-1000 ${
-                 execution.status === 'FAILED' ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]' :
-                 execution.status === 'COMPLETED' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' :
-                 'bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.5)]'
-               }`}
+                execution.status === 'FAILED' || execution.status === 'QA_FAILED' ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]' :
+                execution.status === 'COMPLETED' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' :
+                'bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.5)]'
+              }`}
                style={{ width: `${execution.percentComplete}%` }}
              />
           </div>
@@ -225,7 +233,7 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
         {/* Container Activity Timeline (PM-friendly live feed / historical review) */}
         {(() => {
           const isLive = execution.status === 'IN_PROGRESS' || execution.status === 'PAUSED';
-          const showTimeline = isLive || ['COMPLETED', 'FAILED', 'TIMEOUT', 'CANCELLED'].includes(execution.status);
+          const showTimeline = isLive || ['COMPLETED', 'FAILED', 'TIMEOUT', 'CANCELLED', 'QA_FAILED'].includes(execution.status);
           if (!showTimeline) return null;
 
           return (
@@ -270,8 +278,35 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
           </div>
         </div>
 
+        {/* QA Failure Prompt (FE-1.1) */}
+        {execution.status === 'QA_FAILED' && (
+          <div className="mt-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-rose-400 text-sm">
+              <ShieldAlert className="w-4 h-4 shrink-0" />
+              <span className="font-medium">
+                QA failed
+                {execution.qaRetryCount === undefined
+                  ? ''
+                  : execution.qaRetryCount === 0
+                  ? ' on first attempt'
+                  : ` after ${execution.qaRetryCount} retr${execution.qaRetryCount === 1 ? 'y' : 'ies'}`}
+                {" — "}action required
+              </span>
+            </div>
+            <Button
+              size="sm"
+              variant="destructive"
+              className="h-8 rounded-lg px-4 font-bold shadow-lg shadow-rose-500/20"
+              onClick={() => onResolve?.(execution.id)}
+              aria-label={`Resolve QA failure for execution ${execution.id}`}
+            >
+              Resolve
+            </Button>
+          </div>
+        )}
+
         {/* Error message if failed */}
-        {execution.errorMessage && (
+        {execution.errorMessage && execution.status !== 'QA_FAILED' && (
           <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg">
             <p className="text-xs text-rose-500 font-medium flex items-center gap-1.5">
               <AlertTriangle className="w-3.5 h-3.5" />

@@ -8,6 +8,7 @@ import {
   ExecutionEvents,
   type ExecutionEventPayload,
   type ExecutionLogPayload,
+  type QAFailedEventPayload,
   type ContainerActivityPayload,
   type NotificationPayload 
 } from './socketEvents';
@@ -224,6 +225,7 @@ export function useExecutionEvents(
     onPaused?: (payload: ExecutionEventPayload) => void;
     onResumed?: (payload: ExecutionEventPayload) => void;
     onEmergencyStopped?: (payload: ExecutionEventPayload) => void;
+    onQAFailed?: (payload: QAFailedEventPayload) => void;
   },
   options?: {
     progressDebounceMs?: number; // Debounce progress events (default: 500ms)
@@ -258,6 +260,7 @@ export function useExecutionEvents(
     const handlePaused = (payload: ExecutionEventPayload) => handlersRef.current.onPaused?.(payload);
     const handleResumed = (payload: ExecutionEventPayload) => handlersRef.current.onResumed?.(payload);
     const handleEmergencyStopped = (payload: ExecutionEventPayload) => handlersRef.current.onEmergencyStopped?.(payload);
+    const handleQAFailed = (payload: QAFailedEventPayload) => handlersRef.current.onQAFailed?.(payload);
 
     socket.on('execution.started', handleStarted);
     socket.on('execution.progress', handleProgress);
@@ -268,6 +271,7 @@ export function useExecutionEvents(
     socket.on('execution.paused', handlePaused);
     socket.on('execution.resumed', handleResumed);
     socket.on('execution.emergency_stopped', handleEmergencyStopped);
+    socket.on(ExecutionEvents.QA_FAILED, handleQAFailed);
 
     return () => {
       socket.off('execution.started', handleStarted);
@@ -279,6 +283,7 @@ export function useExecutionEvents(
       socket.off('execution.paused', handlePaused);
       socket.off('execution.resumed', handleResumed);
       socket.off('execution.emergency_stopped', handleEmergencyStopped);
+      socket.off(ExecutionEvents.QA_FAILED, handleQAFailed);
     };
   }, [socket, progressDebounceMs]); // handlers removed from dependency array
 }

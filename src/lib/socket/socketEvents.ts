@@ -26,6 +26,9 @@ export const ExecutionEvents = {
   
   // Container activity events (PM dashboard)
   ACTIVITY: 'execution-activity',
+
+  // QA failure state (WR-4.1 backend, FE-1.1 frontend)
+  QA_FAILED: 'execution.qa_failed',
 } as const;
 
 export type ExecutionEventType = typeof ExecutionEvents[keyof typeof ExecutionEvents];
@@ -73,7 +76,7 @@ export interface ExecutionEventPayload {
   executionId: string;
   ticketId: string;
   projectId: string | null;
-  status: 'QUEUED' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED' | 'FAILED' | 'TIMEOUT' | 'CANCELLED' | 'AWAITING_APPROVAL';
+  status: 'QUEUED' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED' | 'FAILED' | 'TIMEOUT' | 'CANCELLED' | 'AWAITING_APPROVAL' | 'QA_FAILED';
   currentStep?: string;
   percentComplete?: number;
   errorMessage?: string;
@@ -92,6 +95,21 @@ export interface ExecutionEventPayload {
     aiProvider?: string;
     startTime?: string;
     duration?: number;
+  };
+}
+
+/** Payload emitted with the 'execution.qa_failed' WebSocket event (FE-1.1) */
+export interface QAFailedEventPayload {
+  executionId: string;
+  ticketId: string;
+  projectId: string | null;
+  provider: string;
+  status: string; // always 'QA_FAILED'
+  timestamp: string;
+  payload: {
+    errorMessage: string;
+    branchName: string | null;
+    qaRetryCount?: number;
   };
 }
 

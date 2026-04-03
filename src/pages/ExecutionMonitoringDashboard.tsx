@@ -11,13 +11,15 @@ import {
   WifiOff,
   Filter,
   SortAsc,
-  Inbox
+  Inbox,
+  ShieldAlert
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 
 
 import { useSocketIO, useExecutionEvents } from '@/lib/socket/useSocketIO';
+import { type QAFailedEventPayload } from '@/lib/socket/socketEvents';
 import { useActiveExecutions, executionKeys } from '@/hooks/queries/useExecutions';
 import { useUserProjects } from '@/hooks/queries/useProjects';
 import { ExecutionCard } from '@/components/execution/ExecutionCard';
@@ -87,6 +89,14 @@ const statusFilters: StatusFilter[] = [
     label: 'Failed', 
     value: 'FAILED', 
     icon: <XCircle className="w-4 h-4" />,
+    color: 'text-rose-500',
+    activeColor: 'text-white',
+    activeBg: 'bg-rose-600'
+  },
+  { 
+    label: 'QA Failed', 
+    value: 'QA_FAILED', 
+    icon: <ShieldAlert className="w-4 h-4" />,
     color: 'text-rose-500',
     activeColor: 'text-white',
     activeBg: 'bg-rose-600'
@@ -200,6 +210,34 @@ export function ExecutionMonitoringDashboard() {
     onPaused: (payload) => updateExecutionStatus(payload.executionId, 'PAUSED'),
     onResumed: (payload) => updateExecutionStatus(payload.executionId, 'IN_PROGRESS'),
     onEmergencyStopped: (payload) => updateExecutionStatus(payload.executionId, 'CANCELLED'),
+    onQAFailed: (payload: QAFailedEventPayload) => {
+      toast.error(
+        `Execution ${payload.executionId.slice(0, 8)} — QA failed after ${payload.payload.qaRetryCount ?? '?'} retries. Resolve required.`
+      );
+      queryClient.setQueryData(
+        executionKeys.activeFiltered(undefined),
+        (oldData: any[] | undefined) => {
+          if (!oldData) return oldData;
+          const exists = oldData.some((exec) => exec.id === payload.executionId);
+          if (!exists) {
+            // Execution not in cache — refetch to pull QA_FAILED entry from server
+            refetch();
+            return oldData;
+          }
+          return oldData.map((exec) =>
+            exec.id === payload.executionId
+              ? {
+                  ...exec,
+                  status: 'QA_FAILED',
+                  qaRetryCount: payload.payload.qaRetryCount,
+                  qaFailedBranch: payload.payload.branchName,
+                  errorMessage: payload.payload.errorMessage,
+                }
+              : exec,
+          );
+        },
+      );
+    },
   }, {
     progressDebounceMs: 500
   });
@@ -365,6 +403,9 @@ export function ExecutionMonitoringDashboard() {
               key={execution.id}
               execution={execution}
               onViewLogs={handleViewLogs}
+              onResolve={(_executionId) => {
+                /* TODO FE-1.2: open PM Resolution Modal */
+              }}
               socket={socket}
             />
           ))}

@@ -11,7 +11,8 @@ export type ExecutionStatus =
   | 'FAILED' 
   | 'TIMEOUT' 
   | 'CANCELLED'
-  | 'AWAITING_APPROVAL';
+  | 'AWAITING_APPROVAL'
+  | 'QA_FAILED'; // FE-1.1: hard QA failure state (WR-4.1)
 
 export type LogLevel = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'STDOUT' | 'STDERR';
 
@@ -27,6 +28,8 @@ export interface Execution {
   startTime: string;
   duration: number; // in seconds
   errorMessage?: string;
+  qaRetryCount?: number;           // FE-1.1: populated from execution.qa_failed event
+  qaFailedBranch?: string | null;  // FE-1.1: branch name for PM resolution (FE-1.2)
   metadata?: Record<string, unknown>;
 }
 
@@ -111,6 +114,14 @@ export interface ControlButtonConfig {
   requirePermission: boolean;
 }
 
+/** Response from POST /executions/:id/resolve-qa-failure (FE-1.2) */
+export interface QAResolutionResult {
+  action: 'open_pr' | 'cancel';
+  prUrl?: string;
+  prNumber?: number;
+  branchName?: string | null;
+}
+
 // Control button visibility matrix
 export const CONTROL_BUTTON_MATRIX: Record<ExecutionStatus, ControlAction[]> = {
   'QUEUED': ['emergency-stop'],
@@ -121,4 +132,5 @@ export const CONTROL_BUTTON_MATRIX: Record<ExecutionStatus, ControlAction[]> = {
   'FAILED': [],
   'TIMEOUT': [],
   'CANCELLED': [],
+  'QA_FAILED': [], // FE-1.1: terminal-ish state pending PM action
 };
