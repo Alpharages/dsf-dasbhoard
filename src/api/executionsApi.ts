@@ -4,15 +4,16 @@
  */
 
 import apiClient from './client';
-import type { 
-  Execution, 
-  ExecutionFilters, 
+import type {
+  Execution,
+  ExecutionFilters,
   LogFilters,
   ActivityFilters,
   ActiveExecutionsResponse,
   ExecutionLogsResponse,
   ExecutionActivitiesResponse,
-  ExecutionControlResponse 
+  ExecutionControlResponse,
+  QAResolutionResult,
 } from '@/types/execution';
 
 const BASE_URL = '/executions';
@@ -183,4 +184,19 @@ export async function controlExecution(
     default:
       throw new Error(`Unknown control action: ${action}`);
   }
+}
+
+/**
+ * Resolve a QA-failed execution: open PR or cancel (FE-1.2 / WR-4.3)
+ * POST /executions/:id/resolve-qa-failure
+ */
+export async function resolveQaFailure(
+  executionId: string,
+  action: 'open_pr' | 'cancel',
+): Promise<QAResolutionResult> {
+  const response = await apiClient.post<QAResolutionResult>(
+    `${BASE_URL}/${executionId}/resolve-qa-failure`,
+    { action },
+  );
+  return response.data;
 }

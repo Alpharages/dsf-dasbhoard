@@ -24,7 +24,9 @@ import { useActiveExecutions, executionKeys } from '@/hooks/queries/useExecution
 import { useUserProjects } from '@/hooks/queries/useProjects';
 import { ExecutionCard } from '@/components/execution/ExecutionCard';
 const ExecutionLogsViewer = lazy(() => import('@/components/execution/ExecutionLogsViewer'));
-import type { ExecutionStatus } from '@/types/execution';
+import { PMResolutionModal } from '@/components/execution/PMResolutionModal';
+import type { ExecutionStatus, QAResolutionResult } from '@/types/execution';
+import type { Project } from '@/types/project';
 import { Button } from '@/components/ui/button';
 
 interface StatusFilter {
@@ -267,6 +269,47 @@ export function ExecutionMonitoringDashboard() {
     setViewingLogsFor(null);
   }, []);
 
+  // PM Resolution Modal state
+  const [resolvingExecution, setResolvingExecution] = useState<{
+    executionId: string;
+    branchName: string | null;
+    branchUrl: string | null;
+    errorMessage: string;
+  } | null>(null);
+
+  const handleResolve = useCallback(
+    (executionId: string) => {
+      const execution = executions.find((e) => e.id === executionId);
+      if (!execution) return;
+      const project = userProjects.find((p) => p.id === execution.projectId);
+      const branchName = execution.qaFailedBranch ?? null;
+      const branchUrl =
+        project?.github_repository_url && branchName
+          ? `${project.github_repository_url}/tree/${branchName}`
+          : null;
+      setResolvingExecution({
+        executionId,
+        branchName,
+        branchUrl,
+        errorMessage: execution.errorMessage ?? 'No error details available.',
+      });
+    },
+    [executions, userProjects],
+  );
+
+  const handleModalClose = useCallback(() => {
+    setResolvingExecution(null);
+  }, []);
+
+  const handleResolved = useCallback(
+    (result: QAResolutionResult) => {
+      if (!resolvingExecution) return;
+      const newStatus = result.action === 'open_pr' ? 'COMPLETED' : 'FAILED';
+      updateExecutionStatus(resolvingExecution.executionId, newStatus);
+    },
+    [resolvingExecution, updateExecutionStatus],
+  );
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -403,9 +446,7 @@ export function ExecutionMonitoringDashboard() {
               key={execution.id}
               execution={execution}
               onViewLogs={handleViewLogs}
-              onResolve={(_executionId) => {
-                /* TODO FE-1.2: open PM Resolution Modal */
-              }}
+              onResolve={handleResolve}
               socket={socket}
             />
           ))}
@@ -421,6 +462,20 @@ export function ExecutionMonitoringDashboard() {
           socket={socket}
         />
       </Suspense>
+
+      {/* PM Resolution Modal — QA failure resolution (FE-1.2) */}
+      {resolvingExecution && (
+        <PMResolutionModal
+          key={resolvingExecution.executionId}
+          isOpen={!!resolvingExecution}
+          executionId={resolvingExecution.executionId}
+          branchName={resolvingExecution.branchName}
+          branchUrl={resolvingExecution.branchUrl}
+          errorMessage={resolvingExecution.errorMessage}
+          onClose={handleModalClose}
+          onResolved={handleResolved}
+        />
+      )}
     </div>
   );
 }
