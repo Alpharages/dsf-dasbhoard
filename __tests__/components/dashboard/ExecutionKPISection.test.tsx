@@ -42,7 +42,9 @@ describe('ExecutionKPISection', () => {
   it('renders the average completion time', () => {
     render(<ExecutionKPISection summary={mockSummary} />);
     
-    expect(screen.getByText('2.5h')).toBeInTheDocument();
+    // Component renders value and unit as separate elements
+    expect(screen.getByText('2.5')).toBeInTheDocument();
+    expect(screen.getByText('hours')).toBeInTheDocument();
   });
 
   it('renders initial live load metrics', () => {
@@ -102,6 +104,6 @@ describe('ExecutionKPISection', () => {
     
     // Check if it renders 0% or N/A
     expect(screen.getByText('0%')).toBeInTheDocument();
-    expect(screen.getByText('0.0h')).toBeInTheDocument();
+    expect(screen.getByText('0.0')).toBeInTheDocument();
   });
 });

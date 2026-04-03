@@ -94,7 +94,9 @@ describe('FinancialKPISection', () => {
     renderSection();
 
     await waitFor(() => {
-      expect(screen.getAllByText('No data yet').length).toBeGreaterThan(0);
+      // Component renders "No cost data available yet" and/or "No burn data available yet"
+      const noDataEls = screen.queryAllByText(/No .+ data available yet/i);
+      expect(noDataEls.length).toBeGreaterThan(0);
     });
   });
 });

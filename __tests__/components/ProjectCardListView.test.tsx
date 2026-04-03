@@ -75,7 +75,7 @@ describe('ProjectCardListView', () => {
 
       expect(screen.getByText('My Project')).toBeInTheDocument();
       expect(screen.getByText('ClientCo')).toBeInTheDocument();
-      expect(screen.getByText('active')).toBeInTheDocument();
+      expect(screen.getByText('Active')).toBeInTheDocument();
       expect(screen.getByText('8')).toBeInTheDocument();
       expect(screen.getByText('3')).toBeInTheDocument();
     });
@@ -148,19 +148,19 @@ describe('ProjectCardListView', () => {
   describe('status badge colors', () => {
     it('applies emerald styling for active status', () => {
       const { container } = renderList([makeProject({ status: 'active' })]);
-      const badge = container.querySelector('.text-emerald-500');
+      const badge = container.querySelector('.text-emerald-400');
       expect(badge).not.toBeNull();
     });
 
     it('applies amber styling for on-hold status', () => {
       const { container } = renderList([makeProject({ status: 'on-hold' })]);
-      const badge = container.querySelector('.text-amber-500');
+      const badge = container.querySelector('.text-amber-400');
       expect(badge).not.toBeNull();
     });
 
     it('falls back to paused styling for unknown status', () => {
       const { container } = renderList([makeProject({ status: 'unknown-status' as any })]);
-      const badge = container.querySelector('.text-slate-500');
+      const badge = container.querySelector('.text-slate-400');
       expect(badge).not.toBeNull();
     });
   });

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
 import { ProjectsTable } from '@/components/projects/ProjectsTable';
 import type { ProjectRowData } from '@/components/projects/ProjectsTable';
 import apiClient from '@/api/client';
@@ -74,9 +75,11 @@ describe('ProjectsTable', () => {
     it('expands row when chevron is clicked', async () => {
         const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
         render(
-            <QueryClientProvider client={queryClient}>
-                <ProjectsTable projects={mockProjects} />
-            </QueryClientProvider>
+            <MemoryRouter>
+                <QueryClientProvider client={queryClient}>
+                    <ProjectsTable projects={mockProjects} />
+                </QueryClientProvider>
+            </MemoryRouter>
         );
 
         // Get all buttons - there are 2 per row: sync button + chevron button

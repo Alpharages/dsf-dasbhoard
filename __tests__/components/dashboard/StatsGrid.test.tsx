@@ -34,6 +34,6 @@ describe('StatsGrid', () => {
 
     render(<StatsGrid summary={summary} />);
 
-    expect(screen.getAllByText('No data yet').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('No data').length).toBeGreaterThan(0);
   });
 });

@@ -17,7 +17,7 @@ describe('ProviderDistributionChart', () => {
     render(<ProviderDistributionChart summary={summary} />);
 
     expect(screen.getByText('AI Provider Distribution')).toBeInTheDocument();
-    expect(screen.getByText('No data yet')).toBeInTheDocument();
+    expect(screen.getByText('No provider data available')).toBeInTheDocument();
   });
 
   it('renders chart container when provider distribution exists', () => {

@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PmIntegrationPanel, StatusConfigSection } from '@/pages/settings/panels/PmIntegrationPanel';
@@ -370,7 +370,20 @@ describe('PmIntegrationPanel', () => {
                 </QueryClientProvider>
             );
 
+            // Mock statuses so the select becomes enabled after syncConfig loads
+            (integrationsApi.getIntegrationStatuses as any).mockResolvedValue([
+                { id: 'status-1', name: 'In Progress' },
+            ]);
+
+            // Wait for syncConfig to load (listId input gets populated)
+            await screen.findByDisplayValue('901234567');
+
+            // Wait for statuses to load so the Select becomes enabled
             const select = await screen.findByTestId('mock-select');
+            await waitFor(() => {
+                expect((select as HTMLSelectElement).disabled).toBe(false);
+            });
+
             fireEvent.change(select, { target: { value: 'In Progress' } });
 
             const updateButton = screen.getByRole('button', { name: /Update Trigger Status/i });
