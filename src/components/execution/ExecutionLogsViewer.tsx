@@ -1,17 +1,19 @@
 import { useState, useRef, useEffect, useCallback, lazy, Suspense } from 'react';
-import { 
-  X, 
-  Download, 
-  Search, 
+import {
+  X,
+  Download,
+  Search,
   Filter,
   ChevronDown,
   ChevronUp,
   AlertCircle,
   Loader2,
-  Activity
+  Activity,
+  ShieldCheck,
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { useExecutionLogs, useExportExecutionLogs } from '@/hooks/queries/useExecutions';
+import { useExecutionLogs, useExportExecutionLogs, useExecution } from '@/hooks/queries/useExecutions';
+import { QAResultsPanel } from '@/components/execution/QAResultsPanel';
 import { useLogEvents } from '@/lib/socket/useSocketIO';
 import type { ExecutionLog, LogLevel } from '@/types/execution';
 import { Button } from '@/components/ui/button';
@@ -70,6 +72,7 @@ export default function ExecutionLogsViewer({
   const [autoScroll, setAutoScroll] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [showActivityPanel, setShowActivityPanel] = useState(true);
+  const [showQAPanel, setShowQAPanel] = useState(false);
   const [realTimeLogs, setRealTimeLogs] = useState<ExecutionLog[]>([]);
   const logsEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -82,6 +85,11 @@ export default function ExecutionLogsViewer({
   );
 
   const exportLogs = useExportExecutionLogs();
+
+  const { data: executionDetail } = useExecution(executionId, {
+    refetchInterval: isLive ? 5_000 : false,
+    enabled: !!executionId && isOpen,
+  });
 
   // Combine initial logs with real-time logs
   const allLogs = [...initialLogs, ...realTimeLogs];
@@ -145,6 +153,20 @@ export default function ExecutionLogsViewer({
     );
   };
 
+  const handleToggleActivity = () => {
+    setShowActivityPanel((prev) => {
+      if (!prev) setShowQAPanel(false); // opening activity → close QA
+      return !prev;
+    });
+  };
+
+  const handleToggleQAPanel = () => {
+    setShowQAPanel((prev) => {
+      if (!prev) setShowActivityPanel(false); // opening QA → close activity
+      return !prev;
+    });
+  };
+
   // Handle export
   const handleExport = () => {
     exportLogs.mutate(executionId);
@@ -155,6 +177,8 @@ export default function ExecutionLogsViewer({
     if (!isOpen) {
       setRealTimeLogs([]);
       setSearchQuery('');
+      setShowQAPanel(false);    // FE-1.3: reset QA panel on close
+      setShowActivityPanel(true); // reset to default-open
     }
   }, [isOpen]);
 
@@ -211,11 +235,25 @@ export default function ExecutionLogsViewer({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setShowActivityPanel(!showActivityPanel)}
+              onClick={handleToggleActivity}
               className={`border-slate-700 ${showActivityPanel ? 'bg-slate-800 text-blue-400' : ''}`}
             >
               <Activity className="w-4 h-4 mr-2" />
               Activity
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleToggleQAPanel}
+              className={`border-slate-700 ${showQAPanel ? 'bg-slate-800 text-emerald-400' : ''}`}
+            >
+              <ShieldCheck className="w-4 h-4 mr-2" />
+              QA Results
+              {executionDetail?.qaAttempts?.length ? (
+                <Badge variant="secondary" className="ml-2 bg-emerald-500/20 text-emerald-400 text-[10px]">
+                  {executionDetail.qaAttempts.length}
+                </Badge>
+              ) : null}
             </Button>
             <Button
               variant="outline"
@@ -275,28 +313,47 @@ export default function ExecutionLogsViewer({
 
         {/* Main Content: Activity Panel + Logs */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Activity Panel (collapsible sidebar) */}
-          {showActivityPanel && (
-            <div className="w-72 border-r border-slate-800 bg-slate-900/50 p-4 overflow-auto flex-shrink-0">
-              <div className="flex items-center gap-2 mb-3">
-                <Activity className="w-4 h-4 text-blue-400" />
-                <h3 className="text-sm font-bold text-slate-200">Container Activity</h3>
-              </div>
-              <Suspense fallback={
-                <div className="flex items-center gap-2 py-4 text-xs text-slate-500">
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                  Loading...
-                </div>
-              }>
-                <ContainerActivityTimeline
-                  executionId={executionId}
-                  socket={socket}
-                  maxHeight="calc(100% - 40px)"
-                  collapsible={false}
-                  defaultCollapsed={false}
-                  isLive={isLive}
-                />
-              </Suspense>
+          {/* Left sidebar — Activity OR QA Results (mutually exclusive) */}
+          {(showActivityPanel || showQAPanel) && (
+            <div className="w-72 border-r border-slate-800 bg-slate-900/50 overflow-auto flex-shrink-0">
+              {showActivityPanel && (
+                <>
+                  <div className="flex items-center gap-2 p-4 pb-3">
+                    <Activity className="w-4 h-4 text-blue-400" />
+                    <h3 className="text-sm font-bold text-slate-200">Container Activity</h3>
+                  </div>
+                  <div className="px-4 pb-4">
+                    <Suspense
+                      fallback={
+                        <div className="flex items-center gap-2 py-4 text-xs text-slate-500">
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                          Loading...
+                        </div>
+                      }
+                    >
+                      <ContainerActivityTimeline
+                        executionId={executionId}
+                        socket={socket}
+                        maxHeight="calc(100% - 40px)"
+                        collapsible={false}
+                        defaultCollapsed={false}
+                        isLive={isLive}
+                      />
+                    </Suspense>
+                  </div>
+                </>
+              )}
+              {showQAPanel && (
+                <>
+                  <div className="flex items-center gap-2 p-4 pb-3">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    <h3 className="text-sm font-bold text-slate-200">QA Results</h3>
+                  </div>
+                  <div className="px-4 pb-4">
+                    <QAResultsPanel qaAttempts={executionDetail?.qaAttempts ?? null} isLive={isLive} />
+                  </div>
+                </>
+              )}
             </div>
           )}
 

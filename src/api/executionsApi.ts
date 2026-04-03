@@ -50,7 +50,7 @@ export async function getActiveExecutions(
  * Get execution by ID
  */
 export async function getExecution(executionId: string): Promise<Execution> {
-  const response = await apiClient.get(`${BASE_URL}/${executionId}`);
+  const response = await apiClient.get(`${BASE_URL}/${executionId}/status`);
   return response.data;
 }
 

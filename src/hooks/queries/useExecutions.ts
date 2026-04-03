@@ -83,7 +83,7 @@ export function useExecution(
     queryFn: () => getExecution(executionId),
     staleTime: 30 * 1000,
     ...options,
-    enabled: !!executionId && !!user,
+    enabled: !!executionId && !!user && (options?.enabled ?? true),
   });
 }
 

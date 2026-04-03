@@ -30,6 +30,7 @@ export interface Execution {
   errorMessage?: string;
   qaRetryCount?: number;           // FE-1.1: populated from execution.qa_failed event
   qaFailedBranch?: string | null;  // FE-1.1: branch name for PM resolution (FE-1.2)
+  qaAttempts?: QAAttempt[] | null; // FE-1.3: per-attempt QA history (WR-6.3)
   metadata?: Record<string, unknown>;
 }
 
@@ -120,6 +121,32 @@ export interface QAResolutionResult {
   prUrl?: string;
   prNumber?: number;
   branchName?: string | null;
+}
+
+/** Per-attempt QA result from sandbox self-healing loop (FR-EXT14 / WR-6.1) */
+export interface QAAttempt {
+  /** 1-based attempt number */
+  attemptNumber: number;
+  /**
+   * Lint check outcome for this attempt.
+   * - 'passed'  — lint ran and found no errors
+   * - 'failed'  — lint ran and found errors (see lintErrors)
+   * - 'skipped' — lint is disabled for this project or unavailable in sandbox
+   */
+  lintStatus: 'passed' | 'failed' | 'skipped';
+  /** Lint failure details — present only when lintStatus is 'failed' */
+  lintErrors?: { count: number; details: unknown[] };
+  /**
+   * Test run outcome for this attempt.
+   * - 'passed'  — all tests passed
+   * - 'failed'  — one or more tests failed (see testResults)
+   * - 'skipped' — tests are disabled for this project or sandbox lacks required environment
+   */
+  testStatus: 'passed' | 'failed' | 'skipped';
+  /** Test run details — present only when testStatus is 'failed' */
+  testResults?: { passed: number; failed: number; details: unknown[] };
+  /** Duration of this QA attempt in milliseconds */
+  durationMs: number;
 }
 
 // Control button visibility matrix
