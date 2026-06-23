@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, AlertCircle } from 'lucide-react';
-import { QualityGateSummary } from './QualityGateSummary';
+import { QualityGateSummary, type QaSummary } from './QualityGateSummary';
 import { DiffViewer } from './DiffViewer';
 import { ApprovalActionForm } from './ApprovalActionForm';
 import apiClient from '../../api/client';
@@ -13,7 +13,7 @@ interface ReviewModalProps {
     ticketTitle: string;
     ticketRequirements: string; // AC#6: Added ticket context
     confidenceScore: number;    // AC#3: Added confidence score
-    qaSummary: any;
+    qaSummary: QaSummary;
     diffs: Array<{ fileName: string; oldCode: string; newCode: string }>;
     onActionComplete: () => void;
 }
@@ -40,14 +40,15 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
         setError(null);
         try {
             await apiClient.post(
-                `/executions/${executionId}/approve`,
+                `/executions/${executionId}/gate-decision`,
                 { decision, reasoning }
             );
             onActionComplete();
             onClose();
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Approval action failed:', err);
-            setError(err.response?.data?.message || 'Failed to submit approval decision');
+            const e = err as { response?: { data?: { message?: string } } };
+            setError(e.response?.data?.message || 'Failed to submit approval decision');
         } finally {
             setIsSubmitting(false);
         }

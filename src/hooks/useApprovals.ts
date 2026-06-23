@@ -51,10 +51,11 @@ export const useApprovals = () => {
       queryFn: async () => {
         if (!executionId) return null;
 
-        // Fetch execution details, QA results, and approval history in parallel
-        const [executionRes, qaRes] = await Promise.allSettled([
+        // Fetch execution details. QA results now travel on the execution
+        // payload itself — the standalone `/qa-results/:executionId` route was
+        // removed in OHP-3.4, so we no longer fire a (now-404) request for it.
+        const [executionRes] = await Promise.allSettled([
           apiClient.get(`/executions/${executionId}`),
-          apiClient.get(`/qa-results/${executionId}`),
         ]);
 
         const execution =
@@ -62,10 +63,7 @@ export const useApprovals = () => {
             ? executionRes.value.data?.data || executionRes.value.data
             : null;
 
-        const qaResult =
-          qaRes.status === 'fulfilled'
-            ? qaRes.value.data?.data || qaRes.value.data
-            : null;
+        const qaResult = execution?.qaResult ?? null;
 
         // Build diffs from code_output or files_changed
         const diffs: ApprovalDetailData['diffs'] = [];
@@ -138,7 +136,7 @@ export const useApprovals = () => {
         payload: ApprovalActionPayload;
       }) => {
         const { data } = await apiClient.post(
-          `/executions/${executionId}/approve`,
+          `/executions/${executionId}/gate-decision`,
           payload,
         );
         return data as ApprovalActionResponse;
@@ -151,7 +149,7 @@ export const useApprovals = () => {
         });
 
         const decisionLabels: Record<string, string> = {
-          APPROVE: '✅ Execution approved — GitHub push triggered',
+          APPROVE: '✅ Execution approved — PR merged',
           REJECT: '❌ Execution rejected',
           REWORK: '🔄 Execution sent for rework',
           ESCALATE: '⬆️ Execution escalated',
