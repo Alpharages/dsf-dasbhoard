@@ -1,7 +1,7 @@
 import React from 'react';
 import GaugeComponent from 'react-gauge-component';
 
-interface QaSummary {
+export interface QaSummary {
     linting_passed: boolean;
     tests_passed: boolean;
     test_coverage: number;

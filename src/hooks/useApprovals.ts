@@ -136,7 +136,7 @@ export const useApprovals = () => {
         payload: ApprovalActionPayload;
       }) => {
         const { data } = await apiClient.post(
-          `/executions/${executionId}/approve`,
+          `/executions/${executionId}/gate-decision`,
           payload,
         );
         return data as ApprovalActionResponse;
@@ -149,7 +149,7 @@ export const useApprovals = () => {
         });
 
         const decisionLabels: Record<string, string> = {
-          APPROVE: '✅ Execution approved — GitHub push triggered',
+          APPROVE: '✅ Execution approved — PR merged',
           REJECT: '❌ Execution rejected',
           REWORK: '🔄 Execution sent for rework',
           ESCALATE: '⬆️ Execution escalated',
