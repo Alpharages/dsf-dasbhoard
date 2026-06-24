@@ -9,7 +9,6 @@ interface SuccessRateChartProps {
     models: Array<{
         modelName: string;
         successRate: number;
-        selfHealingRate: number;
     }>;
 }
 
@@ -17,8 +16,7 @@ export function SuccessRateChart({ models }: SuccessRateChartProps) {
     const chartData = models.map(model => ({
         model: model.modelName,
         success: model.successRate,
-        selfHealing: model.selfHealingRate,
-        failure: 100 - model.successRate - model.selfHealingRate,
+        failure: 100 - model.successRate,
     }));
 
     return (
@@ -38,7 +36,6 @@ export function SuccessRateChart({ models }: SuccessRateChartProps) {
                 />
                 <Legend />
                 <Bar dataKey="success" name="Success %" fill="#10b981" />
-                <Bar dataKey="selfHealing" name="Self-Healing %" fill="#3b82f6" />
                 <Bar dataKey="failure" name="Failure %" fill="#ef4444" />
             </BarChart>
         </ResponsiveContainer>
