@@ -89,7 +89,6 @@ export interface ModelMetricsDto {
     costPerExecution: string;
     costPer1kTokens: string;
     avgExecutionTimeSec: number;
-    selfHealingRate: number;
 }
 
 export interface ModelEfficiencyDto {

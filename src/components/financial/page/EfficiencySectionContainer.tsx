@@ -76,7 +76,6 @@ export function EfficiencySectionContainer({ projectId, startDate, endDate }: Ef
     const successRateData = models.map(model => ({
         model: model.modelName,
         success: model.successRate,
-        selfHealing: model.selfHealingRate,
     }));
 
     return (
@@ -162,7 +161,6 @@ export function EfficiencySectionContainer({ projectId, startDate, endDate }: Ef
                         />
                         <Legend />
                         <Bar dataKey="success" name="Success Rate %" fill="#10b981" />
-                        <Bar dataKey="selfHealing" name="Self-Healing %" fill="#3b82f6" />
                     </BarChart>
                 </ResponsiveContainer>
             </div>
