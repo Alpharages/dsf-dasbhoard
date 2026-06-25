@@ -54,7 +54,7 @@ export const WorkloadCapacityPage: React.FC = () => {
 
     const { data: teamWorkload, isLoading: teamLoading } = useQuery({
         queryKey: ['workload', 'team', pmId],
-        queryFn: () => workloadApi.getTeamWorkload(),
+        queryFn: () => workloadApi.getTeamWorkload(pmId),
         enabled: isManager && !!pmId,
         staleTime: 5 * 60 * 1000
     });
