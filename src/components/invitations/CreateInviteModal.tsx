@@ -1,21 +1,7 @@
-import React, { useState } from 'react';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogFooter,
-} from '@/components/ui/dialog';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 import { type CreateInvitationRequest, type Role } from '@/types/invitation';
 
@@ -39,6 +25,17 @@ export function CreateInviteModal({ isOpen, onClose, onCreate }: CreateInviteMod
     const [role, setRole] = useState<Role>('VIEWER');
     const [expiresInDays, setExpiresInDays] = useState(7);
     const [errors, setErrors] = useState<{ email?: string }>({});
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') onClose();
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, onClose]);
 
     const validateEmail = (email: string) => {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -74,12 +71,22 @@ export function CreateInviteModal({ isOpen, onClose, onCreate }: CreateInviteMod
         }
     };
 
+    if (!isOpen) return null;
+
     return (
-        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-800 text-slate-50">
-                <DialogHeader>
-                    <DialogTitle>Send Invitation</DialogTitle>
-                </DialogHeader>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={onClose}>
+            <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="create-invite-title"
+                className="relative grid w-full max-w-[425px] gap-4 rounded-lg border border-slate-800 bg-slate-900 p-6 text-slate-50 shadow-lg"
+                onClick={(event) => event.stopPropagation()}
+            >
+                <div className="flex flex-col space-y-1.5 text-center sm:text-left">
+                    <h2 id="create-invite-title" className="text-lg font-semibold leading-none tracking-tight">
+                        Send Invitation
+                    </h2>
+                </div>
                 <form onSubmit={handleSubmit} className="space-y-4 py-4">
                     <div className="space-y-2">
                         <Label htmlFor="email" className="text-right">
@@ -93,6 +100,7 @@ export function CreateInviteModal({ isOpen, onClose, onCreate }: CreateInviteMod
                             onChange={(e) => setEmail(e.target.value)}
                             className="col-span-3 bg-slate-800 border-slate-700"
                             disabled={isLoading}
+                            autoFocus
                         />
                         {errors.email && (
                             <p className="text-sm text-rose-500">{errors.email}</p>
@@ -103,47 +111,41 @@ export function CreateInviteModal({ isOpen, onClose, onCreate }: CreateInviteMod
                         <Label htmlFor="role" className="text-right">
                             Role
                         </Label>
-                        <Select
+                        <select
+                            id="role"
                             value={role}
-                            onValueChange={(val) => setRole(val as Role)}
+                            onChange={(event) => setRole(event.target.value as Role)}
                             disabled={isLoading}
+                            className="h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-50 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                            <SelectTrigger className="w-full bg-slate-800 border-slate-700">
-                                <SelectValue placeholder="Select a role" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-slate-800 border-slate-700">
-                                {ROLES.map((r) => (
-                                    <SelectItem key={r} value={r} className="text-slate-200">
-                                        {r}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                            {ROLES.map((r) => (
+                                <option key={r} value={r}>
+                                    {r}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     <div className="space-y-2">
                         <Label htmlFor="expiration" className="text-right">
                             Expires In
                         </Label>
-                        <Select
+                        <select
+                            id="expiration"
                             value={expiresInDays.toString()}
-                            onValueChange={(val) => setExpiresInDays(Number(val))}
+                            onChange={(event) => setExpiresInDays(Number(event.target.value))}
                             disabled={isLoading}
+                            className="h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-50 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                            <SelectTrigger className="w-full bg-slate-800 border-slate-700">
-                                <SelectValue placeholder="Select expiration" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-slate-800 border-slate-700">
-                                {EXPIRATION_OPTIONS.map((opt) => (
-                                    <SelectItem key={opt.value} value={opt.value.toString()} className="text-slate-200">
-                                        {opt.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                            {EXPIRATION_OPTIONS.map((opt) => (
+                                <option key={opt.value} value={opt.value.toString()}>
+                                    {opt.label}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
-                    <DialogFooter>
+                    <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
                         <Button type="button" variant="ghost" onClick={onClose} disabled={isLoading}>
                             Cancel
                         </Button>
@@ -151,9 +153,9 @@ export function CreateInviteModal({ isOpen, onClose, onCreate }: CreateInviteMod
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Send Invitation
                         </Button>
-                    </DialogFooter>
+                    </div>
                 </form>
-            </DialogContent>
-        </Dialog>
+            </div>
+        </div>
     );
 }

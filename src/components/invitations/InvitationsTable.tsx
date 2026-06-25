@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
     useReactTable,
     getCoreRowModel,
@@ -22,13 +22,6 @@ import { RoleBadge } from '@/components/common/RoleBadge';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import {
     Card,
     CardContent,
     CardHeader,
@@ -43,7 +36,8 @@ interface InvitationsTableProps {
     onRevoke: (invitation: Invitation) => void;
 }
 
-
+const EMPTY_INVITATIONS: Invitation[] = [];
+const PAGE_SIZES = [10, 25, 50, 100];
 
 export function InvitationsTable({
     invitations,
@@ -58,7 +52,8 @@ export function InvitationsTable({
         pageSize: 25,
     });
 
-    const columns: ColumnDef<Invitation>[] = [
+    const data = invitations ?? EMPTY_INVITATIONS;
+    const columns = useMemo<ColumnDef<Invitation>[]>(() => [
         {
             accessorKey: 'email',
             header: ({ column }) => {
@@ -140,10 +135,15 @@ export function InvitationsTable({
                 );
             },
         },
-    ];
+    ], [onCopyLink, onRevoke]);
+
+    const columnFilters = useMemo(
+        () => statusFilter === 'all' ? [] : [{ id: 'status', value: statusFilter }],
+        [statusFilter]
+    );
 
     const table = useReactTable({
-        data: invitations ?? [],
+        data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -154,7 +154,7 @@ export function InvitationsTable({
         state: {
             sorting,
             pagination,
-            columnFilters: statusFilter === 'all' ? [] : [{ id: 'status', value: statusFilter }],
+            columnFilters,
         },
     });
 
@@ -193,27 +193,25 @@ export function InvitationsTable({
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <Select
+                    <select
                         value={statusFilter}
-                        onValueChange={setStatusFilter}
+                        onChange={(event) => {
+                            setStatusFilter(event.target.value);
+                            setPagination((current) => ({ ...current, pageIndex: 0 }));
+                        }}
+                        aria-label="Filter by status"
+                        className="h-9 w-[180px] rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
                     >
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Filter by status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Statuses</SelectItem>
-                            <SelectItem value={InvitationStatus.PENDING}>Pending</SelectItem>
-                            <SelectItem value={InvitationStatus.ACCEPTED}>Accepted</SelectItem>
-                            <SelectItem value={InvitationStatus.EXPIRED}>Expired</SelectItem>
-                            <SelectItem value={InvitationStatus.REVOKED}>Revoked</SelectItem>
-                        </SelectContent>
-                    </Select>
+                        <option value="all">All Statuses</option>
+                        <option value={InvitationStatus.PENDING}>Pending</option>
+                        <option value={InvitationStatus.ACCEPTED}>Accepted</option>
+                        <option value={InvitationStatus.EXPIRED}>Expired</option>
+                        <option value={InvitationStatus.REVOKED}>Revoked</option>
+                    </select>
                     <span className="text-sm text-slate-400">
-                        Showing {table.getFilteredRowModel().rows.length} of {(invitations ?? []).length} invitations
+                        Showing {table.getFilteredRowModel().rows.length} of {data.length} invitations
                     </span>
                 </div>
-
-                {/* Add search by email here if needed later (AC#8 mentions email search input) */}
             </div>
 
             <div className="hidden md:block rounded-md border border-slate-800">
@@ -262,7 +260,6 @@ export function InvitationsTable({
                 </Table>
             </div>
 
-            {/* Mobile Card View */}
             <div className="md:hidden space-y-4">
                 {table.getRowModel().rows?.length ? (
                     table.getRowModel().rows.map((row) => {
@@ -320,25 +317,20 @@ export function InvitationsTable({
             <div className="flex items-center justify-between space-x-2 py-4">
                 <div className="flex items-center space-x-2">
                     <p className="text-sm text-slate-400">
-                        Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                        Page {table.getState().pagination.pageIndex + 1} of {Math.max(1, table.getPageCount())}
                     </p>
-                    <Select
+                    <select
                         value={`${table.getState().pagination.pageSize}`}
-                        onValueChange={(value) => {
-                            table.setPageSize(Number(value))
-                        }}
+                        onChange={(event) => table.setPageSize(Number(event.target.value))}
+                        aria-label="Rows per page"
+                        className="h-8 w-[70px] rounded-md border border-slate-700 bg-slate-900 px-2 py-1 text-sm text-slate-100 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
                     >
-                        <SelectTrigger className="h-8 w-[70px]">
-                            <SelectValue placeholder={table.getState().pagination.pageSize} />
-                        </SelectTrigger>
-                        <SelectContent side="top">
-                            {[10, 25, 50, 100].map((pageSize) => (
-                                <SelectItem key={pageSize} value={`${pageSize}`}>
-                                    {pageSize}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                        {PAGE_SIZES.map((pageSize) => (
+                            <option key={pageSize} value={`${pageSize}`}>
+                                {pageSize}
+                            </option>
+                        ))}
+                    </select>
                 </div>
                 <div className="flex items-center space-x-2">
                     <Button

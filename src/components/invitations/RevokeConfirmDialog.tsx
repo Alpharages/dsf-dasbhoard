@@ -1,12 +1,4 @@
 import { useState } from 'react';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription,
-    DialogFooter,
-} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import type { Invitation } from '@/types/invitation';
@@ -26,7 +18,7 @@ export function RevokeConfirmDialog({
 }: RevokeConfirmDialogProps) {
     const [isLoading, setIsLoading] = useState(false);
 
-    if (!invitation) return null;
+    if (!isOpen || !invitation) return null;
 
     const handleConfirm = async () => {
         setIsLoading(true);
@@ -41,20 +33,28 @@ export function RevokeConfirmDialog({
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-800 text-slate-50">
-                <DialogHeader>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={onClose}>
+            <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="revoke-invite-title"
+                className="relative grid w-full max-w-[425px] gap-4 rounded-lg border border-slate-800 bg-slate-900 p-6 text-slate-50 shadow-lg"
+                onClick={(event) => event.stopPropagation()}
+            >
+                <div className="flex flex-col space-y-1.5 text-center sm:text-left">
                     <div className="flex items-center gap-2 text-red-500 mb-2">
                         <AlertTriangle className="h-5 w-5" />
-                        <DialogTitle>Revoke Invitation?</DialogTitle>
+                        <h2 id="revoke-invite-title" className="text-lg font-semibold leading-none tracking-tight">
+                            Revoke Invitation?
+                        </h2>
                     </div>
-                    <DialogDescription className="text-slate-400">
+                    <p className="text-sm text-slate-400">
                         Are you sure you want to revoke the invitation for <span className="font-semibold text-slate-200">{invitation.email}</span>?
                         <br />
                         This action cannot be undone. The invite link will become invalid immediately.
-                    </DialogDescription>
-                </DialogHeader>
-                <DialogFooter className="mt-4">
+                    </p>
+                </div>
+                <div className="mt-4 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
                     <Button
                         variant="ghost"
                         onClick={onClose}
@@ -71,8 +71,8 @@ export function RevokeConfirmDialog({
                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Revoke Invitation
                     </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                </div>
+            </div>
+        </div>
     );
 }

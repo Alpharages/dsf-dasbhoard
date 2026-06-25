@@ -1,30 +1,29 @@
 import apiClient from './client';
 import type { CreateInvitationRequest, CreateInvitationResponse, Invitation } from '../types/invitation';
 
+type InvitationApiResponse = Invitation & {
+    invitedBy?: {
+        fullName?: string;
+        email?: string;
+    };
+};
+
+const normalizeInvitation = (invitation: InvitationApiResponse): Invitation => ({
+    ...invitation,
+    invitedByName: invitation.invitedByName ?? invitation.invitedBy?.fullName ?? invitation.invitedBy?.email,
+});
+
 export const fetchInvitations = async (): Promise<Invitation[]> => {
-    try {
-        // Backend returns { invitations: Invitation[], total: number, ... }
-        // We only return the array for now.
-        const response = await apiClient.get<{ invitations: Invitation[] }>('/auth/invitations');
-        return response.data.invitations;
-    } catch (error) {
-        throw error;
-    }
+    const response = await apiClient.get<{ items?: InvitationApiResponse[]; invitations?: InvitationApiResponse[] }>('/auth/invitations');
+    return (response.data.items ?? response.data.invitations ?? []).map(normalizeInvitation);
 };
 
 export const createInvitation = async (data: CreateInvitationRequest): Promise<CreateInvitationResponse> => {
-    try {
-        const response = await apiClient.post<CreateInvitationResponse>('/auth/invitations', data);
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
+    const response = await apiClient.post<CreateInvitationResponse | InvitationApiResponse>('/auth/invitations', data);
+    const invitation = 'invitation' in response.data ? response.data.invitation : response.data;
+    return { invitation: normalizeInvitation(invitation) };
 };
 
 export const revokeInvitation = async (id: string): Promise<void> => {
-    try {
-        await apiClient.delete(`/auth/invitations/${id}`);
-    } catch (error) {
-        throw error;
-    }
+    await apiClient.delete(`/auth/invitations/${id}`);
 };
