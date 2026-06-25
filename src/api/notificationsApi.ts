@@ -25,7 +25,11 @@ const BASE_URL = '/notifications';
  */
 export async function getNotificationPreferences(): Promise<NotificationPreferencesResponse> {
   const response = await apiClient.get(`${BASE_URL}/preferences`);
-  return response.data;
+  // Backend returns a bare array of preferences; normalize to the { preferences } shape
+  // the UI expects. Returning undefined here is what made React Query throw
+  // "Query data cannot be undefined" on the Notification Preferences page.
+  const data = response.data;
+  return Array.isArray(data) ? { preferences: data } : (data ?? { preferences: [] });
 }
 
 /**
