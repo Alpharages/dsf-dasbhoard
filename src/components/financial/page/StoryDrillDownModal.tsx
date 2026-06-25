@@ -38,7 +38,10 @@ export function StoryDrillDownModal({ isOpen, onClose, story }: StoryDrillDownMo
                     <div className="p-6 border-b border-slate-800 flex items-center justify-between sticky top-0 bg-slate-900 z-10">
                         <div>
                             <h2 className="text-2xl font-bold text-white">{story.title}</h2>
-                            <p className="text-slate-400 text-sm mt-1">Story {story.id} · Epic {story.epicId}</p>
+                            <p className="text-slate-400 text-sm mt-1">
+                                Story {story.id}
+                                {story.epicId != null && story.epicId !== '' && ` · Epic ${story.epicId}`}
+                            </p>
                         </div>
                         <button
                             onClick={onClose}

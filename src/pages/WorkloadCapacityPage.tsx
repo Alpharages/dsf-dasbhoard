@@ -17,6 +17,10 @@ export const WorkloadCapacityPage: React.FC = () => {
     const { user, isLoading: authLoading } = useAuth();
     const pmId = user?.id || '';
     const isManager = useHasRole('MANAGER');
+    // Personal utilization/trends only exist for actual PMs (they have a PM record).
+    // ADMIN/MANAGER/TL have no PM record, so calling /workload/pm/:id 404s — skip it
+    // for them and show only the team view.
+    const isPm = user?.role === 'PM';
 
     // Socket for real-time alerts
     const token = getAccessToken() || '';
@@ -47,7 +51,7 @@ export const WorkloadCapacityPage: React.FC = () => {
     const { data: pmWorkload, isLoading: pmLoading } = useQuery({
         queryKey: ['workload', 'pm', pmId],
         queryFn: () => workloadApi.getPmWorkload(pmId),
-        enabled: !!pmId,
+        enabled: isPm && !!pmId,
         staleTime: 5 * 60 * 1000,
         retry: 1
     });
@@ -62,7 +66,7 @@ export const WorkloadCapacityPage: React.FC = () => {
     const { data: trends, isLoading: trendsLoading } = useQuery({
         queryKey: ['workload', 'trends', pmId],
         queryFn: () => workloadApi.getWorkloadTrends(pmId),
-        enabled: !!pmId,
+        enabled: isPm && !!pmId,
         staleTime: 5 * 60 * 1000
     });
 
@@ -112,7 +116,7 @@ export const WorkloadCapacityPage: React.FC = () => {
         return <Navigate to="/login" replace />;
     }
 
-    if (pmLoading || trendsLoading || (isManager && teamLoading)) {
+    if ((isPm && (pmLoading || trendsLoading)) || (isManager && teamLoading)) {
         return (
             <div className="space-y-8 animate-pulse">
                 <div className="h-10 w-64 bg-muted rounded-xl"></div>
@@ -159,23 +163,25 @@ export const WorkloadCapacityPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Top Stats */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* PM Gauge */}
-                {pmWorkload && (
-                    <UtilizationGauge
-                        utilization={pmWorkload.utilization}
-                        activeTickets={pmWorkload.active_tickets}
-                        maxTickets={pmWorkload.max_tickets}
-                        title="Your Utilization"
-                    />
-                )}
+            {/* Top Stats — personal utilization is only available to PMs */}
+            {isPm && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* PM Gauge */}
+                    {pmWorkload && (
+                        <UtilizationGauge
+                            utilization={pmWorkload.utilization}
+                            activeTickets={pmWorkload.active_tickets}
+                            maxTickets={pmWorkload.max_tickets}
+                            title="Your Utilization"
+                        />
+                    )}
 
-                {/* Trends Chart */}
-                <div className="lg:col-span-2">
-                    {trends && <WorkloadTrendsChart data={trends.data} />}
+                    {/* Trends Chart */}
+                    <div className="lg:col-span-2">
+                        {trends && <WorkloadTrendsChart data={trends.data} />}
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Manager View */}
             {isManager && teamWorkload && (

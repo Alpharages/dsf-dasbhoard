@@ -214,8 +214,10 @@ export function EfficiencySectionContainer({ projectId, startDate, endDate }: Ef
                 </div>
             </div>
 
-            {/* Optimization Recommendation */}
-            {efficiencyData?.recommendation && (
+            {/* Optimization Recommendation — only when meaningful (avoid "N/A" / "$0%" on sparse data) */}
+            {efficiencyData?.recommendation &&
+                efficiencyData.recommendation.mostEfficient &&
+                efficiencyData.recommendation.mostEfficient !== 'N/A' && (
                 <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-2xl p-6">
                     <div className="flex items-start gap-3">
                         <div className="w-10 h-10 bg-blue-500/20 border border-blue-500/30 rounded-xl flex items-center justify-center flex-shrink-0">

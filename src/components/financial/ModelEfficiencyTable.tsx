@@ -33,11 +33,25 @@ export const ModelEfficiencyTable: React.FC<ModelEfficiencyTableProps> = ({
         );
     }
 
-    if (error || !data || !data.models || data.models.length === 0) {
+    if (error) {
         return (
             <Card className="h-[420px]">
                 <CardContent className="h-full flex items-center justify-center">
                     <p className="text-muted-foreground text-center">Failed to load model efficiency data</p>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    if (!data || !data.models || data.models.length === 0) {
+        return (
+            <Card className="h-[420px]">
+                <CardContent className="h-full flex flex-col items-center justify-center gap-2">
+                    <Cpu className="h-8 w-8 text-muted-foreground/40" />
+                    <p className="text-muted-foreground text-center">No model efficiency data yet</p>
+                    <p className="text-xs text-muted-foreground/70 text-center">
+                        Metrics will appear once executions have run for this project.
+                    </p>
                 </CardContent>
             </Card>
         );
@@ -126,8 +140,10 @@ export const ModelEfficiencyTable: React.FC<ModelEfficiencyTableProps> = ({
                     </tbody>
                 </table>
 
-                {/* Recommendation */}
-                {data.recommendation && (
+                {/* Recommendation — only when meaningful (avoid "N/A" / "$0%" on sparse data) */}
+                {data.recommendation &&
+                    data.recommendation.mostEfficient &&
+                    data.recommendation.mostEfficient !== 'N/A' && (
                     <div className="mt-4 p-4 bg-[var(--surface-1)] rounded-xl border border-[var(--card-border)]">
                         <div className="flex items-center gap-2 mb-2">
                             <TrendingUp className="w-4 h-4 text-emerald-400" />

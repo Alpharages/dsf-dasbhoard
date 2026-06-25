@@ -51,7 +51,9 @@ export function TopStoriesList(_props: TopStoriesListProps) {
                             <div className="text-sm font-semibold text-white group-hover:text-blue-400 transition-colors">
                                 {story.title}
                             </div>
-                            <div className="text-xs text-slate-500">Epic {story.epicId}</div>
+                            {story.epicId != null && story.epicId !== '' && (
+                                <div className="text-xs text-slate-500">Epic {story.epicId}</div>
+                            )}
                         </div>
                     </div>
                     <div className="text-right">
