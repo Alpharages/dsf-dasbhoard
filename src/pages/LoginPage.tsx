@@ -135,6 +135,8 @@ export function LoginPage() {
                                 </Label>
                                 <Input
                                     id="email"
+                                    name="email"
+                                    autoComplete="email"
                                     type="email"
                                     placeholder="you@company.com"
                                     value={email}
@@ -154,6 +156,8 @@ export function LoginPage() {
                                 </Label>
                                 <Input
                                     id="password"
+                                    name="password"
+                                    autoComplete="current-password"
                                     type="password"
                                     placeholder="••••••••"
                                     value={password}
