@@ -61,26 +61,6 @@ export interface FileLockResponseDto {
 }
 
 // ===================================================================
-// AC#4: AI Provider Status
-// ===================================================================
-
-export type AIProviderName = 'Cursor CLI' | 'Windsurf' | 'Antigravity';
-
-export type AIProviderStatus = 'available' | 'busy' | 'unavailable' | 'paused';
-
-export interface AIProviderDto {
-  name: AIProviderName;
-  status: AIProviderStatus;
-  last_heartbeat?: Date;
-  active_executions?: number;
-}
-
-export interface AIProvidersResponseDto {
-  providers: AIProviderDto[];
-  execution_paused: boolean;
-}
-
-// ===================================================================
 // UI Types
 // ===================================================================
 

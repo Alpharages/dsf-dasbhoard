@@ -16,7 +16,6 @@ import {
   MessageSquare,
   Settings,
   ShieldAlert,
-  ShieldCheck,
   UserPlus,
   Users,
 } from 'lucide-react';
@@ -63,7 +62,6 @@ export const navigationGroups: NavigationGroup[] = [
       { icon: Briefcase, label: 'Projects', path: '/projects/sync', shortcut: 'G P' },
       { icon: CheckCircle, label: 'Decisions', path: '/decisions', shortcut: 'G N' },
       { icon: Inbox, label: 'PM Approvals', path: '/approvals', roles: ['PM', 'TL', 'ADMIN', 'MANAGER'] },
-      { icon: ShieldCheck, label: 'QA Review', path: '/qa-review/dashboard', roles: ['QA', 'TL', 'ADMIN', 'MANAGER'] },
     ],
   },
   {

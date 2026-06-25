@@ -1,9 +1,8 @@
 import apiClient from '@/api/client';
-import type { 
-  SystemHealthDto, 
-  QueueMetricsDto, 
-  FileLockResponseDto,
-  AIProvidersResponseDto 
+import type {
+  SystemHealthDto,
+  QueueMetricsDto,
+  FileLockResponseDto
 } from '../types';
 
 // ===================================================================
@@ -45,19 +44,3 @@ export async function releaseFileLock(ticketId: string): Promise<void> {
   await apiClient.delete(`/dashboard/file-locks/${ticketId}`);
 }
 
-/**
- * Fetch AI provider status
- * GET /api/v1/ai-providers/status
- */
-export async function fetchAIProvidersStatus(): Promise<AIProvidersResponseDto> {
-  const response = await apiClient.get<AIProvidersResponseDto>('/ai-providers/status');
-  return response.data;
-}
-
-/**
- * Toggle execution pause state
- * POST /api/v1/ai-providers/toggle-pause
- */
-export async function toggleExecutionPause(paused: boolean): Promise<void> {
-  await apiClient.post('/ai-providers/toggle-pause', { paused });
-}

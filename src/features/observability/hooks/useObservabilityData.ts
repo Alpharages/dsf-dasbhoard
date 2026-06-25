@@ -2,14 +2,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useCallback } from 'react';
 import { useSocket } from '@/hooks/useSocket';
 import { useAuth, getAccessToken } from '@/contexts/AuthContext';
-import type { SystemHealthDto, QueueMetricsDto, FileLockResponseDto, AIProvidersResponseDto } from '../types';
+import type { SystemHealthDto, QueueMetricsDto, FileLockResponseDto } from '../types';
 import {
   fetchSystemHealth,
   fetchQueueMetrics,
   fetchFileLocks,
   releaseFileLock,
-  fetchAIProvidersStatus,
-  toggleExecutionPause,
 } from '../api/observability.api';
 
 // Query keys for caching
@@ -17,7 +15,6 @@ const QUERY_KEYS = {
   systemHealth: ['system-health'] as const,
   queueMetrics: ['queue-metrics'] as const,
   fileLocks: ['file-locks'] as const,
-  aiProviders: ['ai-providers'] as const,
 };
 
 // Polling interval (10 seconds fallback per AC#1)
@@ -44,35 +41,29 @@ interface UseObservabilityDataReturn {
   systemHealth: SystemHealthDto | undefined;
   queueMetrics: QueueMetricsDto | undefined;
   fileLocks: FileLockResponseDto | undefined;
-  aiProviders: AIProvidersResponseDto | undefined;
-  
+
   // Loading states
   isSystemHealthLoading: boolean;
   isQueueMetricsLoading: boolean;
   isFileLocksLoading: boolean;
-  isAiProvidersLoading: boolean;
-  
+
   // Error states
   systemHealthError: Error | null;
   queueMetricsError: Error | null;
   fileLocksError: Error | null;
-  aiProvidersError: Error | null;
-  
+
   // Connection states
   isDisconnected: boolean;
   isSocketConnected: boolean;
-  
+
   // Mutations
   releaseLock: (ticketId: string) => Promise<void>;
   isReleasingLock: boolean;
-  togglePause: (paused: boolean) => Promise<void>;
-  isTogglingPause: boolean;
-  
+
   // Refetch functions
   refetchSystemHealth: () => void;
   refetchQueueMetrics: () => void;
   refetchFileLocks: () => void;
-  refetchAiProviders: () => void;
 }
 
 /**
@@ -140,19 +131,6 @@ export function useObservabilityData(
     staleTime: pollingInterval / 2,
   });
 
-  const {
-    data: aiProviders,
-    isLoading: isAiProvidersLoading,
-    error: aiProvidersError,
-    refetch: refetchAiProviders,
-  } = useQuery({
-    queryKey: QUERY_KEYS.aiProviders,
-    queryFn: fetchAIProvidersStatus,
-    refetchInterval: pollingInterval, // Always poll AI providers status as it might not be through socket 
-    enabled: pollingEnabled,
-    staleTime: pollingInterval / 2,
-  });
-
   // ===================================================================
   // Socket.IO Real-time Updates
   // ===================================================================
@@ -201,20 +179,6 @@ export function useObservabilityData(
     [releaseLockMutation]
   );
 
-  const togglePauseMutation = useMutation({
-    mutationFn: toggleExecutionPause,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.aiProviders });
-    },
-  });
-
-  const togglePause = useCallback(
-    async (paused: boolean) => {
-      await togglePauseMutation.mutateAsync(paused);
-    },
-    [togglePauseMutation]
-  );
-
   // ===================================================================
   // Connection State
   // ===================================================================
@@ -226,34 +190,28 @@ export function useObservabilityData(
     systemHealth,
     queueMetrics,
     fileLocks,
-    aiProviders,
-    
+
     // Loading states
     isSystemHealthLoading,
     isQueueMetricsLoading,
     isFileLocksLoading,
-    isAiProvidersLoading,
-    
+
     // Error states
     systemHealthError,
     queueMetricsError,
     fileLocksError,
-    aiProvidersError,
-    
+
     // Connection states
     isDisconnected,
     isSocketConnected,
-    
+
     // Mutations
     releaseLock,
     isReleasingLock: releaseLockMutation.isPending,
-    togglePause,
-    isTogglingPause: togglePauseMutation.isPending,
-    
+
     // Refetch functions
     refetchSystemHealth: () => refetchSystemHealth(),
     refetchQueueMetrics: () => refetchQueueMetrics(),
     refetchFileLocks: () => refetchFileLocks(),
-    refetchAiProviders: () => refetchAiProviders(),
   };
 }

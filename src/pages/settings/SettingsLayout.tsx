@@ -9,8 +9,7 @@ import {
     HeartPulse,
     Blocks,
     Settings,
-    AppWindow,
-    Cpu
+    AppWindow
 } from 'lucide-react';
 
 const panels = [
@@ -19,7 +18,6 @@ const panels = [
     { id: 'dependency', label: 'Dependencies', icon: Share2 },
     { id: 'auto-merge', label: 'Auto-Merge', icon: GitMerge },
     { id: 'cost', label: 'Cost & Models', icon: DollarSign },
-    { id: 'ai-routing', label: 'AI Routing', icon: Cpu },
     { id: 'audit', label: 'Audit & Safety', icon: ShieldAlert },
     { id: 'health', label: 'Health & Rollback', icon: HeartPulse },
     { id: 'integrations', label: 'Third-Party Integrations', icon: Blocks },
@@ -29,7 +27,6 @@ const panels = [
 const projectPanels = [
     { id: 'integrations', label: 'PM Tool Integration', icon: Blocks },
     { id: 'general', label: 'General Settings', icon: Settings },
-    { id: 'ai-routing', label: 'AI Routing', icon: Cpu },
 ];
 
 export const SettingsLayout = () => {
