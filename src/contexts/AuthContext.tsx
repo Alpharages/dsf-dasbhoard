@@ -48,6 +48,12 @@ const setTokens = (accessToken: string, refreshToken: string, rememberMe: boolea
     const otherStorage = rememberMe ? sessionStorage : localStorage;
     otherStorage.removeItem('access_token');
     otherStorage.removeItem('refresh_token');
+
+    // Notify SocketContext (same-tab) that a fresh token is available so it can
+    // (re)connect immediately. sessionStorage writes do NOT fire a same-tab
+    // `storage` event, so on a fresh login SocketContext would otherwise never
+    // pick up the new token and the dashboard stays "OFFLINE" until a manual reload.
+    window.dispatchEvent(new CustomEvent('tokenRefreshed'));
 };
 
 const clearTokens = () => {
