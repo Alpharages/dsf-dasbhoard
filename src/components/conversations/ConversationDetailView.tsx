@@ -143,7 +143,7 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
             <div className="bg-card border border-border rounded-lg p-8 mb-6">
                 <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
-                        <h1 className="text-3xl font-bold text-white mb-2">{conversation.title}</h1>
+                        <h1 className="text-3xl font-bold text-foreground mb-2">{conversation.title}</h1>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                             <span>
                                 {new Date(conversation.conversation_date).toLocaleDateString('en-US', {
@@ -216,7 +216,7 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
                 <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 mb-6">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                            <span className="text-white font-bold">AI</span>
+                            <span className="text-foreground font-bold">AI</span>
                         </div>
                         <h3 className="text-lg font-bold text-foreground">AI Summary</h3>
                     </div>

@@ -32,7 +32,7 @@ export function RoiForecastWidget({ currentRoi }: RoiForecastWidgetProps) {
                         <Calendar className="w-4 h-4 text-muted-foreground" />
                         <span className="text-xs font-semibold text-muted-foreground uppercase">{forecast.period} Forecast</span>
                     </div>
-                    <div className="text-3xl font-bold text-white mb-2">{forecast.roi.toFixed(1)}%</div>
+                    <div className="text-3xl font-bold text-foreground mb-2">{forecast.roi.toFixed(1)}%</div>
                     <div className="flex items-center gap-2 mb-2">
                         <div className="flex-1 bg-muted rounded-full h-2">
                             <div

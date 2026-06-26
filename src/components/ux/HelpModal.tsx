@@ -33,7 +33,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
                             <Keyboard className="w-6 h-6" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold text-white tracking-tight">Keyboard Shortcuts</h2>
+                            <h2 className="text-xl font-bold text-foreground tracking-tight">Keyboard Shortcuts</h2>
                             <p className="text-sm text-muted-foreground">Boost your productivity with quick actions.</p>
                         </div>
                     </div>
@@ -52,7 +52,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
                             <div className="grid gap-3">
                                 {shortcuts.filter(s => s.category === category).map((shortcut, i) => (
                                     <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 border border-border/50 hover:border-border/50 transition-colors group">
-                                        <span className="text-sm text-foreground font-medium group-hover:text-white transition-colors">{shortcut.label}</span>
+                                        <span className="text-sm text-foreground font-medium group-hover:text-foreground transition-colors">{shortcut.label}</span>
                                         <div className="flex items-center gap-1.5">
                                             {shortcut.key.split(' + ').map((k, j) => (
                                                 <React.Fragment key={j}>
@@ -84,7 +84,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
                 <div className="p-5 bg-card border-t border-border text-center">
                     <button
                         onClick={onClose}
-                        className="w-full py-3 bg-muted hover:bg-muted text-white font-bold rounded-lg transition-all"
+                        className="w-full py-3 bg-muted hover:bg-muted text-foreground font-bold rounded-lg transition-all"
                     >
                         Got it, thanks!
                     </button>

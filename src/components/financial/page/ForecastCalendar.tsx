@@ -51,7 +51,7 @@ export function ForecastCalendar({ exhaustionDate, dailyBurn }: ForecastCalendar
                         `}
                         title={`${day.date.toLocaleDateString()}: $${day.projectedSpend.toFixed(2)}`}
                     >
-                        <div className={`text-xs font-bold ${day.isExhaustionDate ? 'text-red-400' : 'text-white'}`}>
+                        <div className={`text-xs font-bold ${day.isExhaustionDate ? 'text-red-400' : 'text-foreground'}`}>
                             {day.day}
                         </div>
                         <div className="text-[10px] text-muted-foreground group-hover:text-foreground transition-colors">

@@ -38,7 +38,7 @@ export const EscalationContextCard: React.FC<EscalationContextCardProps> = ({ re
             <div className="p-4 bg-red-500/10 border-b border-red-500/10 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <EscalationBadge reasonCode={reasonCode} />
-                    <h3 className="text-white font-semibold">Escalation Context</h3>
+                    <h3 className="text-foreground font-semibold">Escalation Context</h3>
                 </div>
             </div>
 

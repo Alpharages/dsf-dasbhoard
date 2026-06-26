@@ -109,7 +109,7 @@ export const CreateTicketsModal: React.FC<CreateTicketsModalProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <div className="bg-card border border-border rounded-lg shadow-2xl max-w-md w-full p-6">
                 <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-white">Create ClickUp Tickets</h2>
+                    <h2 className="text-xl font-bold text-foreground">Create ClickUp Tickets</h2>
                     <button
                         onClick={handleClose}
                         disabled={isCreating}

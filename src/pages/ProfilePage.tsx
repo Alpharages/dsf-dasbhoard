@@ -43,7 +43,7 @@ export const ProfilePage: React.FC = () => {
                     <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
                         <div className="flex flex-col items-center">
                             <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center border-4 border-background mb-4">
-                                <span className="text-3xl font-bold text-white">
+                                <span className="text-3xl font-bold text-foreground">
                                     {user.fullName.charAt(0).toUpperCase()}
                                 </span>
                             </div>

@@ -48,7 +48,7 @@ export function TopStoriesList(_props: TopStoriesListProps) {
                             <span className="text-sm font-bold text-blue-500">#{index + 1}</span>
                         </div>
                         <div>
-                            <div className="text-sm font-semibold text-white group-hover:text-blue-400 transition-colors">
+                            <div className="text-sm font-semibold text-foreground group-hover:text-blue-400 transition-colors">
                                 {story.title}
                             </div>
                             {story.epicId != null && story.epicId !== '' && (
@@ -57,7 +57,7 @@ export function TopStoriesList(_props: TopStoriesListProps) {
                         </div>
                     </div>
                     <div className="text-right">
-                        <div className="text-lg font-bold text-white">${story.cost}</div>
+                        <div className="text-lg font-bold text-foreground">${story.cost}</div>
                         <div className="text-xs text-muted-foreground">total cost</div>
                     </div>
                 </button>

@@ -83,7 +83,7 @@ export function MigrationCalculator({ models = [] }: MigrationCalculatorProps) {
                 <div className="bg-gradient-to-br from-emerald-600/10 to-blue-600/10 border border-emerald-600/20 rounded-xl p-6">
                     <div className="flex items-center gap-2 mb-4">
                         <TrendingDown className="w-5 h-5 text-emerald-400" />
-                        <h3 className="text-lg font-semibold text-white">Potential Savings</h3>
+                        <h3 className="text-lg font-semibold text-foreground">Potential Savings</h3>
                     </div>
 
                     <div className="grid grid-cols-3 gap-4 mb-4">

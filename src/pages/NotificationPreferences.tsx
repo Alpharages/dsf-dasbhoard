@@ -129,7 +129,7 @@ export function NotificationPreferences() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Notification Preferences</h1>
+          <h1 className="text-2xl font-bold text-foreground">Notification Preferences</h1>
           <p className="text-muted-foreground mt-1">
             Configure how and when you receive notifications
           </p>

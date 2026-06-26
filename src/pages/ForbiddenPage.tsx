@@ -29,7 +29,7 @@ export function ForbiddenPage() {
                     </div>
 
                     {/* Heading */}
-                    <h1 className="text-3xl font-bold text-white mb-2">
+                    <h1 className="text-3xl font-bold text-foreground mb-2">
                         403 Forbidden
                     </h1>
 

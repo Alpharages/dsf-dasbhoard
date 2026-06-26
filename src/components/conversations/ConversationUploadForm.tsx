@@ -198,7 +198,7 @@ export const ConversationUploadForm: React.FC<ConversationUploadFormProps> = ({ 
     return (
         <div className="max-w-3xl mx-auto p-8">
             <div className="bg-card border border-border rounded-lg p-8">
-                <h2 className="text-2xl font-bold text-white mb-2">Upload Client Conversation</h2>
+                <h2 className="text-2xl font-bold text-foreground mb-2">Upload Client Conversation</h2>
                 <p className="text-muted-foreground text-sm mb-6">
                     Upload audio or paste transcript for AI-powered analysis
                 </p>

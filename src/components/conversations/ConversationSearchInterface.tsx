@@ -115,7 +115,7 @@ export const ConversationSearchInterface: React.FC<ConversationSearchInterfacePr
 
     return (
         <div className="max-w-7xl mx-auto p-8">
-            <h1 className="text-4xl font-extrabold text-white mb-6">Search Conversations</h1>
+            <h1 className="text-4xl font-extrabold text-foreground mb-6">Search Conversations</h1>
 
             {/* Search Bar */}
             <div className="bg-card border border-border rounded-lg p-6 mb-6">

@@ -52,7 +52,7 @@ export const LimitationFormModal: React.FC<LimitationFormModalProps> = ({
             <div className="bg-muted rounded-lg max-w-3xl w-full max-h-[90vh] overflow-hidden border border-border shadow-2xl">
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-border">
-                    <h2 className="text-2xl font-bold text-white">
+                    <h2 className="text-2xl font-bold text-foreground">
                         {isEditMode ? 'Edit Limitation' : 'Add New Limitation'}
                     </h2>
                     <button
@@ -75,7 +75,7 @@ export const LimitationFormModal: React.FC<LimitationFormModalProps> = ({
                             value={formData.taskType}
                             onChange={(e) => setFormData({ ...formData, taskType: e.target.value as TaskType })}
                             disabled={isEditMode} // Can't change task type in edit mode
-                            className="w-full bg-muted/50 border border-[var(--border-hover)] rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full bg-muted/50 border border-[var(--border-hover)] rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {taskTypes.map(type => (
                                 <option key={type} value={type}>{TASK_TYPE_LABELS[type]}</option>
@@ -109,7 +109,7 @@ export const LimitationFormModal: React.FC<LimitationFormModalProps> = ({
                                 onChange={(e) => setFormData({ ...formData, knownIssues: e.target.value })}
                                 placeholder="Describe the limitation (Markdown supported)..."
                                 rows={5}
-                                className={`w-full bg-muted/50 border ${errors.knownIssues ? 'border-red-500' : 'border-[var(--border-hover)]'} rounded-lg px-4 py-2.5 text-white placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                                className={`w-full bg-muted/50 border ${errors.knownIssues ? 'border-red-500' : 'border-[var(--border-hover)]'} rounded-lg px-4 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500`}
                             />
                         )}
                         {errors.knownIssues && (
@@ -127,7 +127,7 @@ export const LimitationFormModal: React.FC<LimitationFormModalProps> = ({
                             onChange={(e) => setFormData({ ...formData, workaround: e.target.value })}
                             placeholder="Describe the manual workaround steps..."
                             rows={4}
-                            className="w-full bg-muted/50 border border-[var(--border-hover)] rounded-lg px-4 py-2.5 text-white placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full bg-muted/50 border border-[var(--border-hover)] rounded-lg px-4 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
@@ -144,7 +144,7 @@ export const LimitationFormModal: React.FC<LimitationFormModalProps> = ({
                                         className="w-5 h-5 rounded bg-muted border-[var(--border-hover)] text-red-500 focus:ring-red-500"
                                     />
                                     <div>
-                                        <span className="text-sm font-semibold text-white">Disable AI for this task type</span>
+                                        <span className="text-sm font-semibold text-foreground">Disable AI for this task type</span>
                                         <p className="text-xs text-muted-foreground mt-1">
                                             AI will skip tasks of this type. Use this for known severe limitations.
                                         </p>

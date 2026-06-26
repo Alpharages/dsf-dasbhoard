@@ -150,7 +150,7 @@ export const NotificationCenter = memo(function NotificationCenter({ maxNotifica
           {countFetchFailed ? (
             <span
               aria-hidden="true"
-              className="absolute top-0 right-0 z-10 min-w-[18px] h-[18px] flex items-center justify-center px-1 bg-yellow-500 text-white text-[10px] font-bold rounded-full border-2 border-background"
+              className="absolute top-0 right-0 z-10 min-w-[18px] h-[18px] flex items-center justify-center px-1 bg-yellow-500 text-foreground text-[10px] font-bold rounded-full border-2 border-background"
             >
               ?
             </span>

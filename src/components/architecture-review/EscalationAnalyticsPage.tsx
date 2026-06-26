@@ -28,7 +28,7 @@ export const EscalationAnalyticsPage: React.FC = () => {
 
     return (
         <div className="space-y-6 p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h1 className="text-3xl font-bold text-white mb-2">Escalation Trends & Analytics</h1>
+            <h1 className="text-3xl font-bold text-foreground mb-2">Escalation Trends & Analytics</h1>
             <p className="text-muted-foreground mb-6">Insights into AI architecture decision escalations and resolution patterns.</p>
 
             {/* KPI Cards */}
@@ -41,7 +41,7 @@ export const EscalationAnalyticsPage: React.FC = () => {
                         <AlertTriangle className="w-4 h-4 text-blue-500" />
                         Total Escalations
                     </h3>
-                    <div className="text-3xl font-bold text-white">{metrics.totalEscalations}</div>
+                    <div className="text-3xl font-bold text-foreground">{metrics.totalEscalations}</div>
                     <div className="text-xs text-blue-400 mt-2 bg-blue-500/10 inline-block px-2 py-0.5 rounded">All time</div>
                 </div>
 
@@ -53,7 +53,7 @@ export const EscalationAnalyticsPage: React.FC = () => {
                         <TrendingUp className="w-4 h-4 text-purple-500" />
                         Escalation Rate
                     </h3>
-                    <div className="text-3xl font-bold text-white">{metrics.escalationRate}%</div>
+                    <div className="text-3xl font-bold text-foreground">{metrics.escalationRate}%</div>
                     <div className="text-xs text-purple-400 mt-2 bg-purple-500/10 inline-block px-2 py-0.5 rounded">Of all decisions</div>
                 </div>
 
@@ -65,7 +65,7 @@ export const EscalationAnalyticsPage: React.FC = () => {
                         <Clock className="w-4 h-4 text-emerald-500" />
                         Avg Resolution Time
                     </h3>
-                    <div className="text-3xl font-bold text-white">{Math.round(metrics.avgResolutionTimeMinutes)}m</div>
+                    <div className="text-3xl font-bold text-foreground">{Math.round(metrics.avgResolutionTimeMinutes)}m</div>
                     <div className="text-xs text-emerald-400 mt-2 bg-emerald-500/10 inline-block px-2 py-0.5 rounded">Per escalation</div>
                 </div>
 
@@ -77,7 +77,7 @@ export const EscalationAnalyticsPage: React.FC = () => {
                         <Users className="w-4 h-4 text-amber-500" />
                         Delegation Rate
                     </h3>
-                    <div className="text-3xl font-bold text-white">{metrics.delegationRate}%</div>
+                    <div className="text-3xl font-bold text-foreground">{metrics.delegationRate}%</div>
                     <div className="text-xs text-amber-400 mt-2 bg-amber-500/10 inline-block px-2 py-0.5 rounded">Of escalated items</div>
                 </div>
             </div>
@@ -85,7 +85,7 @@ export const EscalationAnalyticsPage: React.FC = () => {
             {/* Charts Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="bg-card/50 border border-border p-6 rounded-lg">
-                    <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
                         <PieChartIcon className="w-5 h-5 text-muted-foreground" />
                         Primary Escalation Reasons
                     </h3>
@@ -118,7 +118,7 @@ export const EscalationAnalyticsPage: React.FC = () => {
                 </div>
 
                 <div className="bg-card/50 border border-border p-6 rounded-lg">
-                    <h3 className="text-lg font-bold text-white mb-6">Top Reasons Breakdown</h3>
+                    <h3 className="text-lg font-bold text-foreground mb-6">Top Reasons Breakdown</h3>
                     <div className="space-y-4">
                         {metrics.topReasons.map((item, index) => (
                             <div key={index} className="flex items-center gap-4 p-3 bg-background/50 rounded-xl border border-border/50">
@@ -136,7 +136,7 @@ export const EscalationAnalyticsPage: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <div className="font-bold text-white">{item.count}</div>
+                                    <div className="font-bold text-foreground">{item.count}</div>
                                     <div className="text-xs text-muted-foreground">count</div>
                                 </div>
                             </div>

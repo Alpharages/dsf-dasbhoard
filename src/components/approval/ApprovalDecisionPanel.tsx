@@ -175,7 +175,7 @@ export const ApprovalDecisionPanel: React.FC<ApprovalDecisionPanelProps> = ({
         <Button
           type="submit"
           disabled={isSubmitting || !canSubmit}
-          className={`h-14 px-10 rounded-lg font-extrabold text-lg shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white ${activeOption.color.button}`}
+          className={`h-14 px-10 rounded-lg font-extrabold text-lg shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-foreground ${activeOption.color.button}`}
         >
           {isSubmitting ? (
             <>

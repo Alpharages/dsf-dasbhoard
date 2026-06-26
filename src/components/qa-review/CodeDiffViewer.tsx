@@ -52,7 +52,7 @@ export const CodeDiffViewer: React.FC<CodeDiffViewerProps> = ({ diffs }) => {
           variant="outline"
           size="sm"
           onClick={() => setSplitView(!splitView)}
-          className="bg-card border-border text-muted-foreground hover:text-white rounded-xl gap-2"
+          className="bg-card border-border text-muted-foreground hover:text-foreground rounded-xl gap-2"
         >
           {splitView ? <Layout className="w-4 h-4" /> : <Split className="w-4 h-4" />}
           {splitView ? 'Unified View' : 'Split View'}
@@ -68,7 +68,7 @@ export const CodeDiffViewer: React.FC<CodeDiffViewerProps> = ({ diffs }) => {
             >
               <div className="flex items-center gap-3">
                 <FileCode className="w-4 h-4 text-muted-foreground group-hover:text-blue-400 transition-colors" />
-                <CardTitle className="text-sm font-mono text-foreground group-hover:text-white transition-colors">
+                <CardTitle className="text-sm font-mono text-foreground group-hover:text-foreground transition-colors">
                   {diff.fileName}
                 </CardTitle>
                 {diff.language && (
@@ -77,7 +77,7 @@ export const CodeDiffViewer: React.FC<CodeDiffViewerProps> = ({ diffs }) => {
                   </Badge>
                 )}
               </div>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-muted-foreground hover:text-white transition-colors">
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground transition-colors">
                 {expandedFiles[diff.fileName] ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
               </Button>
             </CardHeader>
