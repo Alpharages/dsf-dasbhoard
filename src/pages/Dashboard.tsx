@@ -534,7 +534,16 @@ export function Dashboard() {
         ticketTitle={reviewState.ticketTitle}
         ticketRequirements={reviewState.ticketRequirements}
         confidenceScore={reviewState.confidenceScore}
-        qaSummary={reviewState.qaSummary}
+        // qaSummary is null only while the modal is closed (it is populated when a
+        // review is opened); fall back to an empty summary to satisfy the required prop.
+        qaSummary={
+          reviewState.qaSummary ?? {
+            linting_passed: false,
+            tests_passed: false,
+            test_coverage: 0,
+            quality_score: 0,
+          }
+        }
         diffs={reviewState.diffs}
         onActionComplete={fetchData}
       />

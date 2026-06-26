@@ -20,7 +20,7 @@ const makeProject = (overrides: Partial<Project> = {}): Project => ({
   created_at: '2026-01-15T10:00:00Z',
   updated_at: '2026-01-15T10:00:00Z',
   last_activity: '2026-02-01T10:00:00Z',
-  tickets: { total: 10, in_progress: 3, completed: 5, blocked: 2, awaiting_approval: 0 },
+  tickets: { total: 10, in_progress: 3, completed: 5, blocked: 2, awaiting_approval: 0, sync_pending: 0 },
   ...overrides,
 });
 
@@ -70,7 +70,7 @@ describe('ProjectCardListView', () => {
         name: 'My Project',
         client_name: 'ClientCo',
         status: 'active',
-        tickets: { total: 8, in_progress: 2, completed: 4, blocked: 3, awaiting_approval: 0 },
+        tickets: { total: 8, in_progress: 2, completed: 4, blocked: 3, awaiting_approval: 0, sync_pending: 0 },
       })]);
 
       expect(screen.getByText('My Project')).toBeInTheDocument();
@@ -96,14 +96,14 @@ describe('ProjectCardListView', () => {
   describe('Actions column', () => {
     it('shows "Review" button when awaiting_approval > 0', () => {
       renderList([makeProject({
-        tickets: { total: 5, in_progress: 1, completed: 2, blocked: 0, awaiting_approval: 1 },
+        tickets: { total: 5, in_progress: 1, completed: 2, blocked: 0, awaiting_approval: 1, sync_pending: 0 },
       })]);
       expect(screen.getByRole('button', { name: /review/i })).toBeInTheDocument();
     });
 
     it('calls onReview with the project when Review is clicked', () => {
       const project = makeProject({
-        tickets: { total: 5, in_progress: 1, completed: 2, blocked: 0, awaiting_approval: 1 },
+        tickets: { total: 5, in_progress: 1, completed: 2, blocked: 0, awaiting_approval: 1, sync_pending: 0 },
       });
       const onReview = vi.fn();
       renderList([project], onReview);
@@ -113,7 +113,7 @@ describe('ProjectCardListView', () => {
 
     it('shows "Details" button when awaiting_approval is 0', () => {
       renderList([makeProject({
-        tickets: { total: 5, in_progress: 1, completed: 2, blocked: 0, awaiting_approval: 0 },
+        tickets: { total: 5, in_progress: 1, completed: 2, blocked: 0, awaiting_approval: 0, sync_pending: 0 },
       })]);
       expect(screen.getByRole('button', { name: /details/i })).toBeInTheDocument();
     });

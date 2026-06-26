@@ -4,7 +4,6 @@ import { PmIntegrationCallback } from '@/pages/settings/PmIntegrationCallback';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React from 'react';
 import { toast } from 'react-hot-toast';
 
 vi.mock('react-hot-toast');

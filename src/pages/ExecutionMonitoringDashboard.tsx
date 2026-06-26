@@ -26,7 +26,6 @@ import { ExecutionCard } from '@/components/execution/ExecutionCard';
 const ExecutionLogsViewer = lazy(() => import('@/components/execution/ExecutionLogsViewer'));
 import { PMResolutionModal } from '@/components/execution/PMResolutionModal';
 import type { ExecutionStatus, QAResolutionResult } from '@/types/execution';
-import type { Project } from '@/types/project';
 import { Button } from '@/components/ui/button';
 
 interface StatusFilter {
