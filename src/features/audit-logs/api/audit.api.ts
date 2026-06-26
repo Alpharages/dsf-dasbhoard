@@ -2,8 +2,16 @@ import apiClient from '@/api/client';
 import type { AIDecisionLog, PaginatedResponse } from '../types';
 
 export const getAuditTimeline = async (ticketId: string): Promise<AIDecisionLog[]> => {
-  const response = await apiClient.get<AIDecisionLog[]>(`/audit/timeline/${ticketId}`);
-  return response.data;
+  // The backend returns { ticketId, decisions, totalDecisions } — not a bare array.
+  // Returning the wrapper object made the timeline call `logs.map` on a non-array,
+  // crashing the page to a white screen. Normalize to the decisions array here so
+  // the component can stay untouched (tolerate a bare array too, defensively).
+  const response = await apiClient.get<{ decisions?: AIDecisionLog[] } | AIDecisionLog[]>(
+    `/audit/timeline/${ticketId}`,
+  );
+  const data = response.data;
+  if (Array.isArray(data)) return data;
+  return data?.decisions ?? [];
 };
 
 export const getLowConfidenceAudits = async (
