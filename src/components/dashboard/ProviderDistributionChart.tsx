@@ -88,9 +88,12 @@ export function ProviderDistributionChart({ summary }: ProviderDistributionChart
               )}
             </div>
             
-            {/* Custom Legend */}
+            {/* Custom Legend — only providers actually used (matches the pie).
+                Avoids advertising dormant 0% providers (e.g. post-pivot the
+                runtime is subscription-only Claude, so GEMINI/CODEX/KIMI at 0%
+                would otherwise show as stale buckets). */}
             <div className="mt-4 grid grid-cols-3 gap-2">
-              {distribution.map((item, index) => (
+              {filteredDistribution.map((item, index) => (
                 <div 
                   key={item.provider}
                   className="flex items-center gap-2 p-2 rounded-lg bg-[var(--surface-1)] border border-[var(--card-border)]"
