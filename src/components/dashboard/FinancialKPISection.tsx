@@ -44,8 +44,8 @@ export function FinancialKPISection() {
   if (isLoading || (!data && !isError)) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-        <div className="h-40 rounded-2xl border border-[var(--card-border)] bg-[var(--surface-1)] animate-pulse" />
-        <div className="h-40 rounded-2xl border border-[var(--card-border)] bg-[var(--surface-1)] animate-pulse" />
+        <div className="h-40 rounded-lg border border-[var(--card-border)] bg-[var(--surface-1)] animate-pulse" />
+        <div className="h-40 rounded-lg border border-[var(--card-border)] bg-[var(--surface-1)] animate-pulse" />
       </div>
     );
   }
@@ -53,7 +53,7 @@ export function FinancialKPISection() {
   if (isError || !data) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-        <div className="col-span-2 rounded-2xl border border-[var(--card-border)] bg-[var(--surface-1)] p-4">
+        <div className="col-span-2 rounded-lg border border-[var(--card-border)] bg-[var(--surface-1)] p-4">
           <p className="text-sm text-muted-foreground">Financial data unavailable. Please try refreshing.</p>
         </div>
       </div>
@@ -86,8 +86,8 @@ export function FinancialKPISection() {
         <Card className="h-[180px]">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                <DollarSign className="h-5 w-5 text-white" />
+              <div className="h-10 w-10 rounded-md bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                <DollarSign className="h-5 w-5" />
               </div>
               <div>
                 <CardTitle className="text-sm font-medium text-muted-foreground">Cost per Ticket</CardTitle>
@@ -102,7 +102,7 @@ export function FinancialKPISection() {
           <CardContent>
             {hasCostPerTicket ? (
               <div className="flex items-baseline gap-3">
-                <span className="text-3xl font-bold text-foreground">
+                <span className="data-figure tabular-nums text-3xl font-semibold text-foreground">
                   ${data.cost_per_ticket?.toFixed(2)}
                 </span>
                 <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
@@ -128,8 +128,8 @@ export function FinancialKPISection() {
         <Card className="h-[180px] relative overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-400 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <TrendingUp className="h-5 w-5 text-white" />
+              <div className="h-10 w-10 rounded-md bg-primary/10 text-primary flex items-center justify-center">
+                <TrendingUp className="h-5 w-5" />
               </div>
               <CardTitle className="text-sm font-medium text-muted-foreground">Budget Burn Rate</CardTitle>
             </div>

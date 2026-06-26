@@ -132,7 +132,7 @@ describe('ConnectedAppsPanel', () => {
       expect(window.location.href).toBe('https://oauth.url');
     });
 
-    window.location = originalLocation;
+    window.location = originalLocation as any;
   });
 
   it('shows Jira and Asana as coming soon', () => {

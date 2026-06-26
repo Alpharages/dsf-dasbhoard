@@ -63,8 +63,8 @@ export const RoiGaugeWidget: React.FC<RoiGaugeWidgetProps> = ({ projectId, perio
         <Card className="h-[520px] flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                        <DollarSign className="h-4 h-4 text-white" />
+                    <div className="h-9 w-9 rounded-md bg-primary/10 text-primary flex items-center justify-center">
+                        <DollarSign className="h-4 h-4" />
                     </div>
                     <CardTitle className="text-sm font-medium">ROI Analysis</CardTitle>
                 </div>
@@ -101,7 +101,7 @@ export const RoiGaugeWidget: React.FC<RoiGaugeWidgetProps> = ({ projectId, perio
                     </svg>
                     {/* Center text */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className={`text-3xl font-bold ${getColor()}`}>
+                        <span className={`text-3xl font-semibold data-figure tabular-nums ${getColor()}`}>
                             {roi.toFixed(0)}%
                         </span>
                         <span className="text-xs text-muted-foreground mt-1">ROI</span>

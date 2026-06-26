@@ -36,7 +36,7 @@ export function ProjectsSyncPage() {
     });
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
             {/* Page Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
@@ -63,14 +63,14 @@ export function ProjectsSyncPage() {
                     </div>
                     <button
                         onClick={() => refetch()}
-                        className="p-3 bg-card border border-border text-muted-foreground hover:text-foreground rounded-2xl transition-all"
+                        className="p-3 bg-card border border-border text-muted-foreground hover:text-foreground rounded-lg transition-all"
                         title="Refresh Projects"
                     >
                         <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
                     </button>
                     <button
                         onClick={() => setIsImportModalOpen(true)}
-                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-2xl shadow-lg shadow-blue-500/20 transition-all hover:translate-y-[-2px] active:translate-y-0"
+                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg shadow-blue-500/20 transition-all hover:translate-y-[-2px] active:translate-y-0"
                     >
                         <Plus className="w-5 h-5" />
                         Add Project
@@ -80,7 +80,7 @@ export function ProjectsSyncPage() {
 
             {/* Projects Table */}
             {isLoading ? (
-                <div className="h-64 bg-card/50 border border-border animate-pulse rounded-2xl flex items-center justify-center">
+                <div className="h-64 bg-card/50 border border-border animate-pulse rounded-lg flex items-center justify-center">
                     <div className="text-muted-foreground">Loading projects...</div>
                 </div>
             ) : (
@@ -91,7 +91,7 @@ export function ProjectsSyncPage() {
             )}
 
             {/* Info Panel */}
-            <div className="bg-primary/10 border border-primary/20 rounded-2xl p-6">
+            <div className="bg-primary/10 border border-primary/20 rounded-lg p-6">
                 <h3 className="text-primary font-bold text-lg mb-2">💡 How it works</h3>
                 <ul className="text-muted-foreground space-y-2 text-sm">
                     <li>• <strong>Add Project:</strong> Import a ClickUp list to sync tasks automatically</li>

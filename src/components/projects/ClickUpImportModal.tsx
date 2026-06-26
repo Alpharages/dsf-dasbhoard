@@ -87,7 +87,7 @@ const ConnectionStatus = ({ isConnected = true }: { isConnected?: boolean }) => 
 
 const CountBadge = ({ count, label }: { count: number; label: string }) => {
     const getColorClass = () => {
-        if (count === 0) return 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700';
+        if (count === 0) return 'bg-muted text-muted-foreground border-border dark:bg-muted dark:text-muted-foreground dark:border-border';
         if (count < 5) return 'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-950/30 dark:text-blue-400 dark:border-blue-800';
         if (count < 20) return 'bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800';
         return 'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800';
@@ -390,7 +390,7 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                     <div className="flex items-start gap-3 sm:gap-4">
                         <div className="relative shrink-0">
                             <div className="absolute inset-0 bg-primary blur-xl opacity-40 animate-pulse" />
-                            <div className="relative w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary via-primary/90 to-primary/70 flex items-center justify-center shadow-xl shadow-primary/20">
+                            <div className="relative w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-lg bg-gradient-to-br from-primary via-primary/90 to-primary/70 flex items-center justify-center shadow-xl shadow-primary/20">
                                 {getStepIcon()}
                             </div>
                         </div>
@@ -439,7 +439,7 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                                     <>
                                         {/* Zero accounts — inline OAuth empty state */}
                                         {clickUpAccounts.length === 0 && (
-                                            <div className="flex flex-col items-center gap-4 py-8 text-center border-2 border-dashed border-border/30 rounded-2xl">
+                                            <div className="flex flex-col items-center gap-4 py-8 text-center border-2 border-dashed border-border/30 rounded-lg">
                                                 <Cloud className="w-12 h-12 text-muted-foreground/50" />
                                                 <div>
                                                     <p className="font-semibold text-foreground">No ClickUp accounts connected</p>
@@ -487,7 +487,7 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                                                                 key={account.id}
                                                                 onClick={() => setSelectedAccountId(account.id)}
                                                                 className={cn(
-                                                                    "group flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-2xl border transition-all text-left w-full focus:outline-none focus:ring-2 focus:ring-primary/20",
+                                                                    "group flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-lg border transition-all text-left w-full focus:outline-none focus:ring-2 focus:ring-primary/20",
                                                                     selectedAccountId === account.id
                                                                         ? "border-primary/50 bg-primary/10"
                                                                         : "border-border/50 bg-gradient-to-br from-card/80 to-background hover:from-muted/80 hover:to-muted/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
@@ -495,7 +495,7 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                                                                 style={{ animationDelay: `${index * 50}ms` }}
                                                             >
                                                                 <div className="relative shrink-0">
-                                                                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-background flex items-center justify-center border border-primary/20 transition-all shadow-inner">
+                                                                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-lg bg-gradient-to-br from-primary/20 via-primary/10 to-background flex items-center justify-center border border-primary/20 transition-all shadow-inner">
                                                                         <span className="text-lg sm:text-xl font-bold text-primary">
                                                                             {(account.bot_username || account.workspace_name)?.[0]?.toUpperCase() || 'C'}
                                                                         </span>
@@ -605,10 +605,10 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="text-center flex flex-col items-center justify-center py-12 sm:py-16 text-muted-foreground border-2 border-dashed border-border/30 rounded-2xl bg-muted/10">
+                                    <div className="text-center flex flex-col items-center justify-center py-12 sm:py-16 text-muted-foreground border-2 border-dashed border-border/30 rounded-lg bg-muted/10">
                                         <div className="relative mb-4 sm:mb-5">
                                             <div className="absolute inset-0 bg-muted-foreground/20 blur-xl" />
-                                            <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
+                                            <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
                                                 {orgSearch ? <Search className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground/50" /> : <Cloud className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground/50" />}
                                             </div>
                                         </div>
@@ -837,10 +837,10 @@ export function ClickUpImportModal({ isOpen, onClose, onImportSuccess }: ClickUp
                                         )}
                                     </div>
                                 ) : (
-                                    <div className="text-center flex flex-col items-center justify-center py-12 sm:py-16 text-muted-foreground border-2 border-dashed border-border/30 rounded-2xl bg-muted/10">
+                                    <div className="text-center flex flex-col items-center justify-center py-12 sm:py-16 text-muted-foreground border-2 border-dashed border-border/30 rounded-lg bg-muted/10">
                                         <div className="relative mb-4 sm:mb-5">
                                             <div className="absolute inset-0 bg-muted-foreground/20 blur-xl" />
-                                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
+                                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
                                                 <FolderOpen className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground/50" />
                                             </div>
                                         </div>

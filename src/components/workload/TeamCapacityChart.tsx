@@ -37,15 +37,15 @@ export const TeamCapacityChart: React.FC<TeamCapacityChartProps> = ({
     };
 
     return (
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 h-[500px] flex flex-col">
-            <div className="flex items-center justify-between mb-8">
-                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+        <div className="bg-card border border-border rounded-lg p-6 h-[500px] flex flex-col">
+            <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
                     <Users2 className="w-5 h-5 text-blue-400" />
                     Team Capacity Overview
                 </h3>
                 <button
                     onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all border border-slate-700/50"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-muted hover:bg-muted text-foreground rounded-lg text-xs font-bold transition-all border border-border"
                 >
                     <ArrowUpDown className="w-3 h-3" />
                     Sort: {sortOrder === 'desc' ? 'High Load' : 'Low Load'}
@@ -109,15 +109,15 @@ export const TeamCapacityChart: React.FC<TeamCapacityChartProps> = ({
             <div className="mt-6 flex items-center justify-center gap-6">
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Healthy</span>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Healthy</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Warning</span>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Warning</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-rose-500"></div>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Critical</span>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Critical</span>
                 </div>
             </div>
         </div>

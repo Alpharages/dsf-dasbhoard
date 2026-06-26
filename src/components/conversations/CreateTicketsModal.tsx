@@ -107,13 +107,13 @@ export const CreateTicketsModal: React.FC<CreateTicketsModalProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <div className="bg-card border border-border rounded-lg shadow-2xl max-w-md w-full p-6">
                 <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-white">Create ClickUp Tickets</h2>
+                    <h2 className="text-xl font-bold text-foreground">Create ClickUp Tickets</h2>
                     <button
                         onClick={handleClose}
                         disabled={isCreating}
-                        className="text-slate-500 hover:text-slate-300 transition-colors disabled:opacity-50"
+                        className="text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -131,22 +131,22 @@ export const CreateTicketsModal: React.FC<CreateTicketsModalProps> = ({
                 ) : (
                     <>
                         <div className="mb-6">
-                            <label className="block text-sm font-bold text-slate-300 mb-2">
+                            <label className="block text-sm font-bold text-foreground mb-2">
                                 Select ClickUp List <span className="text-rose-500">*</span>
                             </label>
                             {loadingLists ? (
-                                <div className="flex items-center gap-2 text-slate-500 py-3">
+                                <div className="flex items-center gap-2 text-muted-foreground py-3">
                                     <Loader2 className="w-4 h-4 animate-spin" />
                                     <span>Loading available lists...</span>
                                 </div>
                             ) : (
                                 <div className="relative">
-                                    <ListChecks className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                    <ListChecks className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                     <select
                                         value={selectedListId}
                                         onChange={(e) => setSelectedListId(e.target.value)}
                                         disabled={isCreating}
-                                        className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-blue-500 transition-colors disabled:opacity-50 appearance-none"
+                                        className="w-full bg-background border border-border text-foreground rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-blue-500 transition-colors disabled:opacity-50 appearance-none"
                                     >
                                         <option value="" disabled>Select a list</option>
                                         {lists.map((list) => (
@@ -159,7 +159,7 @@ export const CreateTicketsModal: React.FC<CreateTicketsModalProps> = ({
                             )}
                         </div>
 
-                        <p className="text-slate-400 mb-6 text-sm">
+                        <p className="text-muted-foreground mb-6 text-sm">
                             Create <span className="text-blue-400 font-bold">{selectedActionItemIds.length}</span> ticket{selectedActionItemIds.length > 1 ? 's' : ''} from the selected action items.
                         </p>
 
@@ -174,7 +174,7 @@ export const CreateTicketsModal: React.FC<CreateTicketsModalProps> = ({
                             <button
                                 onClick={handleClose}
                                 disabled={isCreating}
-                                className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl transition-all disabled:opacity-50"
+                                className="flex-1 bg-muted hover:bg-muted text-foreground font-bold py-3 rounded-xl transition-all disabled:opacity-50"
                             >
                                 Cancel
                             </button>

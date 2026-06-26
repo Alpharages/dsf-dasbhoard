@@ -20,16 +20,16 @@ export const ReviewActionButtons: React.FC<ReviewActionButtonsProps> = ({
         return (
             <div className="flex items-center justify-center py-2">
                 <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
-                <span className="ml-2 text-slate-400 font-medium">Processing review...</span>
+                <span className="ml-2 text-muted-foreground font-medium">Processing review...</span>
             </div>
         );
     }
 
     return (
-        <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-800">
+        <div className="flex items-center justify-end gap-3 pt-6 border-t border-border">
             <button
                 onClick={onDefer}
-                className="flex items-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 bg-muted hover:bg-muted text-foreground font-semibold rounded-xl transition-colors"
             >
                 <Clock className="w-4 h-4" />
                 Defer

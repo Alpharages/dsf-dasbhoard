@@ -527,7 +527,7 @@ export const PmIntegrationPanel: React.FC = () => {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-8">
+            <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-[var(--brand-500)]/10 rounded-xl text-[var(--brand-500)]">
                     <Boxes className="w-6 h-6" />
                 </div>
@@ -539,7 +539,7 @@ export const PmIntegrationPanel: React.FC = () => {
 
             {/* FIX H3: Use Skeleton component for loading state instead of spinner */}
             {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[1, 2, 3].map((n) => (
                         <Card key={n} className="glass-card overflow-hidden">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -560,7 +560,7 @@ export const PmIntegrationPanel: React.FC = () => {
                     <p className="text-sm">Failed to load integration status. Please try again later.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {PROVIDERS.map(renderProviderCard)}
                 </div>
             )}

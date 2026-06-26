@@ -118,24 +118,24 @@ const colorVariants = {
 
 const sizeVariants = {
   default: {
-    padding: 'p-6',
-    iconSize: 'h-12 w-12',
-    iconInner: 'h-6 w-6',
-    title: 'text-sm',
+    padding: 'p-5',
+    iconSize: 'h-10 w-10',
+    iconInner: 'h-5 w-5',
+    title: 'text-[11px]',
     value: 'text-3xl',
   },
   large: {
-    padding: 'p-8',
-    iconSize: 'h-14 w-14',
-    iconInner: 'h-7 w-7',
-    title: 'text-base',
+    padding: 'p-6',
+    iconSize: 'h-12 w-12',
+    iconInner: 'h-6 w-6',
+    title: 'text-xs',
     value: 'text-4xl',
   },
   compact: {
     padding: 'p-4',
-    iconSize: 'h-10 w-10',
-    iconInner: 'h-5 w-5',
-    title: 'text-xs',
+    iconSize: 'h-9 w-9',
+    iconInner: 'h-[18px] w-[18px]',
+    title: 'text-[10px]',
     value: 'text-2xl',
   },
 };
@@ -167,17 +167,17 @@ export function StatsCard({
     return (
       <div
         className={cn(
-          'relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50',
+          'relative overflow-hidden rounded-lg border border-[var(--card-border)] bg-card',
           sizes.padding,
           className
         )}
       >
         <div className="animate-pulse space-y-4">
           <div className="flex items-start justify-between">
-            <div className="h-4 w-24 rounded bg-slate-800" />
-            <div className={cn('rounded-xl bg-slate-800', sizes.iconSize)} />
+            <div className="h-3 w-24 rounded bg-[var(--muted)]" />
+            <div className={cn('rounded-md bg-[var(--muted)]', sizes.iconSize)} />
           </div>
-          <div className={cn('h-8 w-20 rounded bg-slate-800', sizes.value)} />
+          <div className="h-8 w-20 rounded bg-[var(--muted)]" />
         </div>
       </div>
     );
@@ -186,8 +186,8 @@ export function StatsCard({
   return (
     <div
       className={cn(
-        'group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 backdrop-blur-sm transition-all duration-300',
-        onClick && 'cursor-pointer hover:border-slate-700 hover:shadow-lg hover:shadow-black/20',
+        'stats-card group',
+        onClick && 'cursor-pointer',
         sizes.padding,
         className
       )}
@@ -202,33 +202,24 @@ export function StatsCard({
         </div>
       )}
 
-      {/* Gradient Glow on Hover */}
-      <div
-        className={cn(
-          'absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br opacity-0 blur-3xl transition-opacity duration-500',
-          colors.gradient,
-          isHovered && 'opacity-20'
-        )}
-      />
-
       <div className="relative z-10">
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <p className={cn('font-medium text-slate-500', sizes.title)}>
+            <p className={cn('font-semibold uppercase tracking-wider text-muted-foreground', sizes.title)}>
               {title}
             </p>
             {subtitle && (
-              <p className="mt-0.5 text-xs text-slate-600">{subtitle}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground/70">{subtitle}</p>
             )}
           </div>
           <div
             className={cn(
-              'flex items-center justify-center rounded-xl transition-transform duration-300',
+              'flex items-center justify-center rounded-md transition-transform duration-200',
               colors.iconBg,
               colors.text,
               sizes.iconSize,
-              isHovered && 'scale-110'
+              isHovered && 'scale-105'
             )}
           >
             <Icon className={sizes.iconInner} />
@@ -236,10 +227,10 @@ export function StatsCard({
         </div>
 
         {/* Value */}
-        <div className="mt-4">
+        <div className="mt-3">
           <h3
             className={cn(
-              'font-black tracking-tight text-white',
+              'data-figure font-semibold tracking-tight text-foreground',
               sizes.value
             )}
           >
@@ -252,17 +243,17 @@ export function StatsCard({
           <div className="mt-3 flex items-center gap-2">
             <div
               className={cn(
-                'flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold',
+                'flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-semibold tabular-nums',
                 change.type === 'increase' && 'bg-emerald-500/10 text-emerald-400',
                 change.type === 'decrease' && 'bg-rose-500/10 text-rose-400',
-                change.type === 'neutral' && 'bg-slate-500/10 text-slate-400'
+                change.type === 'neutral' && 'bg-[var(--muted)] text-muted-foreground'
               )}
             >
               <TrendIcon className="h-3 w-3" />
               {Math.abs(change.value)}%
             </div>
             {change.label && (
-              <span className="text-xs text-slate-500">{change.label}</span>
+              <span className="text-xs text-muted-foreground">{change.label}</span>
             )}
           </div>
         )}
@@ -271,9 +262,9 @@ export function StatsCard({
         {onClick && (
           <div
             className={cn(
-              'mt-4 flex items-center gap-1 text-xs font-medium text-slate-500 transition-all duration-300',
+              'mt-4 flex items-center gap-1 text-xs font-medium transition-all duration-200',
               colors.text,
-              isHovered ? 'translate-x-0 opacity-100' : '-translate-x-2 opacity-0'
+              isHovered ? 'translate-x-0 opacity-100' : '-translate-x-1 opacity-0'
             )}
           >
             View details
@@ -281,15 +272,6 @@ export function StatsCard({
           </div>
         )}
       </div>
-
-      {/* Bottom Border Accent */}
-      <div
-        className={cn(
-          'absolute bottom-0 left-0 h-0.5 w-0 bg-gradient-to-r transition-all duration-500',
-          colors.gradient,
-          isHovered && 'w-full'
-        )}
-      />
     </div>
   );
 }

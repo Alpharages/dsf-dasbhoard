@@ -207,7 +207,7 @@ export function RegistrationPage() {
     if (tokenError) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-background p-8">
-                <div className="w-full max-w-md bg-card border border-border rounded-2xl p-8 shadow-2xl text-center">
+                <div className="w-full max-w-md bg-card border border-border rounded-lg p-8 shadow-2xl text-center">
                     <Lock className="w-16 h-16 mx-auto text-destructive mb-4" />
                     <h2 className="text-2xl font-bold text-foreground mb-3">Invalid Invitation</h2>
                     <p className="text-muted-foreground mb-6">{tokenError}</p>
@@ -228,7 +228,7 @@ export function RegistrationPage() {
     return (
         <div className="flex min-h-screen bg-background">
             {/* Left side - Branding */}
-            <div className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-purple-600 to-blue-600 items-center justify-center p-12">
+            <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[var(--brand-800)] to-primary items-center justify-center p-12">
                 <div className="max-w-md text-white">
                     <h1 className="text-5xl font-extrabold mb-6 leading-tight">
                         Join the Team
@@ -243,13 +243,13 @@ export function RegistrationPage() {
             <div className="flex flex-1 items-center justify-center p-8">
                 <div className="w-full max-w-md">
                     {/* Logo for mobile */}
-                    <div className="lg:hidden mb-8 text-center">
+                    <div className="lg:hidden mb-6 text-center">
                         <h1 className="text-3xl font-extrabold text-foreground">Join the Team</h1>
                     </div>
 
                     {/* Registration Card */}
-                    <div className="bg-card border border-border rounded-2xl p-8 shadow-2xl">
-                        <div className="mb-8">
+                    <div className="bg-card border border-border rounded-lg p-8 shadow-2xl">
+                        <div className="mb-6">
                             <h2 className="text-3xl font-bold text-foreground mb-2">Create Account</h2>
                             <p className="text-muted-foreground">Fill in your details to get started</p>
                         </div>

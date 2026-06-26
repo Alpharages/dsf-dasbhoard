@@ -113,7 +113,7 @@ export const DecisionDashboard: React.FC = () => {
             </div>
 
             {/* Main Content */}
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 items-start">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 items-start">
                 {/* Left Column - Tickets */}
                 <div className="space-y-3 flex flex-col">
                     {/* Section Header */}

@@ -167,7 +167,7 @@ export function StatsCard({
     return (
       <div
         className={cn(
-          'relative overflow-hidden rounded-2xl border border-border bg-card/50',
+          'relative overflow-hidden rounded-lg border border-border bg-card/50',
           sizes.padding,
           className
         )}
@@ -186,7 +186,7 @@ export function StatsCard({
   return (
     <div
       className={cn(
-        'group relative overflow-hidden rounded-2xl border border-border bg-card/80 backdrop-blur-sm transition-all duration-300',
+        'group relative overflow-hidden rounded-lg border border-border bg-card/80 backdrop-blur-sm transition-all duration-300',
         onClick && 'cursor-pointer hover:border-border/80 hover:shadow-lg hover:shadow-primary/5',
         sizes.padding,
         className
@@ -239,7 +239,7 @@ export function StatsCard({
         <div className="mt-4">
           <h3
             className={cn(
-              'font-black tracking-tight text-foreground/90',
+              'font-semibold tracking-tight text-foreground/90',
               sizes.value
             )}
           >
@@ -255,7 +255,7 @@ export function StatsCard({
                 'flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold',
                 change.type === 'increase' && 'bg-emerald-500/10 text-emerald-400',
                 change.type === 'decrease' && 'bg-rose-500/10 text-rose-400',
-                change.type === 'neutral' && 'bg-slate-500/10 text-slate-400'
+                change.type === 'neutral' && 'bg-muted/10 text-muted-foreground'
               )}
             >
               <TrendIcon className="h-3 w-3" />

@@ -53,7 +53,7 @@ export function ErrorState({
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center text-center rounded-2xl',
+        'flex flex-col items-center justify-center text-center rounded-lg',
         'bg-destructive/5 border border-destructive/20',
         sizes.wrapper,
         className

@@ -113,7 +113,7 @@ export const ApprovalDecisionPanel: React.FC<ApprovalDecisionPanelProps> = ({
               key={option.value}
               type="button"
               onClick={() => setSelectedDecision(option.value)}
-              className={`flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all duration-200 ${
+              className={`flex flex-col items-center gap-3 p-5 rounded-lg border-2 transition-all duration-200 ${
                 isActive
                   ? option.color.active
                   : 'bg-card border-border text-muted-foreground hover:border-muted-foreground/50'
@@ -175,7 +175,7 @@ export const ApprovalDecisionPanel: React.FC<ApprovalDecisionPanelProps> = ({
         <Button
           type="submit"
           disabled={isSubmitting || !canSubmit}
-          className={`h-14 px-10 rounded-2xl font-extrabold text-lg shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white ${activeOption.color.button}`}
+          className={`h-14 px-10 rounded-lg font-extrabold text-lg shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-foreground ${activeOption.color.button}`}
         >
           {isSubmitting ? (
             <>

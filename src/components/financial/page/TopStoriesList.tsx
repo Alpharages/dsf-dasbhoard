@@ -41,22 +41,24 @@ export function TopStoriesList(_props: TopStoriesListProps) {
                 <button
                     key={story.id}
                     onClick={() => setSelectedStory(story)}
-                    className="w-full flex items-center justify-between p-4 bg-slate-950 border border-slate-800 rounded-xl hover:border-blue-600/50 transition-all text-left group"
+                    className="w-full flex items-center justify-between p-4 bg-background border border-border rounded-xl hover:border-blue-600/50 transition-all text-left group"
                 >
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-blue-600/10 border border-blue-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
                             <span className="text-sm font-bold text-blue-500">#{index + 1}</span>
                         </div>
                         <div>
-                            <div className="text-sm font-semibold text-white group-hover:text-blue-400 transition-colors">
+                            <div className="text-sm font-semibold text-foreground group-hover:text-blue-400 transition-colors">
                                 {story.title}
                             </div>
-                            <div className="text-xs text-slate-500">Epic {story.epicId}</div>
+                            {story.epicId != null && story.epicId !== '' && (
+                                <div className="text-xs text-muted-foreground">Epic {story.epicId}</div>
+                            )}
                         </div>
                     </div>
                     <div className="text-right">
-                        <div className="text-lg font-bold text-white">${story.cost}</div>
-                        <div className="text-xs text-slate-500">total cost</div>
+                        <div className="text-lg font-bold text-foreground">${story.cost}</div>
+                        <div className="text-xs text-muted-foreground">total cost</div>
                     </div>
                 </button>
             ))}

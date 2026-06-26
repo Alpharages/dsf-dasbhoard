@@ -34,7 +34,7 @@ export function EfficiencySectionContainer({ projectId, startDate, endDate }: Ef
 
     if (!projectId) {
         return (
-            <div className="bg-card border border-border rounded-2xl p-8 text-center">
+            <div className="bg-card border border-border rounded-lg p-8 text-center">
                 <Zap className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                 <p className="text-muted-foreground font-medium">Select a project to view model efficiency</p>
             </div>
@@ -43,7 +43,7 @@ export function EfficiencySectionContainer({ projectId, startDate, endDate }: Ef
 
     if (isLoading) {
         return (
-            <div className="bg-card border border-border rounded-2xl p-8">
+            <div className="bg-card border border-border rounded-lg p-8">
                 <div className="animate-pulse space-y-4">
                     <div className="h-8 bg-muted rounded w-1/3"></div>
                     <div className="h-64 bg-muted rounded"></div>
@@ -94,7 +94,7 @@ export function EfficiencySectionContainer({ projectId, startDate, endDate }: Ef
             </div>
 
             {/* Efficiency Leaderboard */}
-            <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="bg-card border border-border rounded-lg p-6">
                 <div className="flex items-center gap-2 mb-4">
                     <Award className="w-5 h-5 text-amber-500" />
                     <h3 className="text-lg font-semibold text-foreground">Efficiency Leaderboard</h3>
@@ -144,7 +144,7 @@ export function EfficiencySectionContainer({ projectId, startDate, endDate }: Ef
             </div>
 
             {/* Success Rate Comparison */}
-            <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
+            <div className="bg-card border border-border rounded-lg p-6 min-w-0">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Success Rate Comparison</h3>
                 <ResponsiveContainer width="100%" height={300} debounce={100}>
                     <BarChart data={successRateData}>
@@ -166,7 +166,7 @@ export function EfficiencySectionContainer({ projectId, startDate, endDate }: Ef
             </div>
 
             {/* Cost-Speed Scatter Plot */}
-            <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
+            <div className="bg-card border border-border rounded-lg p-6 min-w-0">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Cost-Speed Analysis</h3>
                 <ResponsiveContainer width="100%" height={300} debounce={100}>
                     <ScatterChart>
@@ -214,9 +214,11 @@ export function EfficiencySectionContainer({ projectId, startDate, endDate }: Ef
                 </div>
             </div>
 
-            {/* Optimization Recommendation */}
-            {efficiencyData?.recommendation && (
-                <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-2xl p-6">
+            {/* Optimization Recommendation — only when meaningful (avoid "N/A" / "$0%" on sparse data) */}
+            {efficiencyData?.recommendation &&
+                efficiencyData.recommendation.mostEfficient &&
+                efficiencyData.recommendation.mostEfficient !== 'N/A' && (
+                <div className="bg-primary/5 border border-primary/20 rounded-lg p-6">
                     <div className="flex items-start gap-3">
                         <div className="w-10 h-10 bg-blue-500/20 border border-blue-500/30 rounded-xl flex items-center justify-center flex-shrink-0">
                             <TrendingUp className="w-5 h-5 text-blue-500" />
@@ -240,7 +242,7 @@ export function EfficiencySectionContainer({ projectId, startDate, endDate }: Ef
             )}
 
             {/* Reuse existing Model Efficiency Table */}
-            <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="bg-card border border-border rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Detailed Model Metrics</h3>
                 <ModelEfficiencyTable projectId={projectId} />
             </div>

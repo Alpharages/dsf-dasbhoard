@@ -120,7 +120,7 @@ export function ExecutionKPISection({ summary }: ExecutionKPISectionProps) {
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className={`text-2xl font-bold ${successColorClass}`}>
+                <span className={`data-figure tabular-nums text-2xl font-semibold ${successColorClass}`}>
                   {successPercentage}%
                 </span>
               </div>
@@ -159,13 +159,13 @@ export function ExecutionKPISection({ summary }: ExecutionKPISectionProps) {
         <Card className="h-[280px] flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">Avg Completion Time</CardTitle>
-            <div className="p-2 rounded-lg bg-purple-500/10">
-              <Clock className="h-4 w-4 text-purple-400" />
+            <div className="p-2 rounded-md bg-violet-500/10">
+              <Clock className="h-4 w-4 text-violet-400" />
             </div>
           </CardHeader>
           <CardContent className="flex-1 flex flex-col">
             <div className="flex items-baseline gap-2 mb-4">
-              <span className="text-3xl font-bold text-foreground">{avgCompletionTime.toFixed(1)}</span>
+              <span className="data-figure tabular-nums text-3xl font-semibold text-foreground">{avgCompletionTime.toFixed(1)}</span>
               <span className="text-sm text-muted-foreground">hours</span>
             </div>
             
@@ -214,8 +214,8 @@ export function ExecutionKPISection({ summary }: ExecutionKPISectionProps) {
         <Card className="h-[280px] flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">Live Load</CardTitle>
-            <div className="p-2 rounded-lg bg-blue-500/10">
-              <Activity className="h-4 w-4 text-blue-400" />
+            <div className="p-2 rounded-md bg-primary/10">
+              <Activity className="h-4 w-4 text-primary" />
             </div>
           </CardHeader>
           <CardContent className="flex-1 flex flex-col justify-center">

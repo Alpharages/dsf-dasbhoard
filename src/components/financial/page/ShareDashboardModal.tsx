@@ -63,7 +63,7 @@ export function ShareDashboardModal({ isOpen, onClose, projectId }: ShareDashboa
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-card border border-border rounded-2xl max-w-lg w-full shadow-2xl">
+            <div className="bg-card border border-border rounded-lg max-w-lg w-full shadow-2xl">
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-border">
                     <div className="flex items-center gap-3">

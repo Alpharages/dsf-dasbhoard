@@ -23,15 +23,15 @@ export function CostValueChart(_props: CostValueChartProps) {
     return (
         <ResponsiveContainer width="100%" height={300} debounce={100}>
             <AreaChart data={costValueData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis dataKey="period" stroke="#94a3b8" fontSize={12} />
-                <YAxis stroke="#94a3b8" fontSize={12} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis dataKey="period" stroke="var(--muted-foreground)" fontSize={12} />
+                <YAxis stroke="var(--muted-foreground)" fontSize={12} />
                 <Tooltip
                     contentStyle={{
-                        backgroundColor: '#1e293b',
-                        border: '1px solid #334155',
+                        backgroundColor: 'var(--popover)',
+                        border: '1px solid var(--border)',
                         borderRadius: '8px',
-                        color: '#e2e8f0',
+                        color: 'var(--foreground)',
                     }}
                 />
                 <Legend />

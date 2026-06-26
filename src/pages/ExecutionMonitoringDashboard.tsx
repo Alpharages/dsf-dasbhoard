@@ -26,7 +26,6 @@ import { ExecutionCard } from '@/components/execution/ExecutionCard';
 const ExecutionLogsViewer = lazy(() => import('@/components/execution/ExecutionLogsViewer'));
 import { PMResolutionModal } from '@/components/execution/PMResolutionModal';
 import type { ExecutionStatus, QAResolutionResult } from '@/types/execution';
-import type { Project } from '@/types/project';
 import { Button } from '@/components/ui/button';
 
 interface StatusFilter {
@@ -43,7 +42,7 @@ const statusFilters: StatusFilter[] = [
     label: 'All', 
     value: 'ALL', 
     icon: <Activity className="w-4 h-4" />,
-    color: 'text-slate-400',
+    color: 'text-muted-foreground',
     activeColor: 'text-primary-foreground',
     activeBg: 'bg-primary'
   },
@@ -59,9 +58,9 @@ const statusFilters: StatusFilter[] = [
     label: 'Queued', 
     value: 'QUEUED', 
     icon: <Clock className="w-4 h-4" />,
-    color: 'text-slate-400',
+    color: 'text-muted-foreground',
     activeColor: 'text-white',
-    activeBg: 'bg-slate-600'
+    activeBg: 'bg-muted'
   },
   { 
     label: 'Paused', 
@@ -311,7 +310,7 @@ export function ExecutionMonitoringDashboard() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -334,7 +333,7 @@ export function ExecutionMonitoringDashboard() {
         <button
           onClick={() => refetch()}
           disabled={isLoading}
-          className="p-3 bg-secondary/50 border border-border text-muted-foreground hover:text-foreground hover:bg-secondary rounded-2xl transition-all"
+          className="p-3 bg-secondary/50 border border-border text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-all"
           title="Refresh Data"
         >
           <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
@@ -343,7 +342,7 @@ export function ExecutionMonitoringDashboard() {
 
       {/* Socket Error Banner */}
       {socketError && (
-        <div className="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-6 text-rose-500 flex items-center justify-between">
+        <div className="bg-rose-500/10 border border-rose-500/20 rounded-lg p-6 text-rose-500 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <WifiOff className="w-5 h-5" />
             <div>
@@ -355,7 +354,7 @@ export function ExecutionMonitoringDashboard() {
       )}
 
       {/* Controls & Filters Bar */}
-      <div className="bg-card/50 border border-border rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-card/50 border border-border rounded-lg p-4 flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap gap-2">
           {statusFilters.map((filter) => (
             <button
@@ -394,7 +393,7 @@ export function ExecutionMonitoringDashboard() {
 
       {/* Error State */}
       {error && (
-        <div className="p-8 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-center">
+        <div className="p-8 bg-rose-500/10 border border-rose-500/20 rounded-lg text-center">
           <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-rose-500 mb-2">
             Failed to load executions
@@ -415,16 +414,16 @@ export function ExecutionMonitoringDashboard() {
 
       {/* Loading State */}
       {isLoading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-64 bg-card/50 border border-border animate-pulse rounded-2xl"></div>
+            <div key={i} className="h-64 bg-card/50 border border-border animate-pulse rounded-lg"></div>
           ))}
         </div>
       )}
 
       {/* Empty State */}
       {!isLoading && !error && filteredExecutions.length === 0 && (
-        <div className="text-center py-24 bg-card/30 border border-dashed border-border rounded-3xl">
+        <div className="text-center py-24 bg-card/30 border border-dashed border-border rounded-lg">
           <Activity className="w-16 h-16 text-muted-foreground/50 mx-auto mb-6" />
           <h3 className="text-xl font-bold text-muted-foreground mb-2">
             No active executions
@@ -440,7 +439,7 @@ export function ExecutionMonitoringDashboard() {
 
       {/* Executions Grid */}
       {!isLoading && !error && filteredExecutions.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filteredExecutions.map((execution) => (
             <ExecutionCard
               key={execution.id}

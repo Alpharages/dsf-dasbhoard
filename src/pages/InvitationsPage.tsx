@@ -9,6 +9,16 @@ import { fetchInvitations, createInvitation, revokeInvitation } from '@/api/invi
 import { generateInviteLink, copyToClipboard } from '@/utils/invitationHelpers';
 import type { Invitation, CreateInvitationRequest } from '@/types/invitation';
 
+const getErrorStatus = (error: unknown) =>
+    typeof error === 'object' && error !== null && 'response' in error
+        ? (error as { response?: { status?: number } }).response?.status
+        : undefined;
+
+const getErrorMessage = (error: unknown, fallback: string) =>
+    typeof error === 'object' && error !== null && 'response' in error
+        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message ?? fallback
+        : fallback;
+
 export const InvitationsPage: React.FC = () => {
     const [invitations, setInvitations] = useState<Invitation[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -32,7 +42,7 @@ export const InvitationsPage: React.FC = () => {
         loadInvitations();
     }, [loadInvitations]);
 
-    const handleCreateInvite = async (data: CreateInvitationRequest) => {
+    const handleCreateInvite = useCallback(async (data: CreateInvitationRequest) => {
         try {
             const response = await createInvitation(data);
             const link = generateInviteLink(response.invitation.inviteToken);
@@ -41,61 +51,66 @@ export const InvitationsPage: React.FC = () => {
             try {
                 await copyToClipboard(link);
                 toast.success('Invitation sent & link copied to clipboard!');
-            } catch (err) {
+            } catch {
                 toast.success('Invitation sent! (Could not auto-copy link)');
             }
 
             await loadInvitations();
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Create invite error:', error);
-            if (error.response?.status === 409) {
+            const status = getErrorStatus(error);
+            if (status === 409) {
                 toast.error('Invitation already exists for this email');
-            } else if (error.response?.status === 403) {
+            } else if (status === 403) {
                 toast.error('You do not have permission to invite users');
             } else {
-                toast.error(error.response?.data?.message || 'Failed to send invitation');
+                toast.error(getErrorMessage(error, 'Failed to send invitation'));
             }
             throw error; // Re-throw to let modal know it failed
         }
-    };
+    }, [loadInvitations]);
 
-    const handleRevokeInvite = async (invitation: Invitation) => {
+    const handleRevokeInvite = useCallback(async (invitation: Invitation) => {
         try {
             await revokeInvitation(invitation.id);
             toast.success('Invitation revoked successfully');
             setRevokeTarget(null);
             await loadInvitations();
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Revoke error:', error);
-            toast.error(error.response?.data?.message || 'Failed to revoke invitation');
+            toast.error(getErrorMessage(error, 'Failed to revoke invitation'));
         }
-    };
+    }, [loadInvitations]);
 
-    const handleCopyLink = async (invitation: Invitation) => {
+    const handleCopyLink = useCallback(async (invitation: Invitation) => {
         const link = generateInviteLink(invitation.inviteToken);
         try {
             await copyToClipboard(link);
             toast.success('Invite link copied!');
-        } catch (error) {
+        } catch {
             toast.error('Failed to copy link');
         }
-    };
+    }, []);
+
+    const handleOpenCreateModal = useCallback(() => setIsCreateModalOpen(true), []);
+    const handleCloseCreateModal = useCallback(() => setIsCreateModalOpen(false), []);
+    const handleCloseRevokeDialog = useCallback(() => setRevokeTarget(null), []);
 
     return (
-        <div className="container mx-auto py-8 space-y-8">
+        <div className="container mx-auto py-8 space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                        <div className="p-2 bg-slate-800 rounded-lg">
+                        <div className="p-2 bg-muted rounded-lg">
                             <Mail className="h-6 w-6 text-indigo-400" />
                         </div>
-                        <h1 className="text-3xl font-bold tracking-tight text-slate-100">Manage Invitations</h1>
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground">Manage Invitations</h1>
                     </div>
-                    <p className="text-slate-400">
+                    <p className="text-muted-foreground">
                         Create and manage user invitations for the DSF Dashboard access.
                     </p>
                 </div>
-                <Button onClick={() => setIsCreateModalOpen(true)} className="bg-indigo-600 hover:bg-indigo-700">
+                <Button onClick={handleOpenCreateModal} className="bg-indigo-600 hover:bg-indigo-700">
                     <Plus className="mr-2 h-4 w-4" />
                     Create Invite
                 </Button>
@@ -110,14 +125,14 @@ export const InvitationsPage: React.FC = () => {
 
             <CreateInviteModal
                 isOpen={isCreateModalOpen}
-                onClose={() => setIsCreateModalOpen(false)}
+                onClose={handleCloseCreateModal}
                 onCreate={handleCreateInvite}
             />
 
             <RevokeConfirmDialog
                 isOpen={!!revokeTarget}
                 invitation={revokeTarget}
-                onClose={() => setRevokeTarget(null)}
+                onClose={handleCloseRevokeDialog}
                 onConfirm={handleRevokeInvite}
             />
         </div>

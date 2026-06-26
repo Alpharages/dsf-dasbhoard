@@ -10,7 +10,7 @@ const makeProject = (overrides: Partial<Project> = {}): Project => ({
   client_name: 'Acme Corp',
   created_at: '2026-01-15T10:00:00Z',
   updated_at: '2026-01-15T10:00:00Z',
-  tickets: { total: 5, in_progress: 1, completed: 3, blocked: 0, awaiting_approval: 0 },
+  tickets: { total: 5, in_progress: 1, completed: 3, blocked: 0, awaiting_approval: 0, sync_pending: 0 },
   ...overrides,
 });
 
@@ -50,9 +50,9 @@ describe('sortProjects', () => {
   describe('tickets-desc', () => {
     it('sorts by total ticket count descending', () => {
       const projects = [
-        makeProject({ id: '1', tickets: { total: 3, in_progress: 0, completed: 0, blocked: 0, awaiting_approval: 0 } }),
-        makeProject({ id: '2', tickets: { total: 10, in_progress: 0, completed: 0, blocked: 0, awaiting_approval: 0 } }),
-        makeProject({ id: '3', tickets: { total: 7, in_progress: 0, completed: 0, blocked: 0, awaiting_approval: 0 } }),
+        makeProject({ id: '1', tickets: { total: 3, in_progress: 0, completed: 0, blocked: 0, awaiting_approval: 0, sync_pending: 0 } }),
+        makeProject({ id: '2', tickets: { total: 10, in_progress: 0, completed: 0, blocked: 0, awaiting_approval: 0, sync_pending: 0 } }),
+        makeProject({ id: '3', tickets: { total: 7, in_progress: 0, completed: 0, blocked: 0, awaiting_approval: 0, sync_pending: 0 } }),
       ];
       const result = sortProjects(projects, 'tickets-desc');
       expect(result.map((p) => p.id)).toEqual(['2', '3', '1']);
@@ -61,7 +61,7 @@ describe('sortProjects', () => {
     it('treats undefined tickets as 0 (null safety)', () => {
       const projects = [
         makeProject({ id: '1', tickets: undefined as any }),
-        makeProject({ id: '2', tickets: { total: 5, in_progress: 0, completed: 0, blocked: 0, awaiting_approval: 0 } }),
+        makeProject({ id: '2', tickets: { total: 5, in_progress: 0, completed: 0, blocked: 0, awaiting_approval: 0, sync_pending: 0 } }),
       ];
       const result = sortProjects(projects, 'tickets-desc');
       expect(result[0].id).toBe('2');
@@ -71,9 +71,9 @@ describe('sortProjects', () => {
   describe('blocked-desc', () => {
     it('sorts by blocked ticket count descending', () => {
       const projects = [
-        makeProject({ id: '1', tickets: { total: 10, in_progress: 0, completed: 0, blocked: 1, awaiting_approval: 0 } }),
-        makeProject({ id: '2', tickets: { total: 5, in_progress: 0, completed: 0, blocked: 5, awaiting_approval: 0 } }),
-        makeProject({ id: '3', tickets: { total: 8, in_progress: 0, completed: 0, blocked: 3, awaiting_approval: 0 } }),
+        makeProject({ id: '1', tickets: { total: 10, in_progress: 0, completed: 0, blocked: 1, awaiting_approval: 0, sync_pending: 0 } }),
+        makeProject({ id: '2', tickets: { total: 5, in_progress: 0, completed: 0, blocked: 5, awaiting_approval: 0, sync_pending: 0 } }),
+        makeProject({ id: '3', tickets: { total: 8, in_progress: 0, completed: 0, blocked: 3, awaiting_approval: 0, sync_pending: 0 } }),
       ];
       const result = sortProjects(projects, 'blocked-desc');
       expect(result.map((p) => p.id)).toEqual(['2', '3', '1']);
@@ -82,7 +82,7 @@ describe('sortProjects', () => {
     it('treats undefined tickets.blocked as 0 (null safety)', () => {
       const projects = [
         makeProject({ id: '1', tickets: undefined as any }),
-        makeProject({ id: '2', tickets: { total: 2, in_progress: 0, completed: 0, blocked: 2, awaiting_approval: 0 } }),
+        makeProject({ id: '2', tickets: { total: 2, in_progress: 0, completed: 0, blocked: 2, awaiting_approval: 0, sync_pending: 0 } }),
       ];
       const result = sortProjects(projects, 'blocked-desc');
       expect(result[0].id).toBe('2');

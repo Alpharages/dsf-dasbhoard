@@ -137,9 +137,9 @@ export function NotificationPreferenceForm({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-lg bg-slate-900 border-slate-800">
+      <DialogContent className="max-w-lg bg-card border-border">
         <DialogHeader>
-          <DialogTitle className="text-slate-200">
+          <DialogTitle className="text-foreground">
             {isEditing ? 'Edit Notification Preference' : 'Create Notification Preference'}
           </DialogTitle>
         </DialogHeader>
@@ -153,15 +153,15 @@ export function NotificationPreferenceForm({
               onValueChange={(value) => setValue('eventType', value)}
               disabled={isEditing}
             >
-              <SelectTrigger className="bg-slate-800 border-slate-700 text-slate-200">
+              <SelectTrigger className="bg-muted border-border text-foreground">
                 <SelectValue placeholder="Select event type" />
               </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-700">
+              <SelectContent className="bg-muted border-border">
                 {filteredEventTypes.map((type) => (
                   <SelectItem 
                     key={type.value} 
                     value={type.value}
-                    className="text-slate-200 focus:bg-slate-700 focus:text-slate-100"
+                    className="text-foreground focus:bg-muted focus:text-foreground"
                   >
                     {type.label}
                   </SelectItem>
@@ -183,7 +183,7 @@ export function NotificationPreferenceForm({
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-all ${
                     selectedChannels.includes(channel.value)
                       ? 'bg-blue-500/10 border-blue-500/50 text-blue-400'
-                      : 'bg-slate-800 border-slate-700 text-slate-400'
+                      : 'bg-muted border-border text-muted-foreground'
                   }`}
                   onClick={() => toggleChannel(channel.value)}
                 >
@@ -201,10 +201,10 @@ export function NotificationPreferenceForm({
           </div>
 
           {/* Enabled Toggle */}
-          <div className="flex items-center justify-between py-3 border-t border-slate-800">
+          <div className="flex items-center justify-between py-3 border-t border-border">
             <div>
               <Label htmlFor="enabled" className="cursor-pointer">Enable Notifications</Label>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 {enabled ? 'You will receive notifications for this event' : 'Notifications are disabled'}
               </p>
             </div>
@@ -216,15 +216,15 @@ export function NotificationPreferenceForm({
           </div>
 
           {/* Filters */}
-          <div className="space-y-4 border-t border-slate-800 pt-4">
+          <div className="space-y-4 border-t border-border pt-4">
             <Label>Filters (Optional)</Label>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               Only receive notifications matching these criteria
             </p>
 
             {/* Severity Filter */}
             <div className="space-y-2">
-              <Label className="text-sm text-slate-400">Severity Levels</Label>
+              <Label className="text-sm text-muted-foreground">Severity Levels</Label>
               <div className="flex flex-wrap gap-2">
                 {SEVERITY_LEVELS.map((severity) => (
                   <Badge
@@ -232,8 +232,8 @@ export function NotificationPreferenceForm({
                     variant={selectedSeverities.includes(severity.value) ? 'default' : 'outline'}
                     className={`cursor-pointer ${
                       selectedSeverities.includes(severity.value)
-                        ? 'bg-slate-700 text-slate-200'
-                        : 'border-slate-700 text-slate-400 hover:bg-slate-800'
+                        ? 'bg-muted text-foreground'
+                        : 'border-border text-muted-foreground hover:bg-muted'
                     }`}
                     onClick={() => toggleSeverity(severity.value)}
                   >
@@ -246,7 +246,7 @@ export function NotificationPreferenceForm({
             {/* Project Filter */}
             {availableProjects.length > 0 && (
               <div className="space-y-2">
-                <Label className="text-sm text-slate-400">Projects</Label>
+                <Label className="text-sm text-muted-foreground">Projects</Label>
                 <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto">
                   {availableProjects.map((project) => (
                     <Badge
@@ -255,7 +255,7 @@ export function NotificationPreferenceForm({
                       className={`cursor-pointer ${
                         selectedProjects.includes(project.id)
                           ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
-                          : 'border-slate-700 text-slate-400 hover:bg-slate-800'
+                          : 'border-border text-muted-foreground hover:bg-muted'
                       }`}
                       onClick={() => toggleProject(project.id)}
                     >
@@ -268,12 +268,12 @@ export function NotificationPreferenceForm({
           </div>
 
           {/* Footer */}
-          <DialogFooter className="border-t border-slate-800 pt-4">
+          <DialogFooter className="border-t border-border pt-4">
             <Button
               type="button"
               variant="outline"
               onClick={handleClose}
-              className="border-slate-700 text-slate-300"
+              className="border-border text-foreground"
             >
               Cancel
             </Button>

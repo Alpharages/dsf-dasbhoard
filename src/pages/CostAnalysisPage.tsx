@@ -10,7 +10,7 @@ const STAT_CARDS = [
 
 export default function CostAnalysisPage() {
     return (
-        <div className="container mx-auto py-8 space-y-8 animate-in fade-in duration-700">
+        <div className="container mx-auto py-8 space-y-6 animate-in fade-in duration-700">
             <div className="space-y-1">
                 <div className="flex items-center gap-2">
                     <div className="p-2 bg-blue-500/10 border border-blue-500/20 rounded-lg shadow-sm">
@@ -23,7 +23,7 @@ export default function CostAnalysisPage() {
                 </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {STAT_CARDS.map(({ label, icon: Icon, color }) => (
                     <Card key={label} className="bg-card/50 border-border/50">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -38,7 +38,7 @@ export default function CostAnalysisPage() {
                 ))}
             </div>
 
-            <div className="grid gap-8 md:grid-cols-7">
+            <div className="grid gap-4 md:grid-cols-7">
                 <Card className="md:col-span-4 bg-card/40 border-border/50 backdrop-blur-md">
                     <CardHeader>
                         <CardTitle>Spending Trends</CardTitle>

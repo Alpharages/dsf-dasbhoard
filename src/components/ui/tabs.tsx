@@ -37,7 +37,7 @@ interface TabsListProps {
 
 const TabsList: React.FC<TabsListProps> = ({ children, className }) => {
     return (
-        <div className={`inline-flex h-10 items-center justify-center rounded-md bg-slate-800 p-1 text-slate-400 ${className || ''}`}>
+        <div className={`inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground ${className || ''}`}>
             {children}
         </div>
     );
@@ -58,8 +58,8 @@ const TabsTrigger: React.FC<TabsTriggerProps> = ({ value, children, className })
             onClick={() => setValue(value)}
             className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 ${
                 isSelected
-                    ? 'bg-slate-700 text-slate-200 shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
             } ${className || ''}`}
         >
             {children}

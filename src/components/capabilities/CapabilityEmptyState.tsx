@@ -55,12 +55,12 @@ export const CapabilityEmptyState: React.FC<CapabilityEmptyStateProps> = ({
     const Icon = state.icon;
 
     return (
-        <div className="card-theme rounded-2xl p-12 text-center">
+        <div className="card-theme rounded-lg p-12 text-center">
             <div className="max-w-md mx-auto">
                 {/* Animated Icon Container */}
                 <div className="relative inline-block mb-6">
                     <div className={`
-                        w-20 h-20 rounded-2xl bg-gradient-to-br ${state.iconBg}
+                        w-20 h-20 rounded-lg bg-gradient-to-br ${state.iconBg}
                         flex items-center justify-center relative overflow-hidden
                     `}>
                         {/* Glow effect */}
@@ -70,7 +70,7 @@ export const CapabilityEmptyState: React.FC<CapabilityEmptyStateProps> = ({
                         <Icon className={`w-10 h-10 ${state.iconColor} relative z-10`} />
                         
                         {/* Animated rings */}
-                        <div className="absolute inset-0 rounded-2xl border border-white/10 animate-ping opacity-20" style={{ animationDuration: '3s' }} />
+                        <div className="absolute inset-0 rounded-lg border border-white/10 animate-ping opacity-20" style={{ animationDuration: '3s' }} />
                     </div>
                     
                     {/* Decorative dots */}

@@ -91,7 +91,7 @@ export function ImprovedSidebar({ className, lastSyncAt: lastSyncAtProp }: Sideb
   return (
     <aside
       className={cn(
-        'fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-[var(--sidebar-border)] bg-[var(--sidebar)] backdrop-blur-xl transition-all duration-300',
+        'fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-[var(--sidebar-border)] bg-[var(--sidebar)] transition-all duration-300',
         isCollapsed ? 'w-[72px]' : 'w-[280px]',
         className
       )}
@@ -99,11 +99,11 @@ export function ImprovedSidebar({ className, lastSyncAt: lastSyncAtProp }: Sideb
       {/* Logo Section */}
       <div className="flex h-[72px] items-center justify-between border-b border-[var(--sidebar-border)] px-4">
         <Link to="/" className="flex items-center gap-3 overflow-hidden">
-          <motion.div 
-            whileHover={{ scale: 1.05 }}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 shadow-lg shadow-blue-500/25"
+          <motion.div
+            whileHover={{ scale: 1.04 }}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground"
           >
-            <Sparkles className="h-5 w-5 text-white" />
+            <Sparkles className="h-[18px] w-[18px]" />
           </motion.div>
           {!isCollapsed && (
             <div className="flex flex-col">
@@ -230,9 +230,9 @@ export function ImprovedSidebar({ className, lastSyncAt: lastSyncAtProp }: Sideb
                           key={item.path}
                           to={item.path}
                           className={cn(
-                            'group flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
+                            'group relative flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors duration-150',
                             active
-                              ? 'bg-[var(--sidebar-primary)]/10 text-[var(--sidebar-primary)]'
+                              ? 'bg-[var(--sidebar-accent)] text-[var(--sidebar-primary)] before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-0.5 before:rounded-full before:bg-[var(--sidebar-primary)]'
                               : 'text-muted-foreground hover:bg-[var(--sidebar-accent)] hover:text-[var(--sidebar-accent-foreground)]'
                           )}
                         >
@@ -290,9 +290,9 @@ export function ImprovedSidebar({ className, lastSyncAt: lastSyncAtProp }: Sideb
             <TooltipContent side="right">Expand sidebar</TooltipContent>
           </Tooltip>
         ) : (
-          <div className="rounded-xl border border-[var(--sidebar-border)] bg-[var(--sidebar-accent)]/50 p-3">
+          <div className="rounded-md border border-[var(--sidebar-border)] bg-[var(--surface-1)] p-3">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--sidebar-primary)]/10">
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[var(--sidebar-primary)]/10">
                 <Clock className="h-4 w-4 text-[var(--sidebar-primary)]" />
               </div>
               <div className="flex-1">

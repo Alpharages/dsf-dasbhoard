@@ -49,11 +49,11 @@ export function MigrationCalculator({ models = [] }: MigrationCalculatorProps) {
         <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                    <label className="block text-xs font-semibold text-slate-500 mb-2">Current Model</label>
+                    <label className="block text-xs font-semibold text-muted-foreground mb-2">Current Model</label>
                     <select
                         value={fromModel}
                         onChange={(e) => setFromModel(e.target.value)}
-                        className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-slate-300 text-sm"
+                        className="w-full px-3 py-2 bg-card border border-border rounded-lg text-foreground text-sm"
                     >
                         {models.map(model => (
                             <option key={model.modelName} value={model.modelName}>{model.modelName}</option>
@@ -62,15 +62,15 @@ export function MigrationCalculator({ models = [] }: MigrationCalculatorProps) {
                 </div>
 
                 <div className="flex items-end justify-center">
-                    <ArrowRight className="w-6 h-6 text-slate-500 mb-2" />
+                    <ArrowRight className="w-6 h-6 text-muted-foreground mb-2" />
                 </div>
 
                 <div>
-                    <label className="block text-xs font-semibold text-slate-500 mb-2">Target Model</label>
+                    <label className="block text-xs font-semibold text-muted-foreground mb-2">Target Model</label>
                     <select
                         value={toModel}
                         onChange={(e) => setToModel(e.target.value)}
-                        className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-slate-300 text-sm"
+                        className="w-full px-3 py-2 bg-card border border-border rounded-lg text-foreground text-sm"
                     >
                         {models.map(model => (
                             <option key={model.modelName} value={model.modelName}>{model.modelName}</option>
@@ -83,24 +83,24 @@ export function MigrationCalculator({ models = [] }: MigrationCalculatorProps) {
                 <div className="bg-gradient-to-br from-emerald-600/10 to-blue-600/10 border border-emerald-600/20 rounded-xl p-6">
                     <div className="flex items-center gap-2 mb-4">
                         <TrendingDown className="w-5 h-5 text-emerald-400" />
-                        <h3 className="text-lg font-semibold text-white">Potential Savings</h3>
+                        <h3 className="text-lg font-semibold text-foreground">Potential Savings</h3>
                     </div>
 
                     <div className="grid grid-cols-3 gap-4 mb-4">
-                        <div className="bg-slate-950/50 rounded-xl p-4">
-                            <div className="text-xs text-slate-500 mb-1">Per Execution</div>
+                        <div className="bg-background/50 rounded-xl p-4">
+                            <div className="text-xs text-muted-foreground mb-1">Per Execution</div>
                             <div className="text-2xl font-bold text-emerald-400">
                                 ${Math.abs(savings.savingsPerExecution).toFixed(4)}
                             </div>
                         </div>
-                        <div className="bg-slate-950/50 rounded-xl p-4">
-                            <div className="text-xs text-slate-500 mb-1">Monthly</div>
+                        <div className="bg-background/50 rounded-xl p-4">
+                            <div className="text-xs text-muted-foreground mb-1">Monthly</div>
                             <div className="text-2xl font-bold text-emerald-400">
                                 ${Math.abs(savings.monthlySavings).toFixed(2)}
                             </div>
                         </div>
-                        <div className="bg-slate-950/50 rounded-xl p-4">
-                            <div className="text-xs text-slate-500 mb-1">Annual</div>
+                        <div className="bg-background/50 rounded-xl p-4">
+                            <div className="text-xs text-muted-foreground mb-1">Annual</div>
                             <div className="text-2xl font-bold text-emerald-400">
                                 ${Math.abs(savings.annualSavings).toFixed(2)}
                             </div>
@@ -109,10 +109,10 @@ export function MigrationCalculator({ models = [] }: MigrationCalculatorProps) {
 
                     <div className="flex items-center justify-between">
                         <div>
-                            <div className="text-sm text-slate-300">
+                            <div className="text-sm text-foreground">
                                 Cost Reduction: <span className="font-bold text-emerald-400">{Math.abs(savings.percentReduction).toFixed(1)}%</span>
                             </div>
-                            <div className="text-sm text-slate-300 mt-1">
+                            <div className="text-sm text-foreground mt-1">
                                 Success Rate Change: <span className={`font-bold ${savings.successRateDelta >= 0 ? 'text-emerald-400' : 'text-amber-400'}`}>
                                     {savings.successRateDelta > 0 ? '+' : ''}{savings.successRateDelta.toFixed(1)}%
                                 </span>

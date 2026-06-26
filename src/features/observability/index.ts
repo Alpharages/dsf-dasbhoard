@@ -18,10 +18,6 @@ export type {
   WaitingTicketDto,
   FileLockDto,
   FileLockResponseDto,
-  AIProviderName,
-  AIProviderStatus,
-  AIProviderDto,
-  AIProvidersResponseDto,
   HealthStatus,
   HealthIndicatorProps,
   QueueAlertConfig,
@@ -34,6 +30,4 @@ export {
   fetchQueueMetrics,
   fetchFileLocks,
   releaseFileLock,
-  fetchAIProvidersStatus,
-  toggleExecutionPause,
 } from './api/observability.api';

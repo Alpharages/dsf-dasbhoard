@@ -27,7 +27,7 @@ export function LoadingCard({
     return (
       <div
         className={cn(
-          'rounded-2xl border border-[var(--card-border)] bg-[var(--surface-2)] p-5',
+          'rounded-lg border border-[var(--card-border)] bg-[var(--surface-2)] p-5',
           className
         )}
         style={{ height: computedHeight }}
@@ -51,7 +51,7 @@ export function LoadingCard({
     return (
       <div
         className={cn(
-          'rounded-2xl border border-[var(--card-border)] bg-[var(--surface-2)] p-5 flex flex-col',
+          'rounded-lg border border-[var(--card-border)] bg-[var(--surface-2)] p-5 flex flex-col',
           className
         )}
         style={{ height: computedHeight }}
@@ -85,7 +85,7 @@ export function LoadingCard({
     return (
       <div
         className={cn(
-          'rounded-2xl border border-[var(--card-border)] bg-[var(--surface-2)] p-5',
+          'rounded-lg border border-[var(--card-border)] bg-[var(--surface-2)] p-5',
           className
         )}
         style={{ height: computedHeight }}
@@ -113,7 +113,7 @@ export function LoadingCard({
   return (
     <div
       className={cn(
-        'rounded-2xl border border-[var(--card-border)] bg-[var(--surface-2)] p-5',
+        'rounded-lg border border-[var(--card-border)] bg-[var(--surface-2)] p-5',
         className
       )}
       style={{ height: computedHeight }}
@@ -144,7 +144,7 @@ export function ListSkeleton({ className, rows }: { className?: string; rows?: n
 
 export function TableSkeleton({ rows = 5 }: { rows?: number }) {
   return (
-    <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--surface-2)] overflow-hidden">
+    <div className="rounded-lg border border-[var(--card-border)] bg-[var(--surface-2)] overflow-hidden">
       <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-1)]">
         <div className="flex items-center gap-4">
           <div className="h-4 w-32 rounded bg-muted animate-pulse" />

@@ -64,10 +64,10 @@ interface CategoryConfig {
 const CATEGORY_CONFIG: Record<ActivityCategory, CategoryConfig> = {
   SETUP: {
     label: 'Setup',
-    color: 'text-slate-400',
-    bgColor: 'bg-slate-500/10',
-    borderColor: 'border-slate-500/20',
-    dotColor: 'bg-slate-400',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted',
+    borderColor: 'border-border',
+    dotColor: 'bg-muted-foreground',
   },
   DEPENDENCY: {
     label: 'Dependencies',
@@ -267,7 +267,7 @@ const ActivityItem = memo(function ActivityItem({ activity, isLatest }: Activity
 
       {/* Expandable raw content */}
       {showRaw && activity.rawContent && (
-        <div className="mx-3 mb-2 p-2 rounded bg-slate-950/60 border border-border/30">
+        <div className="mx-3 mb-2 p-2 rounded bg-background border border-border/30">
           <pre className="text-[10px] text-muted-foreground font-mono whitespace-pre-wrap break-all max-h-32 overflow-auto">
             {activity.rawContent}
           </pre>
@@ -447,7 +447,7 @@ export default function ContainerActivityTimeline({
         <span>
           {!isLive ? (
             <span className="flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+              <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
               Historical
             </span>
           ) : latestActivity.category !== 'ERROR' ? (

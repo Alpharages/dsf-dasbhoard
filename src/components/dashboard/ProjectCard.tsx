@@ -30,11 +30,11 @@ const statusConfig: Record<string, { bg: string; text: string; border: string; g
         glow: 'shadow-amber-500/10',
         label: 'On Hold'
     },
-    paused: { 
-        bg: 'bg-slate-500/10', 
-        text: 'text-slate-400', 
-        border: 'border-slate-500/20',
-        glow: 'shadow-slate-500/10',
+    paused: {
+        bg: 'bg-muted',
+        text: 'text-muted-foreground',
+        border: 'border-border',
+        glow: '',
         label: 'Paused'
     },
     completed: { 
@@ -53,20 +53,14 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onReview }) =
     return (
         <motion.div 
             whileHover={{ y: -4, transition: { duration: 0.2 } }}
-            className="group relative overflow-hidden rounded-2xl border border-[var(--card-border)] bg-[var(--surface-2)] backdrop-blur-sm transition-all duration-300 hover:border-[var(--border-hover)] hover:shadow-xl"
+            className="stats-card group relative overflow-hidden rounded-lg border border-[var(--card-border)] bg-card transition-all duration-300 hover:border-[var(--border-hover)]"
         >
-            {/* Left accent line */}
-            <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-transparent via-[var(--primary)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            
-            {/* Glow effect on hover */}
-            <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            
             <div className="relative p-5">
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-base font-bold text-foreground group-hover:text-primary transition-colors truncate">
+                            <h3 className="text-base font-semibold text-foreground group-hover:text-primary transition-colors truncate">
                                 {project.name}
                             </h3>
                             <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${status.bg} ${status.text} ${status.border} ${status.glow}`}>
@@ -109,24 +103,24 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onReview }) =
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="bg-[var(--surface-1)] rounded-xl p-3 border border-[var(--card-border)]">
+                    <div className="bg-[var(--surface-1)] rounded-md p-3 border border-[var(--card-border)]">
                         <div className="flex items-center gap-1.5 mb-1">
                             <CheckCircle className="w-3.5 h-3.5 text-muted-foreground" />
                             <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Tickets</p>
                         </div>
                         <div className="flex items-baseline gap-1.5">
-                            <span className="text-xl font-bold text-foreground">{project.tickets.total}</span>
+                            <span className="data-figure tabular-nums text-xl font-semibold text-foreground">{project.tickets.total}</span>
                             <span className="text-[10px] text-muted-foreground">total</span>
                         </div>
                     </div>
-                    
-                    <div className="bg-[var(--surface-1)] rounded-xl p-3 border border-[var(--card-border)]">
+
+                    <div className="bg-[var(--surface-1)] rounded-md p-3 border border-[var(--card-border)]">
                         <div className="flex items-center gap-1.5 mb-1">
                             <AlertCircle className={`w-3.5 h-3.5 ${project.tickets.blocked > 0 ? 'text-rose-400' : 'text-muted-foreground'}`} />
                             <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Blocked</p>
                         </div>
                         <div className="flex items-baseline gap-1.5">
-                            <span className={`text-xl font-bold ${project.tickets.blocked > 0 ? 'text-rose-400' : 'text-foreground'}`}>
+                            <span className={`data-figure tabular-nums text-xl font-semibold ${project.tickets.blocked > 0 ? 'text-rose-400' : 'text-foreground'}`}>
                                 {project.tickets.blocked}
                             </span>
                             <span className="text-[10px] text-muted-foreground">tickets</span>
@@ -148,8 +142,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onReview }) =
                             initial={{ width: 0 }}
                             animate={{ width: `${progress}%` }}
                             transition={{ duration: 0.8, ease: 'easeOut' }}
-                            className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400"
-                            style={{ boxShadow: '0 0 8px rgba(59, 130, 246, 0.5)' }}
+                            className="h-full rounded-full bg-primary"
                         />
                     </div>
                 </div>
@@ -170,7 +163,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onReview }) =
                         {project.tickets.awaiting_approval > 0 ? (
                             <button
                                 onClick={() => onReview?.(project)}
-                                className="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all shadow-lg shadow-blue-500/20"
+                                className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold rounded-md flex items-center gap-1.5 transition-all"
                             >
                                 <CheckCircle className="w-3.5 h-3.5" />
                                 Review

@@ -10,43 +10,43 @@ export function RoleBadge({ role }: RoleBadgeProps) {
         switch (r) {
             case 'ADMIN':
                 return {
-                    className: 'bg-gradient-to-r from-rose-500 to-red-500 text-white border-0 shadow-sm shadow-rose-500/25',
+                    className: 'bg-rose-500/10 text-rose-400 border-0',
                     icon: Shield,
                     label: 'ADMIN'
                 };
             case 'MANAGER':
                 return {
-                    className: 'bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 shadow-sm shadow-violet-500/25',
+                    className: 'bg-violet-500/10 text-violet-400 border-0',
                     icon: Users,
                     label: 'MANAGER'
                 };
             case 'TL':
                 return {
-                    className: 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0 shadow-sm shadow-blue-500/25',
+                    className: 'bg-primary/10 text-primary border-0',
                     icon: UsersRound,
                     label: 'TEAM LEAD'
                 };
             case 'PM':
                 return {
-                    className: 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 shadow-sm shadow-emerald-500/25',
+                    className: 'bg-emerald-500/10 text-emerald-400 border-0',
                     icon: UserCheck,
                     label: 'PRODUCT'
                 };
             case 'QA':
                 return {
-                    className: 'bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 shadow-sm shadow-amber-500/25',
+                    className: 'bg-amber-500/10 text-amber-400 border-0',
                     icon: Wrench,
                     label: 'QA'
                 };
             case 'VIEWER':
                 return {
-                    className: 'bg-gradient-to-r from-slate-500 to-slate-400 text-white border-0 shadow-sm shadow-slate-500/25',
+                    className: 'bg-muted text-muted-foreground border-0',
                     icon: Eye,
                     label: 'VIEWER'
                 };
             default:
                 return {
-                    className: 'bg-slate-500 text-white border-0',
+                    className: 'bg-muted text-muted-foreground border-0',
                     icon: Users,
                     label: r
                 };

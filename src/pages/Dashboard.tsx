@@ -237,7 +237,7 @@ export function Dashboard() {
       diffs: [{
         fileName: 'src/components/Dashboard.tsx',
         oldCode: 'const Dashboard = () => { return <div>Old Dashboard</div> }',
-        newCode: 'const Dashboard = () => { return <div className="bg-slate-900">New Premium Dashboard</div> }',
+        newCode: 'const Dashboard = () => { return <div className="bg-card">New Premium Dashboard</div> }',
       }],
     });
   };
@@ -253,12 +253,12 @@ export function Dashboard() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8"
+        className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6"
       >
         <div>
           <div className="flex items-center gap-4 mb-2">
             <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+              <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center">
                 <LayoutDashboard className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -293,7 +293,7 @@ export function Dashboard() {
             whileHover={{ scale: 1.02, y: -1 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setIsNewProjectOpen(true)}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold py-3 px-5 rounded-xl shadow-lg shadow-blue-500/25 transition-all"
+            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold py-3 px-5 rounded-xl transition-all"
           >
             <Plus className="w-5 h-5" />
             New Project
@@ -326,7 +326,7 @@ export function Dashboard() {
       <FinancialKPISection />
       
       {summaryLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
           <KpiSkeleton />
           <KpiSkeleton />
           <KpiSkeleton />
@@ -339,7 +339,7 @@ export function Dashboard() {
       ) : null}
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
         {summaryLoading ? (
           <div className="lg:col-span-2">
             <ChartSkeleton />
@@ -474,9 +474,9 @@ export function Dashboard() {
 
         {/* Projects Grid/List */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-64 rounded-2xl border border-[var(--card-border)] bg-[var(--surface-1)] animate-pulse" />
+              <div key={i} className="h-64 rounded-lg border border-[var(--card-border)] bg-[var(--surface-1)] animate-pulse" />
             ))}
           </div>
         ) : sortedProjects.length > 0 ? (
@@ -484,7 +484,7 @@ export function Dashboard() {
             {viewMode === 'list' && !isMobile ? (
               <ProjectCardListView projects={sortedProjects} onReview={handleReview} />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {sortedProjects.map((project, index) => (
                   <motion.div
                     key={project.id}
@@ -534,7 +534,16 @@ export function Dashboard() {
         ticketTitle={reviewState.ticketTitle}
         ticketRequirements={reviewState.ticketRequirements}
         confidenceScore={reviewState.confidenceScore}
-        qaSummary={reviewState.qaSummary}
+        // qaSummary is null only while the modal is closed (it is populated when a
+        // review is opened); fall back to an empty summary to satisfy the required prop.
+        qaSummary={
+          reviewState.qaSummary ?? {
+            linting_passed: false,
+            tests_passed: false,
+            test_coverage: 0,
+            quality_score: 0,
+          }
+        }
         diffs={reviewState.diffs}
         onActionComplete={fetchData}
       />

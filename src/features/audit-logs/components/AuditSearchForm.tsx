@@ -75,10 +75,10 @@ export const AuditSearchForm: React.FC<AuditSearchFormProps> = ({ onViewDetail }
 
   return (
     <div className="space-y-6">
-      <div className="bg-card border border-border p-6 rounded-2xl shadow-sm">
+      <div className="bg-card border border-border p-6 rounded-lg shadow-sm">
         <h2 className="text-xl font-bold mb-4">Global Audit Search</h2>
         
-        <form onSubmit={handleSearch} className="flex gap-4 items-end mb-8 flex-wrap">
+        <form onSubmit={handleSearch} className="flex gap-4 items-end mb-6 flex-wrap">
           <div className="flex-1 min-w-[150px] space-y-2">
             <label className="text-sm font-medium text-muted-foreground">Ticket ID</label>
             <input

@@ -30,7 +30,7 @@ export function AiInsightsGallery({ insights, isLoading }: AiInsightsGalleryProp
                 ) : (
                     <div className="flex flex-col items-center justify-center p-8 text-muted-foreground bg-muted/20 rounded-lg">
                         <Brain className="h-8 w-8 mb-2 opacity-50" />
-                        <p>No enough data to generate insights yet.</p>
+                        <p>Not enough data to generate insights yet.</p>
                     </div>
                 )}
             </CardContent>

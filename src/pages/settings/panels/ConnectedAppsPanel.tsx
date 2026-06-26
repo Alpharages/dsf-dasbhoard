@@ -105,7 +105,7 @@ export const ConnectedAppsPanel = () => {
               <Skeleton className="h-20 w-full" />
             </div>
           ) : !hasApps && !provider.comingSoon ? (
-            <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-border rounded-2xl bg-muted/5">
+            <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-border rounded-lg bg-muted/5">
               <provider.icon className="w-12 h-12 text-muted-foreground opacity-20 mb-4" />
               <p className="text-muted-foreground font-medium mb-4">No {provider.name} accounts connected</p>
               <Button variant="secondary" size="sm" onClick={() => handleConnect(provider.id)}>
@@ -122,8 +122,8 @@ export const ConnectedAppsPanel = () => {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center gap-3 mb-8">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex items-center gap-3 mb-6">
         <div className="p-3 bg-[var(--brand-500)]/10 rounded-xl text-[var(--brand-500)]">
           <AppWindow className="w-6 h-6" />
         </div>

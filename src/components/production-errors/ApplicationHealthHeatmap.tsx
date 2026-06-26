@@ -33,7 +33,7 @@ function getHealthColor(status: HealthStatus): string {
     case 'RED':
       return 'border-red-500/50 bg-red-500/10';
     default:
-      return 'border-slate-700 bg-slate-800/50';
+      return 'border-border bg-muted';
   }
 }
 
@@ -48,7 +48,7 @@ function getHealthIndicator(status: HealthStatus): string {
     case 'RED':
       return 'bg-red-500';
     default:
-      return 'bg-slate-500';
+      return 'bg-muted-foreground';
   }
 }
 
@@ -56,19 +56,19 @@ function HealthCard({ application, errorCount24h, healthStatus, lastErrorAt, onC
   return (
     <div
       onClick={onClick}
-      className={`p-4 rounded-xl border cursor-pointer transition-all hover:scale-[1.02] ${getHealthColor(healthStatus)}`}
+      className={`p-4 rounded-lg border cursor-pointer transition-all hover:scale-[1.02] ${getHealthColor(healthStatus)}`}
     >
       <div className="flex items-center justify-between mb-2">
-        <h4 className="font-semibold text-slate-200 truncate">{application}</h4>
+        <h4 className="font-semibold text-foreground truncate">{application}</h4>
         <div className={`w-3 h-3 rounded-full ${getHealthIndicator(healthStatus)}`} />
       </div>
-      
+
       <div className="space-y-1">
-        <p className="text-2xl font-bold text-slate-100">
-          {errorCount24h} <span className="text-sm font-normal text-slate-400">errors (24h)</span>
+        <p className="text-2xl font-semibold text-foreground data-figure tabular-nums">
+          {errorCount24h} <span className="text-sm font-normal text-muted-foreground">errors (24h)</span>
         </p>
         {lastErrorAt && (
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted-foreground">
             Last: {formatDistanceToNow(new Date(lastErrorAt), { addSuffix: true })}
           </p>
         )}
@@ -89,7 +89,7 @@ function ApplicationHealthHeatmapComponent({ onSelectApplication }: ApplicationH
 
   if (isLoading) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+      <div className="bg-card border border-border rounded-lg p-6">
         <Skeleton className="h-6 w-48 mb-4" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
@@ -104,9 +104,9 @@ function ApplicationHealthHeatmapComponent({ onSelectApplication }: ApplicationH
 
   if (applications.length === 0) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-slate-200 mb-4">Application Health</h3>
-        <div className="text-center py-8 text-slate-500">
+      <div className="bg-card border border-border rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-foreground mb-4">Application Health</h3>
+        <div className="text-center py-8 text-muted-foreground">
           No applications with errors in the last 24 hours
         </div>
       </div>
@@ -114,9 +114,9 @@ function ApplicationHealthHeatmapComponent({ onSelectApplication }: ApplicationH
   }
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-      <h3 className="text-lg font-semibold text-slate-200 mb-4">Application Health</h3>
-      
+    <div className="bg-card border border-border rounded-lg p-6">
+      <h3 className="text-lg font-semibold text-foreground mb-4">Application Health</h3>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {applications.map((app) => (
           <HealthCard
@@ -131,22 +131,22 @@ function ApplicationHealthHeatmapComponent({ onSelectApplication }: ApplicationH
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-4 mt-6 pt-4 border-t border-slate-800">
+      <div className="flex flex-wrap gap-4 mt-6 pt-4 border-t border-border">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-emerald-500" />
-          <span className="text-xs text-slate-400">Healthy (0 errors)</span>
+          <span className="text-xs text-muted-foreground">Healthy (0 errors)</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-yellow-500" />
-          <span className="text-xs text-slate-400">Warning (1-5 medium/low)</span>
+          <span className="text-xs text-muted-foreground">Warning (1-5 medium/low)</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-orange-500" />
-          <span className="text-xs text-slate-400">Elevated (High errors or 6+ medium/low)</span>
+          <span className="text-xs text-muted-foreground">Elevated (High errors or 6+ medium/low)</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-red-500" />
-          <span className="text-xs text-slate-400">Critical (1+ critical errors)</span>
+          <span className="text-xs text-muted-foreground">Critical (1+ critical errors)</span>
         </div>
       </div>
     </div>

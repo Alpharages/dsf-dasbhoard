@@ -128,7 +128,7 @@ export default function UsersPage() {
     return (
         <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 max-w-7xl">
             {/* Header Section */}
-            <div className="mb-8">
+            <div className="mb-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="flex items-center gap-4">
                         <div className="p-3 bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20 rounded-xl shadow-sm">
@@ -155,7 +155,7 @@ export default function UsersPage() {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                 <Card className="border-border/60 bg-gradient-to-br from-card to-card/80">
                     <CardContent className="p-5">
                         <div className="flex items-center justify-between">

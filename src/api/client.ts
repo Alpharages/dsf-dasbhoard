@@ -64,8 +64,16 @@ apiClient.interceptors.response.use(
     async (error: AxiosError) => {
         const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
+        // Auth endpoints own their own 401 handling. A 401 from /auth/login means
+        // "wrong credentials" and from /auth/refresh means "session truly expired" —
+        // neither should trigger the token-refresh/redirect-to-login flow below, which
+        // would hard-reload the page and swallow the caller's error + toast (F1).
+        const requestUrl = originalRequest?.url ?? '';
+        const isAuthEndpoint =
+            requestUrl.includes('/auth/login') || requestUrl.includes('/auth/refresh');
+
         // Handle 401 Unauthorized with token refresh attempt
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
             if (isRefreshing) {
                 // Queue the request while refresh is in progress
                 return new Promise((resolve, reject) => {

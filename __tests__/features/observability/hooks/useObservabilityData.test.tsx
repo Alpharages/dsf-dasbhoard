@@ -19,9 +19,7 @@ vi.mock('@/features/observability/api/observability.api', () => ({
   fetchSystemHealth: vi.fn(),
   fetchQueueMetrics: vi.fn(),
   fetchFileLocks: vi.fn(),
-  fetchAIProvidersStatus: vi.fn(),
   releaseFileLock: vi.fn(),
-  toggleExecutionPause: vi.fn(),
 }));
 
 describe('useObservabilityData', () => {
@@ -56,7 +54,6 @@ describe('useObservabilityData', () => {
     expect(result.current.isSystemHealthLoading).toBe(true);
     expect(result.current.isQueueMetricsLoading).toBe(true);
     expect(result.current.isFileLocksLoading).toBe(true);
-    expect(result.current.isAiProvidersLoading).toBe(true);
   });
 
   it('should become disconnected when socket is down AND system health fails (Docker-down scenario)', async () => {

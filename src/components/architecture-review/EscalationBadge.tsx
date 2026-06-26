@@ -69,7 +69,7 @@ const REASON_CONFIG: Record<string, { label: string; color: string; icon: React.
     },
     UNKNOWN: {
         label: 'Unknown',
-        color: 'bg-slate-100 text-slate-800 border-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700',
+        color: 'bg-muted text-muted-foreground border-border',
         icon: HelpCircle,
         description: 'Reason for escalation is not specified.'
     }

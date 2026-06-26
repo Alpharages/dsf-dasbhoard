@@ -44,7 +44,7 @@ export const CodeDiffViewer: React.FC<CodeDiffViewerProps> = ({ diffs }) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
+        <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
           <FileCode className="w-5 h-5 text-blue-400" />
           Code Changes ({diffs.length} files)
         </h3>
@@ -52,7 +52,7 @@ export const CodeDiffViewer: React.FC<CodeDiffViewerProps> = ({ diffs }) => {
           variant="outline"
           size="sm"
           onClick={() => setSplitView(!splitView)}
-          className="bg-slate-900 border-slate-800 text-slate-400 hover:text-white rounded-xl gap-2"
+          className="bg-card border-border text-muted-foreground hover:text-foreground rounded-xl gap-2"
         >
           {splitView ? <Layout className="w-4 h-4" /> : <Split className="w-4 h-4" />}
           {splitView ? 'Unified View' : 'Split View'}
@@ -61,23 +61,23 @@ export const CodeDiffViewer: React.FC<CodeDiffViewerProps> = ({ diffs }) => {
 
       <div className="space-y-4">
         {diffs.map((diff) => (
-          <Card key={diff.fileName} className="bg-slate-900/50 border-slate-800 rounded-2xl overflow-hidden">
+          <Card key={diff.fileName} className="bg-card/50 border-border rounded-lg overflow-hidden">
             <CardHeader 
-              className="py-3 px-6 bg-slate-900/80 border-b border-slate-800 flex flex-row items-center justify-between cursor-pointer group"
+              className="py-3 px-6 bg-card/80 border-b border-border flex flex-row items-center justify-between cursor-pointer group"
               onClick={() => toggleExpand(diff.fileName)}
             >
               <div className="flex items-center gap-3">
-                <FileCode className="w-4 h-4 text-slate-500 group-hover:text-blue-400 transition-colors" />
-                <CardTitle className="text-sm font-mono text-slate-300 group-hover:text-white transition-colors">
+                <FileCode className="w-4 h-4 text-muted-foreground group-hover:text-blue-400 transition-colors" />
+                <CardTitle className="text-sm font-mono text-foreground group-hover:text-foreground transition-colors">
                   {diff.fileName}
                 </CardTitle>
                 {diff.language && (
-                  <Badge variant="outline" className="text-[10px] uppercase font-bold text-slate-600 border-slate-800">
+                  <Badge variant="outline" className="text-[10px] uppercase font-bold text-muted-foreground border-border">
                     {diff.language}
                   </Badge>
                 )}
               </div>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-slate-500 hover:text-white transition-colors">
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground transition-colors">
                 {expandedFiles[diff.fileName] ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
               </Button>
             </CardHeader>

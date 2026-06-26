@@ -30,7 +30,7 @@ export const Header: FC = () => {
     <motion.header
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="h-16 border-b border-[var(--card-border)] bg-[var(--background)]/80 backdrop-blur-xl flex items-center justify-between px-6 sticky top-0 z-30 shrink-0"
+      className="h-16 border-b border-[var(--card-border)] bg-[var(--background)]/85 backdrop-blur-md flex items-center justify-between px-6 sticky top-0 z-30 shrink-0"
     >
       {/* Left: Mobile Menu + Search */}
       <div className="flex items-center gap-4 flex-1">
@@ -55,8 +55,8 @@ export const Header: FC = () => {
           <input
             type="text"
             placeholder="Search projects, clients, tickets..."
-            className="w-full bg-[var(--surface-1)] border border-[var(--card-border)] rounded-xl py-2.5 pl-10 pr-12 text-sm text-foreground 
-                       focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 
+            className="w-full bg-[var(--surface-1)] border border-[var(--card-border)] rounded-md py-2 pl-10 pr-12 text-sm text-foreground
+                       focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30
                        transition-all placeholder:text-muted-foreground"
           />
           <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:block 
@@ -80,15 +80,15 @@ export const Header: FC = () => {
         {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-3 pl-2 pr-1 py-1 rounded-xl hover:bg-[var(--surface-1)] transition-colors border border-transparent hover:border-[var(--card-border)]">
+            <button className="flex items-center gap-3 pl-2 pr-1 py-1 rounded-md hover:bg-[var(--surface-1)] transition-colors border border-transparent hover:border-[var(--card-border)]">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-semibold text-foreground">{user?.fullName || 'User'}</p>
                 <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
                   {user?.role || 'User'}
                 </p>
               </div>
-              <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center border-2 border-[var(--card-border)] shadow-lg">
-                <User className="w-4 h-4 text-white" />
+              <div className="h-9 w-9 rounded-md bg-primary text-primary-foreground flex items-center justify-center">
+                <User className="w-4 h-4" />
               </div>
             </button>
           </DropdownMenuTrigger>

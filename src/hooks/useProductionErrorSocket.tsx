@@ -61,7 +61,7 @@ export function useProductionErrorSocket(
             <div className="font-semibold text-red-400">
               [{error.severity}] {error.application}
             </div>
-            <div className="text-sm text-slate-300 truncate max-w-[300px]">
+            <div className="text-sm text-foreground truncate max-w-[300px]">
               {error.error_type}: {error.message}
             </div>
           </div>

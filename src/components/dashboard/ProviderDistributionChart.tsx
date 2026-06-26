@@ -30,7 +30,7 @@ export function ProviderDistributionChart({ summary }: ProviderDistributionChart
     <Card className="h-full min-h-[400px] flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-400 flex items-center justify-center shadow-lg shadow-violet-500/20">
+          <div className="h-9 w-9 rounded-xl bg-violet-500 flex items-center justify-center ">
             <Cpu className="h-4 w-4 text-white" />
           </div>
           <CardTitle className="text-sm font-medium">AI Provider Distribution</CardTitle>
@@ -39,7 +39,7 @@ export function ProviderDistributionChart({ summary }: ProviderDistributionChart
       <CardContent className="flex-1 flex flex-col">
         {!hasData ? (
           <div className="flex-1 flex flex-col items-center justify-center py-12 text-center">
-            <div className="h-16 w-16 rounded-2xl bg-[var(--surface-1)] flex items-center justify-center mb-3">
+            <div className="h-16 w-16 rounded-lg bg-[var(--surface-1)] flex items-center justify-center mb-3">
               <Cpu className="h-8 w-8 text-muted-foreground/30" />
             </div>
             <p className="text-sm text-muted-foreground">No provider data available</p>
@@ -88,9 +88,12 @@ export function ProviderDistributionChart({ summary }: ProviderDistributionChart
               )}
             </div>
             
-            {/* Custom Legend */}
+            {/* Custom Legend — only providers actually used (matches the pie).
+                Avoids advertising dormant 0% providers (e.g. post-pivot the
+                runtime is subscription-only Claude, so GEMINI/CODEX/KIMI at 0%
+                would otherwise show as stale buckets). */}
             <div className="mt-4 grid grid-cols-3 gap-2">
-              {distribution.map((item, index) => (
+              {filteredDistribution.map((item, index) => (
                 <div 
                   key={item.provider}
                   className="flex items-center gap-2 p-2 rounded-lg bg-[var(--surface-1)] border border-[var(--card-border)]"

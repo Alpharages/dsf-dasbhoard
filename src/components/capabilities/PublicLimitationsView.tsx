@@ -46,7 +46,7 @@ export const PublicLimitationsView: React.FC<PublicLimitationsViewProps> = ({ li
     return (
         <div className="space-y-6">
             {/* Header Banner */}
-            <div className="card-theme rounded-2xl p-6 relative overflow-hidden">
+            <div className="card-theme rounded-lg p-6 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                 
                 <div className="relative flex items-start gap-4">
@@ -97,7 +97,7 @@ export const PublicLimitationsView: React.FC<PublicLimitationsViewProps> = ({ li
                             <div
                                 key={lim.taskType}
                                 className={`
-                                    card-theme rounded-2xl p-6 transition-all duration-300 hover:shadow-lg
+                                    card-theme rounded-lg p-6 transition-all duration-300 hover:shadow-lg
                                     ${lim.isDisabled ? 'border-l-4 border-l-rose-500' : ''}
                                 `}
                             >

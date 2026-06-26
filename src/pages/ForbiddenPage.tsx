@@ -17,10 +17,10 @@ export function ForbiddenPage() {
     const requiredRole = (location.state as { requiredRole?: string })?.requiredRole || 'Unknown';
 
     return (
-        <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="max-w-md w-full">
                 {/* Card container with dark theme */}
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center shadow-xl">
+                <div className="bg-card border border-border rounded-lg p-8 text-center shadow-xl">
                     {/* Lock icon */}
                     <div className="flex justify-center mb-6">
                         <div className="p-4 bg-rose-500/10 rounded-full">
@@ -29,19 +29,19 @@ export function ForbiddenPage() {
                     </div>
 
                     {/* Heading */}
-                    <h1 className="text-3xl font-bold text-white mb-2">
+                    <h1 className="text-3xl font-bold text-foreground mb-2">
                         403 Forbidden
                     </h1>
 
                     {/* Message */}
-                    <p className="text-slate-400 mb-6">
+                    <p className="text-muted-foreground mb-6">
                         You don't have permission to access this page
                     </p>
 
                     {/* Role information */}
-                    <div className="space-y-2 mb-8 text-sm">
-                        <p className="text-slate-500">
-                            Your role: <span className="font-medium text-slate-400">{user?.role || 'Unknown'}</span>
+                    <div className="space-y-2 mb-6 text-sm">
+                        <p className="text-muted-foreground">
+                            Your role: <span className="font-medium text-muted-foreground">{user?.role || 'Unknown'}</span>
                         </p>
                         <p className="text-rose-400">
                             Required: <span className="font-medium">{requiredRole}</span>
@@ -57,7 +57,7 @@ export function ForbiddenPage() {
                     </Button>
 
                     {/* Contact admin message */}
-                    <p className="text-slate-500 text-sm mt-6">
+                    <p className="text-muted-foreground text-sm mt-6">
                         Contact your administrator to request access
                     </p>
                 </div>

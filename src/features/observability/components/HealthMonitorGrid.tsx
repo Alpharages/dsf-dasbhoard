@@ -1,19 +1,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { formatUptime, formatLatency } from "@/lib/utils";
-import type { SystemHealthDto, ComponentHealthDto, ComponentStatus, AIProviderDto, AIProviderStatus } from "../types";
-import { Database, Radio, Activity, Server, AlertTriangle, WifiOff, PauseCircle, PlayCircle } from "lucide-react";
+import type { SystemHealthDto, ComponentHealthDto, ComponentStatus } from "../types";
+import { Database, Radio, Activity, AlertTriangle, WifiOff } from "lucide-react";
 
 interface HealthMonitorGridProps {
   systemHealth: SystemHealthDto | undefined;
   isLoading: boolean;
   isDisconnected: boolean;
-  aiProviders?: AIProviderDto[];
-  executionPaused?: boolean;
-  onTogglePause?: (paused: boolean) => void;
-  aiProvidersError?: Error | null;
 }
 
 /**
@@ -27,24 +22,6 @@ function getStatusVariant(status: ComponentStatus): "default" | "secondary" | "d
       return "default"; // Use default for warning
     case "down":
       return "destructive";
-    default:
-      return "default";
-  }
-}
-
-/**
- * Map AI provider status to badge variant
- */
-function getProviderStatusVariant(status: AIProviderStatus): "secondary" | "default" | "destructive" | "outline" {
-  switch (status) {
-    case "available":
-      return "secondary";
-    case "busy":
-      return "default";
-    case "unavailable":
-      return "destructive";
-    case "paused":
-      return "outline";
     default:
       return "default";
   }
@@ -105,48 +82,17 @@ function ComponentHealthCard({
 }
 
 /**
- * AI Provider status card
- */
-function AIProviderCard({ provider }: { provider: AIProviderDto }) {
-  return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Server className="h-5 w-5 text-blue-500" />
-            <span className="text-sm font-medium">{provider.name}</span>
-          </div>
-          <Badge variant={getProviderStatusVariant(provider.status)}>
-            {provider.status.toUpperCase()}
-          </Badge>
-        </div>
-        {provider.active_executions !== undefined && (
-          <div className="mt-2 text-xs text-muted-foreground">
-            Active: {provider.active_executions} executions
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-/**
  * HealthMonitorGrid component - AC#1, AC#4
- * 
+ *
  * Displays system health with traffic light indicators:
  * - Database, RabbitMQ, Prometheus health status
  * - Latency and uptime display
- * - AI Provider status with pause toggle
  * - Disconnected state handling
  */
 export function HealthMonitorGrid({
   systemHealth,
   isLoading,
   isDisconnected,
-  aiProviders = [],
-  executionPaused = false,
-  onTogglePause,
-  aiProvidersError,
 }: HealthMonitorGridProps) {
   if (isLoading) {
     return (
@@ -243,65 +189,6 @@ export function HealthMonitorGrid({
               icon={Activity}
               health={systemHealth?.components.prometheus}
             />
-          </div>
-        </div>
-
-        {/* AI Providers Section */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-semibold">AI Providers</h4>
-            {onTogglePause && (
-              <div className="flex items-center gap-2">
-                {executionPaused ? (
-                  <PauseCircle className="h-4 w-4 text-yellow-500" />
-                ) : (
-                  <PlayCircle className="h-4 w-4 text-green-500" />
-                )}
-                <label className="flex items-center gap-2 text-sm">
-                  <Switch
-                    checked={!executionPaused}
-                    onCheckedChange={(checked) => onTogglePause(!checked)}
-                  />
-                  {executionPaused ? "Execution Paused" : "Execution Active"}
-                </label>
-              </div>
-            )}
-          </div>
-          
-          {executionPaused && (
-            <Alert className="mb-3">
-              <PauseCircle className="h-4 w-4" />
-              <AlertTitle>Execution Paused</AlertTitle>
-              <AlertDescription>
-                AI execution is currently paused. No new tickets will be processed.
-              </AlertDescription>
-            </Alert>
-          )}
-
-          <div className="grid gap-4 md:grid-cols-3">
-            {aiProvidersError ? (
-              <Card className="md:col-span-3">
-                <CardContent className="p-4 text-center text-sm text-muted-foreground">
-                  Failed to load AI providers: {aiProvidersError.message}
-                </CardContent>
-              </Card>
-            ) : aiProviders.length > 0 ? (
-              aiProviders.map((provider) => (
-                <AIProviderCard key={provider.name} provider={provider} />
-              ))
-            ) : (
-              <>
-                <AIProviderCard
-                  provider={{ name: "Cursor CLI", status: "available" }}
-                />
-                <AIProviderCard
-                  provider={{ name: "Windsurf", status: "available" }}
-                />
-                <AIProviderCard
-                  provider={{ name: "Antigravity", status: "available" }}
-                />
-              </>
-            )}
           </div>
         </div>
       </CardContent>

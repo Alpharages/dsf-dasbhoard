@@ -77,7 +77,7 @@ export const PmApprovalDashboardPage: React.FC = () => {
     const diffs = detail?.diffs || [];
 
     return (
-      <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500 pb-20">
+      <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500 pb-20">
         {/* Detail Header */}
         <div className="flex items-center justify-between border-b border-border/50 pb-6">
           <div className="flex items-center gap-4">
@@ -111,7 +111,7 @@ export const PmApprovalDashboardPage: React.FC = () => {
                   AI Confidence
                 </span>
                 <span
-                  className={`text-xl font-mono font-black ${
+                  className={`text-xl font-mono font-semibold ${
                     (exec.confidenceScore ?? 0) >= 0.85
                       ? 'text-emerald-500'
                       : (exec.confidenceScore ?? 0) >= 0.7
@@ -126,12 +126,12 @@ export const PmApprovalDashboardPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-12 gap-8">
+        <div className="grid grid-cols-12 gap-4">
           {/* Left Column: Info */}
           <div className="col-span-12 lg:col-span-4 space-y-6">
             {/* Ticket Description */}
             {exec.ticketDescription && (
-              <Card className="bg-card/50 border-border rounded-2xl overflow-hidden">
+              <Card className="bg-card/50 border-border rounded-lg overflow-hidden">
                 <CardHeader className="border-b border-border/50 py-4 px-6">
                   <CardTitle className="text-sm font-bold text-card-foreground">
                     Ticket Requirements
@@ -146,7 +146,7 @@ export const PmApprovalDashboardPage: React.FC = () => {
             )}
 
             {/* Execution Info */}
-            <Card className="bg-card/50 border-border rounded-2xl overflow-hidden">
+            <Card className="bg-card/50 border-border rounded-lg overflow-hidden">
               <CardHeader className="border-b border-border/50 py-4 px-6">
                 <CardTitle className="text-sm font-bold text-card-foreground flex items-center gap-2">
                   <Cpu className="w-4 h-4 text-primary" />
@@ -201,7 +201,7 @@ export const PmApprovalDashboardPage: React.FC = () => {
             </Card>
 
             {/* QA Results */}
-            <Card className="bg-card/50 border-border rounded-2xl overflow-hidden">
+            <Card className="bg-card/50 border-border rounded-lg overflow-hidden">
               <CardHeader className="border-b border-border/50 py-4 px-6">
                 <CardTitle className="text-sm font-bold text-card-foreground flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-emerald-500" />
@@ -247,7 +247,7 @@ export const PmApprovalDashboardPage: React.FC = () => {
             {/* File List */}
             {Array.isArray(exec.filesChanged) &&
               exec.filesChanged.length > 0 && (
-                <Card className="bg-card/50 border-border rounded-2xl overflow-hidden">
+                <Card className="bg-card/50 border-border rounded-lg overflow-hidden">
                   <CardHeader className="border-b border-border/50 py-4 px-6">
                     <CardTitle className="text-sm font-bold text-card-foreground flex items-center gap-2">
                       <FileCode className="w-4 h-4 text-blue-400" />
@@ -272,12 +272,12 @@ export const PmApprovalDashboardPage: React.FC = () => {
           </div>
 
           {/* Right Column: Diffs + Decision */}
-          <div className="col-span-12 lg:col-span-8 space-y-8">
+          <div className="col-span-12 lg:col-span-8 space-y-6">
             {/* Code Diffs */}
             {diffs.length > 0 ? (
               <CodeDiffViewer diffs={diffs} />
             ) : (
-              <Card className="bg-card/50 border-border rounded-2xl">
+              <Card className="bg-card/50 border-border rounded-lg">
                 <CardContent className="p-12 text-center">
                   <div className="flex flex-col items-center gap-3">
                     <FileCode className="w-10 h-10 text-muted-foreground/50" />
@@ -312,7 +312,7 @@ export const PmApprovalDashboardPage: React.FC = () => {
 
   // ─── Queue View ────────────────────────────────────────────────
   return (
-    <div className="space-y-10 animate-in fade-in duration-700">
+    <div className="space-y-6 animate-in fade-in duration-700">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
@@ -339,8 +339,8 @@ export const PmApprovalDashboardPage: React.FC = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="bg-card/40 border-border rounded-2xl">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="bg-card/40 border-border rounded-lg">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="p-2 bg-primary/10 rounded-xl">
@@ -350,7 +350,7 @@ export const PmApprovalDashboardPage: React.FC = () => {
                 Pending
               </span>
             </div>
-            <div className="text-3xl font-black text-foreground mb-1">
+            <div className="text-3xl font-semibold text-foreground mb-1">
               {filteredQueue.length}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -359,7 +359,7 @@ export const PmApprovalDashboardPage: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-card/40 border-border rounded-2xl">
+        <Card className="bg-card/40 border-border rounded-lg">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="p-2 bg-amber-500/10 rounded-xl">
@@ -369,7 +369,7 @@ export const PmApprovalDashboardPage: React.FC = () => {
                 Oldest
               </span>
             </div>
-            <div className="text-3xl font-black text-foreground mb-1">
+            <div className="text-3xl font-semibold text-foreground mb-1">
               {summary?.oldestPendingHours || 0}h
             </div>
             <p className="text-xs text-muted-foreground">
@@ -378,7 +378,7 @@ export const PmApprovalDashboardPage: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-card/40 border-border rounded-2xl">
+        <Card className="bg-card/40 border-border rounded-lg">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="p-2 bg-emerald-500/10 rounded-xl">
@@ -388,7 +388,7 @@ export const PmApprovalDashboardPage: React.FC = () => {
                 Approved
               </span>
             </div>
-            <div className="text-3xl font-black text-foreground mb-1">
+            <div className="text-3xl font-semibold text-foreground mb-1">
               {summary?.approvedToday || 0}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -397,7 +397,7 @@ export const PmApprovalDashboardPage: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-card/40 border-border rounded-2xl">
+        <Card className="bg-card/40 border-border rounded-lg">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="p-2 bg-rose-500/10 rounded-xl">
@@ -407,7 +407,7 @@ export const PmApprovalDashboardPage: React.FC = () => {
                 Rejected
               </span>
             </div>
-            <div className="text-3xl font-black text-foreground mb-1">
+            <div className="text-3xl font-semibold text-foreground mb-1">
               {summary?.rejectedToday || 0}
             </div>
             <p className="text-xs text-muted-foreground">

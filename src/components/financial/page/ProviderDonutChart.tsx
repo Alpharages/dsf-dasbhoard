@@ -50,8 +50,8 @@ export function ProviderDonutChart({ providerData }: ProviderDonutChartProps) {
                 </PieChart>
             </ResponsiveContainer>
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
-                <div className="text-2xl font-bold text-white">${totalCost.toFixed(2)}</div>
-                <div className="text-xs text-slate-500">Total Cost</div>
+                <div className="text-2xl font-bold text-foreground">${totalCost.toFixed(2)}</div>
+                <div className="text-xs text-muted-foreground">Total Cost</div>
             </div>
         </div>
     );

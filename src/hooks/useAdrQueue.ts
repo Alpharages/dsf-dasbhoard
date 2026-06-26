@@ -2,9 +2,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { architectureReviewApi } from '../api/architectureReviewApi';
 import type { AdrQueueFilters } from '../types/architectureReview';
 import { toast } from 'react-hot-toast';
+import { getAccessToken } from '../contexts/AuthContext';
 
 export function useAdrQueue(filters: AdrQueueFilters) {
-    const token = localStorage.getItem('access_token') || '';
+    // Read via the shared accessor (checks both localStorage and sessionStorage);
+    // reading localStorage directly left these queries disabled on a normal session-only login.
+    const token = getAccessToken() || '';
 
     return useQuery({
         queryKey: ['adrQueue', filters],
@@ -16,7 +19,9 @@ export function useAdrQueue(filters: AdrQueueFilters) {
 
 export function useSubmitAdrReview() {
     const queryClient = useQueryClient();
-    const token = localStorage.getItem('access_token') || '';
+    // Read via the shared accessor (checks both localStorage and sessionStorage);
+    // reading localStorage directly left these queries disabled on a normal session-only login.
+    const token = getAccessToken() || '';
 
     return useMutation({
         mutationFn: ({ adrId, action, notes }: { adrId: string, action: 'APPROVE' | 'REJECT' | 'MODIFY' | 'DEFER', notes?: string }) =>
@@ -33,7 +38,9 @@ export function useSubmitAdrReview() {
 
 export function useProvideGuidance() {
     const queryClient = useQueryClient();
-    const token = localStorage.getItem('access_token') || '';
+    // Read via the shared accessor (checks both localStorage and sessionStorage);
+    // reading localStorage directly left these queries disabled on a normal session-only login.
+    const token = getAccessToken() || '';
 
     return useMutation({
         mutationFn: ({ adrId, guidance, applyGlobally, updateThresholds }: { adrId: string, guidance: string, applyGlobally: boolean, updateThresholds: boolean }) =>
@@ -50,7 +57,9 @@ export function useProvideGuidance() {
 
 export function useDelegateReview() {
     const queryClient = useQueryClient();
-    const token = localStorage.getItem('access_token') || '';
+    // Read via the shared accessor (checks both localStorage and sessionStorage);
+    // reading localStorage directly left these queries disabled on a normal session-only login.
+    const token = getAccessToken() || '';
 
     return useMutation({
         mutationFn: ({ adrId, architectId, notes }: { adrId: string, architectId: string, notes?: string }) =>
@@ -66,7 +75,9 @@ export function useDelegateReview() {
 }
 
 export function useEscalationMetrics() {
-    const token = localStorage.getItem('access_token') || '';
+    // Read via the shared accessor (checks both localStorage and sessionStorage);
+    // reading localStorage directly left these queries disabled on a normal session-only login.
+    const token = getAccessToken() || '';
 
     return useQuery({
         queryKey: ['escalationMetrics'],

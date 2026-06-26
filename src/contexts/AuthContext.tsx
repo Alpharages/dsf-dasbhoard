@@ -39,6 +39,23 @@ const getRefreshToken = (): string | null => {
     return localStorage.getItem('refresh_token') || sessionStorage.getItem('refresh_token');
 };
 
+// In-flight dedupe for GET /auth/me. The mount auth-check (and React StrictMode's
+// double-invoked effects in dev) can fire several identical /auth/me requests in
+// the same tick; without this they each hit the network (F2). Concurrent callers
+// share one request; the cache clears as soon as it settles.
+let inFlightMeRequest: Promise<User> | null = null;
+const fetchCurrentUser = (): Promise<User> => {
+    if (!inFlightMeRequest) {
+        inFlightMeRequest = apiClient
+            .get('/auth/me')
+            .then((response) => response.data as User)
+            .finally(() => {
+                inFlightMeRequest = null;
+            });
+    }
+    return inFlightMeRequest;
+};
+
 const setTokens = (accessToken: string, refreshToken: string, rememberMe: boolean) => {
     const storage = getStorageType(rememberMe);
     storage.setItem('access_token', accessToken);
@@ -48,6 +65,12 @@ const setTokens = (accessToken: string, refreshToken: string, rememberMe: boolea
     const otherStorage = rememberMe ? sessionStorage : localStorage;
     otherStorage.removeItem('access_token');
     otherStorage.removeItem('refresh_token');
+
+    // Notify SocketContext (same-tab) that a fresh token is available so it can
+    // (re)connect immediately. sessionStorage writes do NOT fire a same-tab
+    // `storage` event, so on a fresh login SocketContext would otherwise never
+    // pick up the new token and the dashboard stays "OFFLINE" until a manual reload.
+    window.dispatchEvent(new CustomEvent('tokenRefreshed'));
 };
 
 const clearTokens = () => {
@@ -114,8 +137,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Fetch current user from /auth/me
     const fetchUser = useCallback(async (): Promise<User | null> => {
         try {
-            const response = await apiClient.get('/auth/me');
-            return response.data;
+            return await fetchCurrentUser();
         } catch (error: any) {
             // On rate limiting (429), wait briefly and retry once before giving up.
             // This prevents a transient throttle burst from incorrectly clearing the
@@ -123,8 +145,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (error?.response?.status === 429) {
                 await new Promise(resolve => setTimeout(resolve, 800));
                 try {
-                    const retryResponse = await apiClient.get('/auth/me');
-                    return retryResponse.data;
+                    return await fetchCurrentUser();
                 } catch (retryError) {
                     console.error('Failed to fetch user after rate-limit retry:', retryError);
                     return null;

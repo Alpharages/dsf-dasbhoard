@@ -23,7 +23,6 @@ import { ConstraintsPage } from './pages/architecture-review/constraints/Constra
 import ArchitectureMetricsPage from './pages/architecture-review/ArchitectureMetricsPage';
 import { InvitationsPage } from './pages/InvitationsPage';
 import UsersPage from './pages/UsersPage';
-import { LeadQaReviewDashboardPage } from './pages/QaReviewDashboardPage';
 import { ProductionErrorDashboard } from './pages/ProductionErrorDashboard';
 import { ExecutionMonitoringDashboard } from './pages/ExecutionMonitoringDashboard';
 import { NotificationPreferences } from './pages/NotificationPreferences';
@@ -46,8 +45,6 @@ import {
   PmIntegrationPanel,
   ConnectedAppsPanel,
   GeneralSettingsPanel,
-  GlobalAiRoutingPanel,
-  ProjectAiRoutingPanel,
 } from './pages/settings/panels/AllPanels';
 import { GithubCallback } from './pages/settings/GithubCallback';
 import { PmIntegrationCallback } from './pages/settings/PmIntegrationCallback';
@@ -137,7 +134,6 @@ function AppContent({ navigate }: { navigate: NavigateFunction }) {
       ['/financial-metrics', 'Financial Metrics — DSF'],
       ['/cost', 'Cost Analysis — DSF'],
       ['/capacity-monitor', 'Capacity Monitor — DSF'],
-      ['/qa-review/dashboard', 'QA Review — DSF'],
       ['/architecture-review/queue', 'Architecture Queue — DSF'],
       ['/architecture-review/constraints', 'Architecture Constraints — DSF'],
       ['/architecture-review/escalations', 'Escalations — DSF'],
@@ -152,7 +148,6 @@ function AppContent({ navigate }: { navigate: NavigateFunction }) {
       ['/observability', 'Observability — DSF'],
       ['/settings/pm-callback', 'PM Integration — DSF'],
       ['/settings/connected-apps', 'Connected Apps — DSF'],
-      ['/settings/ai-routing', 'AI Routing — DSF'],
       ['/notifications/preferences', 'Notification Preferences — DSF'],
     ];
     const path = location.pathname;
@@ -231,7 +226,6 @@ function AppContent({ navigate }: { navigate: NavigateFunction }) {
 
             {/* Alias redirects for legacy/external links */}
             <Route path="/users" element={<Navigate to="/admin/users" replace />} />
-            <Route path="/qa-review" element={<Navigate to="/qa-review/dashboard" replace />} />
 
             {/* Projects sync - all authenticated users */}
             <Route
@@ -297,15 +291,6 @@ function AppContent({ navigate }: { navigate: NavigateFunction }) {
               element={
                 <ProtectedRoute>
                   <WorkloadCapacityPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/qa-review/dashboard"
-              handle={{ title: 'QA Review — DSF' }}
-              element={
-                <ProtectedRoute requiredRoles={['QA', 'TL', 'ADMIN', 'MANAGER']}>
-                  <LeadQaReviewDashboardPage />
                 </ProtectedRoute>
               }
             />
@@ -401,7 +386,6 @@ function AppContent({ navigate }: { navigate: NavigateFunction }) {
                   <ConnectedAppsPanel />
                 </ProtectedRoute>
               } />
-              <Route path="ai-routing" handle={{ title: 'Settings: AI Routing — DSF' }} element={<ProtectedRoute requiredRoles={['ADMIN', 'MANAGER']}><GlobalAiRoutingPanel /></ProtectedRoute>} />
               <Route index handle={{ title: 'Settings: Cleanup — DSF' }} element={<CleanupPanel />} /> {/* Default to cleanup */}
             </Route>
 
@@ -471,7 +455,6 @@ function AppContent({ navigate }: { navigate: NavigateFunction }) {
             >
               <Route path="integrations" handle={{ title: 'Project Settings: Integrations — DSF' }} element={<ProtectedRoute requiredRoles={['ADMIN', 'PM']}><PmIntegrationPanel /></ProtectedRoute>} />
               <Route path="general" handle={{ title: 'Project Settings: General — DSF' }} element={<ProtectedRoute requiredRoles={['ADMIN', 'PM']}><GeneralSettingsPanel /></ProtectedRoute>} />
-              <Route path="ai-routing" handle={{ title: 'Project Settings: AI Routing — DSF' }} element={<ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'PM']}><ProjectAiRoutingPanel /></ProtectedRoute>} />
               <Route index element={<Navigate to="integrations" replace />} />
             </Route>
 

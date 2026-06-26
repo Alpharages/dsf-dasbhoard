@@ -10,7 +10,7 @@ const makeProject = (overrides: Partial<Project> = {}): Project => ({
   client_name: 'Acme Corp',
   created_at: '2026-01-15T10:00:00Z',
   updated_at: '2026-01-15T10:00:00Z',
-  tickets: { total: 0, in_progress: 0, completed: 0, blocked: 0, awaiting_approval: 0 },
+  tickets: { total: 0, in_progress: 0, completed: 0, blocked: 0, awaiting_approval: 0, sync_pending: 0 },
   ...overrides,
 });
 

@@ -71,7 +71,7 @@ export function ConstraintsPage() {
   const deleteConstraint = constraints?.find(c => c.id === deleteConfirmId);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-foreground tracking-tight mb-2">
@@ -85,12 +85,12 @@ export function ConstraintsPage() {
         <div className="flex items-center gap-4">
           <button
             onClick={() => refetch()}
-            className="p-3 bg-card border border-border text-muted-foreground hover:text-foreground rounded-2xl transition-all">
+            className="p-3 bg-card border border-border text-muted-foreground hover:text-foreground rounded-lg transition-all">
             <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
           <button
             onClick={() => setIsFormOpen(true)}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-2xl shadow-lg shadow-blue-500/20 transition-all hover:translate-y-[-2px] active:translate-y-0">
+            className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-6 rounded-lg transition-all">
             <Plus className="w-5 h-5" />
             Add Constraint
           </button>
@@ -98,25 +98,25 @@ export function ConstraintsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-card border border-border rounded-2xl p-6">
+        <div className="bg-card border border-border rounded-lg p-6">
           <p className="text-muted-foreground text-sm font-semibold mb-1">Total Constraints</p>
-          <p className="text-3xl font-bold text-foreground">{constraints.length}</p>
+          <p className="text-3xl font-semibold text-foreground data-figure tabular-nums">{constraints.length}</p>
         </div>
-        <div className="bg-card border border-border rounded-2xl p-6">
+        <div className="bg-card border border-border rounded-lg p-6">
           <p className="text-muted-foreground text-sm font-semibold mb-1">Global</p>
-          <p className="text-3xl font-bold text-primary">
+          <p className="text-3xl font-semibold text-primary data-figure tabular-nums">
             {constraints.filter(c => c.scope === 'GLOBAL').length}
           </p>
         </div>
-        <div className="bg-card border border-border rounded-2xl p-6">
+        <div className="bg-card border border-border rounded-lg p-6">
           <p className="text-muted-foreground text-sm font-semibold mb-1">Project-Specific</p>
-          <p className="text-3xl font-bold text-purple-500">
+          <p className="text-3xl font-semibold text-violet-400 data-figure tabular-nums">
             {constraints.filter(c => c.scope === 'PROJECT').length}
           </p>
         </div>
-        <div className="bg-card border border-border rounded-2xl p-6">
+        <div className="bg-card border border-border rounded-lg p-6">
           <p className="text-muted-foreground text-sm font-semibold mb-1">Patterns</p>
-          <p className="text-3xl font-bold text-orange-500">
+          <p className="text-3xl font-semibold text-amber-400 data-figure tabular-nums">
             {constraints.filter(c => c.type === 'PATTERN').length}
           </p>
         </div>
@@ -124,32 +124,32 @@ export function ConstraintsPage() {
 
       {/* Mutual-Exclusion State Machine */}
       {isLoading ? (
-        <div className="bg-card border border-border animate-pulse rounded-2xl h-64 flex items-center justify-center">
+        <div className="bg-card border border-border animate-pulse rounded-lg h-64 flex items-center justify-center">
           <p className="text-muted-foreground font-medium flex items-center gap-2">
             <RefreshCw className="w-5 h-5 animate-spin" />
             Loading constraints...
           </p>
         </div>
       ) : error ? (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-8 text-center">
-          <p className="text-red-400 font-bold mb-3 text-lg">Failed to load constraints</p>
+        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-8 text-center">
+          <p className="text-red-400 font-semibold mb-3 text-lg">Failed to load constraints</p>
           <p className="text-red-400/80 mb-6">{error instanceof Error ? error.message : "An unknown error occurred"}</p>
           <button onClick={() => refetch()} className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-colors">
             Try Again
           </button>
         </div>
       ) : constraints.length === 0 ? (
-        <div className="bg-card border border-border rounded-2xl p-12 text-center">
-          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4 border border-border shadow-sm">
+        <div className="bg-card border border-border rounded-lg p-12 text-center">
+          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4 border border-border">
             <Plus className="w-8 h-8 text-muted-foreground" />
           </div>
-          <h3 className="text-xl font-bold text-foreground mb-2">No constraints defined</h3>
+          <h3 className="text-xl font-semibold text-foreground mb-2">No constraints defined</h3>
           <p className="text-muted-foreground mb-6 max-w-md mx-auto">
             Get started by creating your first architecture constraint to guide the AI-driven development process.
           </p>
           <button
             onClick={() => setIsFormOpen(true)}
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-6 rounded-xl shadow-md transition-all">
+            className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-2.5 px-6 rounded-md transition-all">
             <Plus className="w-5 h-5" />
             Create Constraint
           </button>
@@ -171,8 +171,8 @@ export function ConstraintsPage() {
 
       {deleteConfirmId && deleteConstraint && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl p-6 w-full max-w-md">
-            <h3 className="text-xl font-bold text-foreground mb-4">Delete Constraint?</h3>
+          <div className="bg-card border border-border rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-xl font-semibold text-foreground mb-4">Delete Constraint?</h3>
             <p className="text-muted-foreground mb-4">
               Are you sure? This will remove the constraint from all AI prompts.
             </p>

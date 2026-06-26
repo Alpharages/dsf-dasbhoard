@@ -70,8 +70,8 @@ export const CostPerFeatureChart: React.FC<CostPerFeatureChartProps> = ({
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-purple-500 to-pink-400 flex items-center justify-center shadow-lg shadow-purple-500/20">
-                            <DollarSign className="w-4 h-4 text-white" />
+                        <div className="h-9 w-9 rounded-md bg-violet-500/10 text-violet-400 flex items-center justify-center">
+                            <DollarSign className="w-4 h-4" />
                         </div>
                         <CardTitle className="text-sm font-medium">Cost per Feature</CardTitle>
                     </div>

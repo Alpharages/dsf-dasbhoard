@@ -63,7 +63,7 @@ export const CapabilityManagementPage: React.FC = () => {
     if (error) {
         return (
             <div className="p-6 max-w-[1600px] mx-auto">
-                <div className="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-6 flex items-center gap-3 text-rose-500">
+                <div className="bg-rose-500/10 border border-rose-500/20 rounded-lg p-6 flex items-center gap-3 text-rose-500">
                     <AlertCircle className="w-6 h-6 flex-shrink-0" />
                     <div>
                         <p className="font-semibold">Failed to load capability data</p>
@@ -78,14 +78,14 @@ export const CapabilityManagementPage: React.FC = () => {
     const hasLimitations = data && data.topLimitations.length > 0;
 
     return (
-        <div className="space-y-8 p-6 max-w-[1600px] mx-auto">
+        <div className="space-y-6 p-6 max-w-[1600px] mx-auto">
             {/* Header */}
             <div className="flex flex-col gap-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="flex items-center gap-4">
-                        <div className="relative p-3.5 rounded-2xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 border border-violet-500/20">
+                        <div className="relative p-3.5 rounded-lg bg-violet-500/10 border border-violet-500/20">
                             <Brain className="w-8 h-8 text-violet-400" />
-                            <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center">
+                            <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-violet-500 flex items-center justify-center">
                                 <Sparkles className="w-2.5 h-2.5 text-white" />
                             </div>
                         </div>
@@ -166,7 +166,7 @@ export const CapabilityManagementPage: React.FC = () => {
                     {/* Capability Metrics Section */}
                     <section className="space-y-6">
                         <div className="flex items-center gap-2">
-                            <div className="w-1 h-6 rounded-full bg-gradient-to-b from-violet-400 to-purple-500" />
+                            <div className="w-1 h-6 rounded-full bg-violet-500" />
                             <h2 className="text-xl font-bold text-[var(--color-text-primary)]">Capability Metrics</h2>
                         </div>
                         <TaskTypeSuccessGrid capabilities={data?.capabilities || []} />

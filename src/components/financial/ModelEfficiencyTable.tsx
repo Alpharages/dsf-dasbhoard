@@ -33,11 +33,25 @@ export const ModelEfficiencyTable: React.FC<ModelEfficiencyTableProps> = ({
         );
     }
 
-    if (error || !data || !data.models || data.models.length === 0) {
+    if (error) {
         return (
             <Card className="h-[420px]">
                 <CardContent className="h-full flex items-center justify-center">
                     <p className="text-muted-foreground text-center">Failed to load model efficiency data</p>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    if (!data || !data.models || data.models.length === 0) {
+        return (
+            <Card className="h-[420px]">
+                <CardContent className="h-full flex flex-col items-center justify-center gap-2">
+                    <Cpu className="h-8 w-8 text-muted-foreground/40" />
+                    <p className="text-muted-foreground text-center">No model efficiency data yet</p>
+                    <p className="text-xs text-muted-foreground/70 text-center">
+                        Metrics will appear once executions have run for this project.
+                    </p>
                 </CardContent>
             </Card>
         );
@@ -59,8 +73,8 @@ export const ModelEfficiencyTable: React.FC<ModelEfficiencyTableProps> = ({
         <Card className="h-[420px] flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-orange-500 to-red-400 flex items-center justify-center shadow-lg shadow-orange-500/20">
-                        <Cpu className="h-4 w-4 text-white" />
+                    <div className="h-9 w-9 rounded-md bg-amber-500/10 text-amber-400 flex items-center justify-center">
+                        <Cpu className="h-4 w-4" />
                     </div>
                     <CardTitle className="text-sm font-medium">Model Efficiency</CardTitle>
                 </div>
@@ -126,8 +140,10 @@ export const ModelEfficiencyTable: React.FC<ModelEfficiencyTableProps> = ({
                     </tbody>
                 </table>
 
-                {/* Recommendation */}
-                {data.recommendation && (
+                {/* Recommendation — only when meaningful (avoid "N/A" / "$0%" on sparse data) */}
+                {data.recommendation &&
+                    data.recommendation.mostEfficient &&
+                    data.recommendation.mostEfficient !== 'N/A' && (
                     <div className="mt-4 p-4 bg-[var(--surface-1)] rounded-xl border border-[var(--card-border)]">
                         <div className="flex items-center gap-2 mb-2">
                             <TrendingUp className="w-4 h-4 text-emerald-400" />

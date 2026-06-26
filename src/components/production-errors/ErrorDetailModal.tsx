@@ -83,14 +83,14 @@ function ErrorDetailModalComponent({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-900 border-slate-800 text-slate-200">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-card border-border text-foreground">
         <DialogHeader>
           <div className="flex items-start justify-between">
             <div>
-              <DialogTitle className="text-xl font-bold text-slate-100">
+              <DialogTitle className="text-xl font-bold text-foreground">
                 Error Details
               </DialogTitle>
-              <p className="text-sm text-slate-400 mt-1">{error?.application}</p>
+              <p className="text-sm text-muted-foreground mt-1">{error?.application}</p>
             </div>
             <Button variant="ghost" size="icon" onClick={onClose}>
               <X className="w-4 h-4" />
@@ -107,7 +107,7 @@ function ErrorDetailModalComponent({
         ) : (
           <div className="space-y-6">
             {/* Error Info Header */}
-            <div className="flex items-start justify-between p-4 bg-slate-800/50 rounded-lg">
+            <div className="flex items-start justify-between p-4 bg-muted rounded-lg">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Badge
@@ -116,16 +116,16 @@ function ErrorDetailModalComponent({
                   >
                     {error.severity}
                   </Badge>
-                  <span className="text-slate-400">{error.error_type}</span>
+                  <span className="text-muted-foreground">{error.error_type}</span>
                 </div>
-                <p className="text-slate-200 font-medium">{error.error_message}</p>
-                <p className="text-sm text-slate-500">
+                <p className="text-foreground font-medium">{error.error_message}</p>
+                <p className="text-sm text-muted-foreground">
                   Occurred: {format(new Date(error.occurred_at), 'PPpp')}
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-slate-400">Affected Users</p>
-                <p className="text-2xl font-bold text-slate-200">{error.affected_users}</p>
+                <p className="text-sm text-muted-foreground">Affected Users</p>
+                <p className="text-2xl font-semibold text-foreground data-figure tabular-nums">{error.affected_users}</p>
               </div>
             </div>
 
@@ -155,7 +155,7 @@ function ErrorDetailModalComponent({
 
             {/* Tabs */}
             <Tabs defaultValue="stacktrace">
-              <TabsList className="bg-slate-800">
+              <TabsList className="bg-muted">
                 <TabsTrigger value="stacktrace">Stack Trace</TabsTrigger>
                 <TabsTrigger value="deployment">Deployment</TabsTrigger>
                 <TabsTrigger value="commits">Related Commits</TabsTrigger>
@@ -165,45 +165,45 @@ function ErrorDetailModalComponent({
               {/* Stack Trace Tab */}
               <TabsContent value="stacktrace" className="mt-4">
                 {detail?.stack_trace ? (
-                  <pre className="p-4 bg-slate-950 rounded-lg overflow-x-auto text-sm text-slate-300 font-mono whitespace-pre-wrap">
+                  <pre className="p-4 bg-background rounded-lg overflow-x-auto text-sm text-foreground font-mono whitespace-pre-wrap">
                     {detail.stack_trace}
                   </pre>
                 ) : (
-                  <p className="text-slate-500">No stack trace available</p>
+                  <p className="text-muted-foreground">No stack trace available</p>
                 )}
               </TabsContent>
 
               {/* Deployment Tab */}
               <TabsContent value="deployment" className="mt-4">
                 {detail?.deployment_context ? (
-                  <div className="space-y-4 p-4 bg-slate-800/50 rounded-lg">
+                  <div className="space-y-4 p-4 bg-muted rounded-lg">
                     <div className="flex items-center gap-2">
-                      <Server className="w-5 h-5 text-slate-400" />
+                      <Server className="w-5 h-5 text-muted-foreground" />
                       <span className="font-medium">Deployment Info</span>
                     </div>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <span className="text-slate-500">Deployment ID:</span>
-                        <p className="text-slate-300 font-mono">{detail.deployment_context.deployment_id}</p>
+                        <span className="text-muted-foreground">Deployment ID:</span>
+                        <p className="text-foreground font-mono">{detail.deployment_context.deployment_id}</p>
                       </div>
                       <div>
-                        <span className="text-slate-500">Commit SHA:</span>
-                        <p className="text-slate-300 font-mono">{detail.deployment_context.commit_sha}</p>
+                        <span className="text-muted-foreground">Commit SHA:</span>
+                        <p className="text-foreground font-mono">{detail.deployment_context.commit_sha}</p>
                       </div>
                       <div>
-                        <span className="text-slate-500">Branch:</span>
-                        <p className="text-slate-300">{detail.deployment_context.branch}</p>
+                        <span className="text-muted-foreground">Branch:</span>
+                        <p className="text-foreground">{detail.deployment_context.branch}</p>
                       </div>
                       <div>
-                        <span className="text-slate-500">Deployed At:</span>
-                        <p className="text-slate-300">
+                        <span className="text-muted-foreground">Deployed At:</span>
+                        <p className="text-foreground">
                           {format(new Date(detail.deployment_context.deployed_at), 'PPpp')}
                         </p>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-slate-500">No deployment context available</p>
+                  <p className="text-muted-foreground">No deployment context available</p>
                 )}
               </TabsContent>
 
@@ -214,12 +214,12 @@ function ErrorDetailModalComponent({
                     {detail.related_commits.map((commit) => (
                       <div
                         key={commit.sha}
-                        className="p-3 bg-slate-800/50 rounded-lg flex items-start gap-3"
+                        className="p-3 bg-muted rounded-lg flex items-start gap-3"
                       >
-                        <GitCommit className="w-5 h-5 text-slate-400 mt-0.5" />
+                        <GitCommit className="w-5 h-5 text-muted-foreground mt-0.5" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-slate-300 truncate">{commit.message}</p>
-                          <div className="flex items-center gap-2 mt-1 text-xs text-slate-500">
+                          <p className="text-sm text-foreground truncate">{commit.message}</p>
+                          <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                             <span>{commit.author}</span>
                             <span>•</span>
                             <span>{format(new Date(commit.committed_at), 'MMM dd, HH:mm')}</span>
@@ -234,38 +234,38 @@ function ErrorDetailModalComponent({
                     ))}
                   </div>
                 ) : (
-                  <p className="text-slate-500">No related commits found</p>
+                  <p className="text-muted-foreground">No related commits found</p>
                 )}
               </TabsContent>
 
               {/* User Context Tab */}
               <TabsContent value="users" className="mt-4">
                 {detail?.user_context ? (
-                  <div className="space-y-4 p-4 bg-slate-800/50 rounded-lg">
+                  <div className="space-y-4 p-4 bg-muted rounded-lg">
                     <div className="flex items-center gap-2">
-                      <Users className="w-5 h-5 text-slate-400" />
+                      <Users className="w-5 h-5 text-muted-foreground" />
                       <span className="font-medium">User Context</span>
                     </div>
                     <div className="space-y-3 text-sm">
                       <div>
-                        <span className="text-slate-500">Affected Users ({detail.user_context.user_ids.length}):</span>
+                        <span className="text-muted-foreground">Affected Users ({detail.user_context.user_ids.length}):</span>
                         <div className="mt-1 flex flex-wrap gap-1">
                           {detail.user_context.user_ids.slice(0, 10).map((userId) => (
-                            <code key={userId} className="px-2 py-1 bg-slate-950 rounded text-xs">
+                            <code key={userId} className="px-2 py-1 bg-background rounded text-xs">
                               {userId.substring(0, 8)}...
                             </code>
                           ))}
                           {detail.user_context.user_ids.length > 10 && (
-                            <span className="text-slate-500">+{detail.user_context.user_ids.length - 10} more</span>
+                            <span className="text-muted-foreground">+{detail.user_context.user_ids.length - 10} more</span>
                           )}
                         </div>
                       </div>
                       {detail.user_context.user_agents.length > 0 && (
                         <div>
-                          <span className="text-slate-500">User Agents:</span>
+                          <span className="text-muted-foreground">User Agents:</span>
                           <ul className="mt-1 space-y-1">
                             {detail.user_context.user_agents.slice(0, 3).map((ua, i) => (
-                              <li key={i} className="text-slate-400 text-xs truncate">{ua}</li>
+                              <li key={i} className="text-muted-foreground text-xs truncate">{ua}</li>
                             ))}
                           </ul>
                         </div>
@@ -273,7 +273,7 @@ function ErrorDetailModalComponent({
                     </div>
                   </div>
                 ) : (
-                  <p className="text-slate-500">No user context available</p>
+                  <p className="text-muted-foreground">No user context available</p>
                 )}
               </TabsContent>
             </Tabs>

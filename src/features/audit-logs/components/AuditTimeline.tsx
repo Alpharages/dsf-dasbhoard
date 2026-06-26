@@ -40,7 +40,7 @@ export const AuditTimeline: React.FC<AuditTimelineProps> = ({ ticketId }) => {
   }
 
   return (
-    <div className="relative pl-6 border-l-2 border-border/50 py-4 space-y-8">
+    <div className="relative pl-6 border-l-2 border-border/50 py-4 space-y-6">
       {logs.map((log) => (
         <div key={log.id} className="relative group">
           {/* Timeline Node */}

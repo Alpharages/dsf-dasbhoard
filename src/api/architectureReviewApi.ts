@@ -88,7 +88,27 @@ export const architectureReviewApi = {
 
     getEscalationMetrics: async (_token: string): Promise<import('../types/architectureReview').EscalationMetrics> => {
         const response = await apiClient.get('/architecture-review/escalations/metrics');
-        return response.data;
+        // Backend returns a snake_case shape (total_escalations, by_reason map,
+        // resolution_outcomes, avg_resolution_time_seconds). Map it to the camelCase
+        // EscalationMetrics the UI expects so the page doesn't crash on undefined fields.
+        const d = response.data ?? {};
+        const byReason: Record<string, number> = d.by_reason ?? {};
+        const topReasons = Object.entries(byReason)
+            .map(([reason, count]) => ({ reason, count: Number(count) || 0 }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
+        const outcomes = d.resolution_outcomes ?? {};
+        const outcomesTotal = Object.values<number>(outcomes).reduce((s, n) => s + (Number(n) || 0), 0);
+        const delegationRate = outcomesTotal > 0
+            ? Math.round(((Number(outcomes.delegated) || 0) / outcomesTotal) * 100)
+            : 0;
+        return {
+            totalEscalations: d.total_escalations ?? 0,
+            escalationRate: d.escalation_rate ?? 0,
+            topReasons,
+            avgResolutionTimeMinutes: (d.avg_resolution_time_seconds ?? 0) / 60,
+            delegationRate,
+        };
     },
 
     getMetrics: async (

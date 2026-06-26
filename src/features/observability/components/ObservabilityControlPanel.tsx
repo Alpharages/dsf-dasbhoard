@@ -38,34 +38,29 @@ export function ObservabilityControlPanel({
     systemHealth,
     queueMetrics,
     fileLocks,
-    aiProviders,
-    
+
     // Loading states
     isSystemHealthLoading,
     isQueueMetricsLoading,
     isFileLocksLoading,
-    isAiProvidersLoading,
-    
+
     // Error states
     systemHealthError,
     queueMetricsError,
     fileLocksError,
-    aiProvidersError,
-    
+
     // Connection states
     isDisconnected,
     isSocketConnected,
-    
+
     // Mutations
     releaseLock,
     isReleasingLock,
-    togglePause,
-    
+
     // Refetch functions
     refetchSystemHealth,
     refetchQueueMetrics,
     refetchFileLocks,
-    refetchAiProviders,
   } = useObservabilityData({
     pollingEnabled: true,
     pollingInterval,
@@ -77,7 +72,6 @@ export function ObservabilityControlPanel({
     refetchSystemHealth();
     refetchQueueMetrics();
     refetchFileLocks();
-    refetchAiProviders();
   };
 
   return (
@@ -134,7 +128,7 @@ export function ObservabilityControlPanel({
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         {/* System Health - Spans full width */}
         <div className="lg:col-span-2">
           {systemHealthError ? (
@@ -147,12 +141,8 @@ export function ObservabilityControlPanel({
           ) : (
             <HealthMonitorGrid
               systemHealth={systemHealth}
-              isLoading={isSystemHealthLoading || isAiProvidersLoading}
+              isLoading={isSystemHealthLoading}
               isDisconnected={isDisconnected}
-              aiProviders={aiProviders?.providers}
-              executionPaused={aiProviders?.execution_paused}
-              onTogglePause={togglePause}
-              aiProvidersError={aiProvidersError}
             />
           )}
         </div>

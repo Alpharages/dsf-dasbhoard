@@ -197,22 +197,22 @@ export const ConversationUploadForm: React.FC<ConversationUploadFormProps> = ({ 
 
     return (
         <div className="max-w-3xl mx-auto p-8">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8">
-                <h2 className="text-2xl font-bold text-white mb-2">Upload Client Conversation</h2>
-                <p className="text-slate-400 text-sm mb-8">
+            <div className="bg-card border border-border rounded-lg p-8">
+                <h2 className="text-2xl font-bold text-foreground mb-2">Upload Client Conversation</h2>
+                <p className="text-muted-foreground text-sm mb-6">
                     Upload audio or paste transcript for AI-powered analysis
                 </p>
 
                 {/* Project Selector */}
                 <div className="mb-6">
-                    <label className="block text-sm font-bold text-slate-300 mb-2">
+                    <label className="block text-sm font-bold text-foreground mb-2">
                         Project <span className="text-rose-500">*</span>
                     </label>
                     <select
                         value={projectId}
                         onChange={(e) => setProjectId(e.target.value)}
                         disabled={isProcessing}
-                        className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors disabled:opacity-50"
+                        className="w-full bg-background border border-border text-foreground rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors disabled:opacity-50"
                     >
                         <option value="">Select Project</option>
                         {projects.map((project) => (
@@ -225,7 +225,7 @@ export const ConversationUploadForm: React.FC<ConversationUploadFormProps> = ({ 
 
                 {/* Title Input */}
                 <div className="mb-6">
-                    <label className="block text-sm font-bold text-slate-300 mb-2">
+                    <label className="block text-sm font-bold text-foreground mb-2">
                         Title (optional)
                     </label>
                     <input
@@ -234,18 +234,18 @@ export const ConversationUploadForm: React.FC<ConversationUploadFormProps> = ({ 
                         onChange={(e) => setTitle(e.target.value)}
                         disabled={isProcessing}
                         placeholder="Meeting title"
-                        className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors disabled:opacity-50"
+                        className="w-full bg-background border border-border text-foreground rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors disabled:opacity-50"
                     />
                 </div>
 
                 {/* Tabs */}
-                <div className="flex border-b border-slate-800 mb-6">
+                <div className="flex border-b border-border mb-6">
                     <button
                         onClick={() => setActiveTab('audio')}
                         disabled={isProcessing}
                         className={`px-6 py-3 font-bold text-sm transition-colors ${activeTab === 'audio'
                             ? 'text-blue-400 border-b-2 border-blue-500'
-                            : 'text-slate-500 hover:text-slate-300'
+                            : 'text-muted-foreground hover:text-foreground'
                             } disabled:opacity-50`}
                     >
                         Upload Audio
@@ -255,7 +255,7 @@ export const ConversationUploadForm: React.FC<ConversationUploadFormProps> = ({ 
                         disabled={isProcessing}
                         className={`px-6 py-3 font-bold text-sm transition-colors ${activeTab === 'transcript'
                             ? 'text-blue-400 border-b-2 border-blue-500'
-                            : 'text-slate-500 hover:text-slate-300'
+                            : 'text-muted-foreground hover:text-foreground'
                             } disabled:opacity-50`}
                     >
                         Paste Transcript
@@ -264,14 +264,14 @@ export const ConversationUploadForm: React.FC<ConversationUploadFormProps> = ({ 
 
                 {/* Audio Upload Tab */}
                 {activeTab === 'audio' && (
-                    <div className="mb-8">
+                    <div className="mb-6">
                         <div
                             onDrop={handleDrop}
                             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                             onDragLeave={() => setIsDragging(false)}
                             className={`border-2 border-dashed rounded-xl p-12 text-center transition-colors ${isDragging
                                 ? 'border-blue-500 bg-blue-500/5'
-                                : 'border-slate-700 hover:border-slate-600'
+                                : 'border-border hover:border-[var(--border-hover)]'
                                 } ${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}
                         >
                             <input
@@ -287,12 +287,12 @@ export const ConversationUploadForm: React.FC<ConversationUploadFormProps> = ({ 
                                     {file ? (
                                         <FileAudio className="w-12 h-12 text-blue-500 mb-4" />
                                     ) : (
-                                        <Upload className="w-12 h-12 text-slate-500 mb-4" />
+                                        <Upload className="w-12 h-12 text-muted-foreground mb-4" />
                                     )}
-                                    <p className="text-lg font-bold text-slate-300 mb-2">
+                                    <p className="text-lg font-bold text-foreground mb-2">
                                         {file ? file.name : 'Drag audio file here or click to browse'}
                                     </p>
-                                    <p className="text-sm text-slate-500">
+                                    <p className="text-sm text-muted-foreground">
                                         Formats: mp3, wav, m4a, mp4 • Max: {MAX_FILE_SIZE_MB}MB
                                     </p>
                                 </div>
@@ -301,7 +301,7 @@ export const ConversationUploadForm: React.FC<ConversationUploadFormProps> = ({ 
 
                         {uploadProgress > 0 && uploadProgress < 100 && (
                             <div className="mt-4">
-                                <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+                                <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                                     <div
                                         className="h-full bg-blue-600 transition-all duration-300"
                                         style={{ width: `${uploadProgress}%` }}
@@ -314,14 +314,14 @@ export const ConversationUploadForm: React.FC<ConversationUploadFormProps> = ({ 
 
                 {/* Transcript Tab */}
                 {activeTab === 'transcript' && (
-                    <div className="mb-8">
+                    <div className="mb-6">
                         <textarea
                             value={transcript}
                             onChange={(e) => setTranscript(e.target.value)}
                             disabled={isProcessing}
                             placeholder="Paste conversation transcript here..."
                             rows={12}
-                            className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors resize-none disabled:opacity-50"
+                            className="w-full bg-background border border-border text-foreground rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors resize-none disabled:opacity-50"
                         />
                     </div>
                 )}
@@ -332,7 +332,7 @@ export const ConversationUploadForm: React.FC<ConversationUploadFormProps> = ({ 
                         <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
                         <div>
                             <p className="text-blue-400 font-bold text-sm">{getStepMessage()}</p>
-                            <p className="text-slate-500 text-xs mt-1">
+                            <p className="text-muted-foreground text-xs mt-1">
                                 This may take a few minutes. Please don't close this window.
                             </p>
                         </div>
@@ -359,7 +359,7 @@ export const ConversationUploadForm: React.FC<ConversationUploadFormProps> = ({ 
                 <button
                     onClick={handleSubmit}
                     disabled={isProcessing || !projectId || (activeTab === 'audio' && !file) || (activeTab === 'transcript' && !transcript.trim())}
-                    className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-600 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-500/20 disabled:shadow-none flex items-center justify-center gap-2"
+                    className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-muted disabled:text-muted-foreground text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-500/20 disabled:shadow-none flex items-center justify-center gap-2"
                 >
                     {isProcessing ? (
                         <>

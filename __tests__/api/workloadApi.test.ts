@@ -25,14 +25,16 @@ describe('workloadApi', () => {
         expect(result).toEqual(mockData);
     });
 
-    it('getTeamWorkload should fetch team workload data', async () => {
-        const mockData = { data: [{ pmId: 'usr-1', pmName: 'Alice', utilization: 60 }] };
-        (apiClient.get as any).mockResolvedValueOnce({ data: mockData });
+    it('getTeamWorkload should fetch team workload data and map the backend shape', async () => {
+        // Backend responds with a bare array of snake_case rows (TeamCapacityResponseDto[]).
+        (apiClient.get as any).mockResolvedValueOnce({
+            data: [{ pm_id: 'usr-1', pm_name: 'Alice', utilization_pct: 60 }],
+        });
 
-        const result = await workloadApi.getTeamWorkload();
+        const result = await workloadApi.getTeamWorkload('mgr-1');
 
-        expect(apiClient.get).toHaveBeenCalledWith('/workload/team');
-        expect(result).toEqual(mockData);
+        expect(apiClient.get).toHaveBeenCalledWith('/workload/team', { params: { managerId: 'mgr-1' } });
+        expect(result).toEqual({ data: [{ pmId: 'usr-1', pmName: 'Alice', utilization: 60 }] });
     });
 
     it('getWorkloadTrends should fetch trends with params', async () => {

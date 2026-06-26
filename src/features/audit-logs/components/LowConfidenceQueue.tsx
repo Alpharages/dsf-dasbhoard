@@ -97,7 +97,7 @@ export const LowConfidenceQueue: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-card border border-border p-6 rounded-2xl shadow-sm">
+      <div className="bg-card border border-border p-6 rounded-lg shadow-sm">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-xl font-bold">Review Required Items</h2>
