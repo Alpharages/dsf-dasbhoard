@@ -7,7 +7,7 @@ export function AuditLogsDashboard() {
   const [timelineTicketId, setTimelineTicketId] = useState('');
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-6 pb-12">
       <div>
         <h1 className="text-3xl font-bold text-foreground tracking-tight">
           Audit Logs Dashboard
@@ -21,7 +21,7 @@ export function AuditLogsDashboard() {
       
       <AuditSearchForm onViewDetail={setTimelineTicketId} />
 
-      <div className="bg-card border border-border p-6 rounded-2xl shadow-sm">
+      <div className="bg-card border border-border p-6 rounded-lg shadow-sm">
         <h2 className="text-xl font-bold mb-4">Decision Timeline Inspector</h2>
         <div className="mb-6 flex gap-4 max-w-md">
           <input 

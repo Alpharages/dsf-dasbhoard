@@ -28,7 +28,7 @@ export function TechListInput({ value, onChange, placeholder = "Press Enter to a
 
     return (
         <div className="space-y-2">
-            <div className="flex flex-wrap gap-2 p-2 bg-slate-900 border border-slate-700 rounded-lg min-h-[42px]">
+            <div className="flex flex-wrap gap-2 p-2 bg-card border border-border rounded-lg min-h-[42px]">
                 {value.map((item, index) => (
                     <div
                         key={index}
@@ -48,10 +48,10 @@ export function TechListInput({ value, onChange, placeholder = "Press Enter to a
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder={value.length === 0 ? placeholder : ''}
-                    className="flex-1 min-w-[120px] bg-transparent outline-none text-slate-200 placeholder-slate-500">
+                    className="flex-1 min-w-[120px] bg-transparent outline-none text-foreground placeholder:text-muted-foreground">
                 </input>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
                 {value.length} package{value.length !== 1 ? 's' : ''} added
             </p>
         </div>

@@ -97,16 +97,16 @@ export const InvitationsPage: React.FC = () => {
     const handleCloseRevokeDialog = useCallback(() => setRevokeTarget(null), []);
 
     return (
-        <div className="container mx-auto py-8 space-y-8">
+        <div className="container mx-auto py-8 space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                        <div className="p-2 bg-slate-800 rounded-lg">
+                        <div className="p-2 bg-muted rounded-lg">
                             <Mail className="h-6 w-6 text-indigo-400" />
                         </div>
-                        <h1 className="text-3xl font-bold tracking-tight text-slate-100">Manage Invitations</h1>
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground">Manage Invitations</h1>
                     </div>
-                    <p className="text-slate-400">
+                    <p className="text-muted-foreground">
                         Create and manage user invitations for the DSF Dashboard access.
                     </p>
                 </div>

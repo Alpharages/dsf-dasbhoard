@@ -26,33 +26,33 @@ export function CostSpeedScatter({ models }: CostSpeedScatterProps) {
         <div className="min-w-0 w-full">
             <ResponsiveContainer width="100%" height={300} debounce={100}>
                 <ScatterChart>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                     <XAxis
                         type="number"
                         dataKey="time"
                         name="Execution Time"
                         unit="s"
-                        stroke="#94a3b8"
+                        stroke="var(--muted-foreground)"
                         fontSize={12}
-                        label={{ value: 'Avg Execution Time (seconds)', position: 'insideBottom', offset: -5, fill: '#94a3b8' }}
+                        label={{ value: 'Avg Execution Time (seconds)', position: 'insideBottom', offset: -5, fill: 'var(--muted-foreground)' }}
                     />
                     <YAxis
                         type="number"
                         dataKey="cost"
                         name="Cost"
                         unit="$"
-                        stroke="#94a3b8"
+                        stroke="var(--muted-foreground)"
                         fontSize={12}
-                        label={{ value: 'Cost per Execution (USD)', angle: -90, position: 'insideLeft', fill: '#94a3b8' }}
+                        label={{ value: 'Cost per Execution (USD)', angle: -90, position: 'insideLeft', fill: 'var(--muted-foreground)' }}
                     />
                     <ZAxis type="number" dataKey="executions" range={[100, 1000]} name="Executions" />
                     <Tooltip
                         cursor={{ strokeDasharray: '3 3' }}
                         contentStyle={{
-                            backgroundColor: '#1e293b',
-                            border: '1px solid #334155',
+                            backgroundColor: 'var(--popover)',
+                            border: '1px solid var(--border)',
                             borderRadius: '8px',
-                            color: '#e2e8f0',
+                            color: 'var(--foreground)',
                         }}
                     />
                     <Scatter name="Models" data={scatterData} fill="#3b82f6" />
@@ -62,11 +62,11 @@ export function CostSpeedScatter({ models }: CostSpeedScatterProps) {
             <div className="mt-4 grid grid-cols-2 gap-4 text-xs">
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-3 bg-emerald-500/20 border border-emerald-500 rounded" />
-                    <span className="text-slate-400">Fast & Cheap (Optimal)</span>
+                    <span className="text-muted-foreground">Fast & Cheap (Optimal)</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-3 bg-red-500/20 border border-red-500 rounded" />
-                    <span className="text-slate-400">Slow & Expensive (Review)</span>
+                    <span className="text-muted-foreground">Slow & Expensive (Review)</span>
                 </div>
             </div>
         </div>

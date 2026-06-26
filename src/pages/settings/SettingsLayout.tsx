@@ -43,10 +43,10 @@ export const SettingsLayout = () => {
     }
 
     return (
-        <div className="grid grid-cols-12 gap-6">
+        <div className="grid grid-cols-12 gap-4">
             {/* Settings Navigation */}
             <div className="col-span-12 lg:col-span-3">
-                <div className="bg-muted/30 border border-border rounded-2xl p-4">
+                <div className="bg-muted/30 border border-border rounded-lg p-4">
                     <h2 className="text-lg font-semibold text-foreground mb-4 px-2">{headerTitle}</h2>
                     <nav className="space-y-1">
                         {currentPanels.map((panel) => (
@@ -70,7 +70,7 @@ export const SettingsLayout = () => {
 
             {/* Content Area */}
             <div className="col-span-12 lg:col-span-9">
-                <div className="bg-card border border-border rounded-2xl p-6">
+                <div className="bg-card border border-border rounded-lg p-6">
                     <Outlet />
                 </div>
             </div>

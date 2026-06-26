@@ -110,7 +110,7 @@ export function ThemeToggle({ className }: { className?: string }) {
           <ThemeIcon theme={resolvedTheme} className="h-4 w-4" />
           <span className="hidden sm:inline capitalize">{theme === 'system' ? 'System' : resolvedTheme}</span>
           {isSystem && (
-            <span className="text-[10px] text-slate-500">
+            <span className="text-[10px] text-muted-foreground">
               ({resolvedTheme})
             </span>
           )}
@@ -176,25 +176,25 @@ export function ThemeSelectorCards({ className }: { className?: string }) {
       value: 'light',
       label: 'Light',
       icon: Sun,
-      bgClass: 'bg-white border-slate-200',
+      bgClass: 'bg-white border-border',
     },
     {
       value: 'dark',
       label: 'Dark',
       icon: Moon,
-      bgClass: 'bg-slate-900 border-slate-700',
+      bgClass: 'bg-card border-border',
     },
     {
       value: 'black',
       label: 'Black',
       icon: Smartphone,
-      bgClass: 'bg-black border-slate-800',
+      bgClass: 'bg-black border-border',
     },
     {
       value: 'system',
       label: 'System',
       icon: Laptop,
-      bgClass: 'bg-gradient-to-br from-white to-slate-900 border-slate-400',
+      bgClass: 'bg-gradient-to-br from-white to-background border-[var(--border-hover)]',
     },
   ];
 
@@ -212,7 +212,7 @@ export function ThemeSelectorCards({ className }: { className?: string }) {
               preview.bgClass,
               isActive
                 ? 'border-blue-500 ring-2 ring-blue-500/20'
-                : 'border-slate-700 hover:border-slate-600'
+                : 'border-border hover:border-[var(--border-hover)]'
             )}
           >
             {/* Preview Content */}
@@ -220,27 +220,27 @@ export function ThemeSelectorCards({ className }: { className?: string }) {
               <div
                 className={cn(
                   'h-2 w-full rounded',
-                  preview.value === 'light' ? 'bg-slate-200' : 'bg-slate-700'
+                  preview.value === 'light' ? 'bg-muted' : 'bg-muted'
                 )}
               />
               <div className="flex gap-2">
                 <div
                   className={cn(
                     'h-8 w-8 rounded-lg',
-                    preview.value === 'light' ? 'bg-slate-100' : 'bg-slate-800'
+                    preview.value === 'light' ? 'bg-muted' : 'bg-muted'
                   )}
                 />
                 <div className="flex-1 space-y-1">
                   <div
                     className={cn(
                       'h-2 w-3/4 rounded',
-                      preview.value === 'light' ? 'bg-slate-200' : 'bg-slate-700'
+                      preview.value === 'light' ? 'bg-muted' : 'bg-muted'
                     )}
                   />
                   <div
                     className={cn(
                       'h-2 w-1/2 rounded',
-                      preview.value === 'light' ? 'bg-slate-200' : 'bg-slate-700'
+                      preview.value === 'light' ? 'bg-muted' : 'bg-muted'
                     )}
                   />
                 </div>
@@ -252,7 +252,7 @@ export function ThemeSelectorCards({ className }: { className?: string }) {
               <span
                 className={cn(
                   'text-sm font-medium',
-                  preview.value === 'light' ? 'text-slate-900' : 'text-slate-200'
+                  preview.value === 'light' ? 'text-foreground' : 'text-foreground'
                 )}
               >
                 {preview.label}

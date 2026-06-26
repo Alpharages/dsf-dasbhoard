@@ -155,21 +155,21 @@ export function ConstraintForm({
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-slate-700">
+      <div className="bg-card border border-border rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-border">
           <h2 className="text-2xl font-bold text-white">
             {editConstraint ? 'Edit Constraint' : 'Add Constraint'}
           </h2>
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-slate-800 rounded-lg transition-colors">
-            <X className="w-5 h-5 text-slate-400" />
+            className="p-2 hover:bg-muted rounded-lg transition-colors">
+            <X className="w-5 h-5 text-muted-foreground" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-slate-300">Scope *</label>
+            <label className="block text-sm font-semibold text-foreground">Scope *</label>
             <div className="flex gap-4">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -180,7 +180,7 @@ export function ConstraintForm({
                   disabled={!!editConstraint}
                   className="w-4 h-4">
                 </input>
-                <span className="text-slate-200">🌍 Global</span>
+                <span className="text-foreground">🌍 Global</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -191,11 +191,11 @@ export function ConstraintForm({
                   disabled={!!editConstraint}
                   className="w-4 h-4">
                 </input>
-                <span className="text-slate-200">📁 Project</span>
+                <span className="text-foreground">📁 Project</span>
               </label>
             </div>
             {editConstraint && (
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 Scope cannot be changed when editing
               </p>
             )}
@@ -203,12 +203,12 @@ export function ConstraintForm({
 
           {scope === 'PROJECT' && (
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-slate-300">Project *</label>
+              <label className="block text-sm font-semibold text-foreground">Project *</label>
               <select
                 value={projectId}
                 onChange={(e) => setProjectId(e.target.value)}
                 disabled={!!editConstraint || isLoadingProjects}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="w-full px-3 py-2 bg-card border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">{isLoadingProjects ? 'Loading projects...' : 'Select a project...'}</option>
                 {projects.map((project: any) => (
                   <option key={project.id} value={project.id}>{project.name}</option>
@@ -218,26 +218,26 @@ export function ConstraintForm({
           )}
 
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-slate-300">Type *</label>
+            <label className="block text-sm font-semibold text-foreground">Type *</label>
             <select
               value={type}
               onChange={(e) => setType(e.target.value as any)}
               disabled={!!editConstraint}
-              className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              className="w-full px-3 py-2 bg-card border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option value="ALLOWED_TECH">✅ Allowed Tech</option>
               <option value="FORBIDDEN_TECH">❌ Forbidden Tech</option>
               <option value="PATTERN">📐 Pattern</option>
               <option value="STANDARD">📋 Standard</option>
             </select>
             {editConstraint && (
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 Type cannot be changed when editing
               </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-slate-300">Rules *</label>
+            <label className="block text-sm font-semibold text-foreground">Rules *</label>
 
             {(type === 'ALLOWED_TECH' || type === 'FORBIDDEN_TECH') && (
               <div className="space-y-4">
@@ -247,7 +247,7 @@ export function ConstraintForm({
                   placeholder="Type package name and press Enter...">
                 </TechListInput>
                 <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-slate-400">
+                  <label className="block text-xs font-semibold text-muted-foreground">
                     Reason (Optional)
                   </label>
                   <input
@@ -255,7 +255,7 @@ export function ConstraintForm({
                     value={techReason}
                     onChange={(e) => setTechReason(e.target.value)}
                     placeholder="Why these technologies?"
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    className="w-full px-3 py-2 bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500">
                   </input>
                 </div>
               </div>
@@ -286,7 +286,7 @@ export function ConstraintForm({
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-lg transition-colors">
+              className="flex-1 px-4 py-2 bg-muted hover:bg-muted text-foreground font-semibold rounded-lg transition-colors">
               Cancel
             </button>
             <button

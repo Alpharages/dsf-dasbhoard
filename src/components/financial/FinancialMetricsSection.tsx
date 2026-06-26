@@ -41,7 +41,7 @@ export const FinancialMetricsSection: React.FC<FinancialMetricsSectionProps> = (
 
     if (!selectedProject) {
         return (
-            <div className="bg-[var(--surface-1)] border border-[var(--card-border)] rounded-2xl p-6">
+            <div className="bg-[var(--surface-1)] border border-[var(--card-border)] rounded-lg p-6">
                 <p className="text-muted-foreground text-center">
                     Select a project to view financial metrics
                 </p>
@@ -99,7 +99,7 @@ export const FinancialMetricsSection: React.FC<FinancialMetricsSectionProps> = (
                     </motion.div>
 
                     {/* Row 2: ROI + Budget Trends - Same height cards */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
                         <motion.div 
                             className="lg:col-span-1 h-full"
                             initial={{ opacity: 0, y: 20 }}

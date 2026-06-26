@@ -53,7 +53,7 @@ export function DashboardSection({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
-      className={cn('mb-8', className)}
+      className={cn('mb-6', className)}
     >
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">

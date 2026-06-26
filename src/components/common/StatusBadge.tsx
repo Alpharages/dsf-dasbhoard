@@ -31,13 +31,13 @@ export function StatusBadge({ status }: StatusBadgeProps) {
                 };
             case 'REVOKED':
                 return {
-                    className: 'bg-slate-500/10 text-slate-600 border-slate-500/30 hover:bg-slate-500/20',
+                    className: 'bg-muted text-muted-foreground border-border hover:bg-muted',
                     icon: AlertCircle,
                     label: 'Revoked'
                 };
             default:
                 return {
-                    className: 'bg-slate-500/10 text-slate-600 border-slate-500/30',
+                    className: 'bg-muted text-muted-foreground border-border',
                     icon: AlertCircle,
                     label: s
                 };

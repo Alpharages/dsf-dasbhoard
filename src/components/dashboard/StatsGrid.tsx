@@ -50,8 +50,7 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
       label: 'Total Projects',
       value: summary?.total_projects || 0,
       icon: BarChart3,
-      gradient: 'from-blue-500 to-cyan-400',
-      glowColor: 'rgba(59, 130, 246, 0.3)',
+      chip: 'bg-primary/10 text-primary',
       change: trends.total_projects,
       sparklineData: generateSparkline(summary?.total_projects || 30),
     },
@@ -59,8 +58,7 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
       label: 'Active Projects',
       value: summary?.active_projects || 0,
       icon: Users,
-      gradient: 'from-emerald-500 to-teal-400',
-      glowColor: 'rgba(16, 185, 129, 0.3)',
+      chip: 'bg-emerald-500/10 text-emerald-400',
       change: trends.active_projects,
       sparklineData: generateSparkline(summary?.active_projects || 20),
     },
@@ -68,8 +66,7 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
       label: 'Team Utilization',
       value: `${summary?.utilization_percent || 0}%`,
       icon: Clock,
-      gradient: 'from-purple-500 to-pink-400',
-      glowColor: 'rgba(139, 92, 246, 0.3)',
+      chip: 'bg-violet-500/10 text-violet-400',
       change: trends.utilization,
       sparklineData: generateSparkline(summary?.utilization_percent || 75),
     },
@@ -77,8 +74,7 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
       label: 'Blocked Tickets',
       value: summary?.blocked_tickets || 0,
       icon: AlertTriangle,
-      gradient: 'from-rose-500 to-orange-400',
-      glowColor: 'rgba(239, 68, 68, 0.3)',
+      chip: 'bg-rose-500/10 text-rose-400',
       change: trends.blocked,
       sparklineData: generateSparkline(summary?.blocked_tickets || 5),
     },
@@ -86,8 +82,7 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
       label: 'PR Merge Rate',
       value: formatPercentageFromRatio(summary?.pr_merge_rate),
       icon: GitPullRequest,
-      gradient: 'from-amber-500 to-yellow-400',
-      glowColor: 'rgba(245, 158, 11, 0.3)',
+      chip: 'bg-amber-500/10 text-amber-400',
       change: trends.pr_merge_rate,
       sparklineData: generateSparkline((summary?.pr_merge_rate || 0) * 100 || 40),
     },
@@ -95,8 +90,7 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
       label: 'QA First-Pass Rate',
       value: formatPercentageFromRatio(summary?.qa_first_pass_rate),
       icon: ShieldCheck,
-      gradient: 'from-cyan-500 to-blue-400',
-      glowColor: 'rgba(6, 182, 212, 0.3)',
+      chip: 'bg-cyan-500/10 text-cyan-400',
       change: trends.qa_first_pass_rate,
       sparklineData: generateSparkline((summary?.qa_first_pass_rate || 0) * 100 || 35),
     },
@@ -104,11 +98,11 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-6">
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div
             key={i}
-            className="h-32 rounded-2xl border border-[var(--card-border)] bg-[var(--surface-1)] animate-pulse"
+            className="h-32 rounded-lg border border-[var(--card-border)] bg-[var(--surface-1)] animate-pulse"
           />
         ))}
       </div>
@@ -116,7 +110,7 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-6">
       {stats.map((stat, index) => {
         const Icon = stat.icon;
         const TrendIcon = stat.change?.type === 'increase' ? TrendingUp : TrendingDown;
@@ -132,13 +126,8 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
             whileHover={{ y: -4, transition: { duration: 0.2 } }}
-            className="group relative overflow-hidden rounded-2xl border border-[var(--card-border)] bg-[var(--surface-2)] backdrop-blur-sm transition-all duration-300 hover:border-[var(--border-hover)] hover:shadow-xl p-5"
+            className="stats-card group relative overflow-hidden rounded-lg border border-[var(--card-border)] bg-card transition-all duration-300 hover:border-[var(--border-hover)] p-5"
           >
-            {/* Background Gradient Glow */}
-            <div 
-              className={`absolute -right-20 -top-20 h-40 w-40 rounded-full bg-gradient-to-br ${stat.gradient} opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-20`}
-            />
-            
             {/* Sparkline Background */}
             <div className="absolute bottom-0 left-0 right-0 h-20 opacity-10">
               <svg
@@ -175,7 +164,7 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
                     {stat.label}
                   </p>
-                  <h4 className="text-2xl font-bold tracking-tight text-foreground">
+                  <h4 className="data-figure tabular-nums text-2xl font-semibold tracking-tight text-foreground">
                     {stat.value}
                   </h4>
                   
@@ -193,18 +182,12 @@ export function StatsGrid({ summary, loading = false }: StatsGridProps) {
                 </div>
                 
                 <div
-                  className={`flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${stat.gradient} shadow-lg transition-transform duration-300 group-hover:scale-110`}
-                  style={{ boxShadow: `0 4px 15px ${stat.glowColor}` }}
+                  className={`flex h-11 w-11 items-center justify-center rounded-md ${stat.chip} transition-transform duration-300 group-hover:scale-110`}
                 >
-                  <Icon className="h-5 w-5 text-white" />
+                  <Icon className="h-5 w-5" />
                 </div>
               </div>
             </div>
-
-            {/* Bottom Gradient Line */}
-            <div
-              className={`absolute bottom-0 left-0 h-0.5 w-0 bg-gradient-to-r ${stat.gradient} transition-all duration-500 group-hover:w-full`}
-            />
           </motion.div>
         );
       })}

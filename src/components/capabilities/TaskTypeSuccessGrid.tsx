@@ -45,13 +45,13 @@ const getTrendIcon = (trend: TrendIndicator) => {
     const iconClass = 'w-4 h-4';
     if (trend === 'UP') return <TrendingUp className={iconClass + ' text-emerald-400'} />;
     if (trend === 'DOWN') return <TrendingDown className={iconClass + ' text-rose-400'} />;
-    return <Minus className={iconClass + ' text-slate-400'} />;
+    return <Minus className={iconClass + ' text-muted-foreground'} />;
 };
 
 const getTrendLabel = (trend: TrendIndicator) => {
     if (trend === 'UP') return { text: 'Improving', color: 'text-emerald-400' };
     if (trend === 'DOWN') return { text: 'Declining', color: 'text-rose-400' };
-    return { text: 'Stable', color: 'text-slate-400' };
+    return { text: 'Stable', color: 'text-muted-foreground' };
 };
 
 export const TaskTypeSuccessGrid: React.FC<TaskTypeSuccessGridProps> = ({ capabilities }) => {
@@ -66,7 +66,7 @@ export const TaskTypeSuccessGrid: React.FC<TaskTypeSuccessGridProps> = ({ capabi
                     <div
                         key={cap.taskType}
                         className={`
-                            group relative overflow-hidden rounded-2xl p-5 
+                            group relative overflow-hidden rounded-lg p-5 
                             border ${config.borderColor} bg-gradient-to-br ${config.bgGradient}
                             transition-all duration-300 ease-out
                             hover:scale-[1.02] hover:shadow-lg ${config.glowColor}

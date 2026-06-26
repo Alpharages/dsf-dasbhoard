@@ -27,20 +27,20 @@ export function RoiForecastWidget({ currentRoi }: RoiForecastWidgetProps) {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {forecasts.map((forecast) => (
-                <div key={forecast.period} className="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                <div key={forecast.period} className="bg-background border border-border rounded-xl p-4">
                     <div className="flex items-center gap-2 mb-3">
-                        <Calendar className="w-4 h-4 text-slate-400" />
-                        <span className="text-xs font-semibold text-slate-400 uppercase">{forecast.period} Forecast</span>
+                        <Calendar className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-xs font-semibold text-muted-foreground uppercase">{forecast.period} Forecast</span>
                     </div>
                     <div className="text-3xl font-bold text-white mb-2">{forecast.roi.toFixed(1)}%</div>
                     <div className="flex items-center gap-2 mb-2">
-                        <div className="flex-1 bg-slate-800 rounded-full h-2">
+                        <div className="flex-1 bg-muted rounded-full h-2">
                             <div
                                 className="bg-blue-500 h-2 rounded-full transition-all"
                                 style={{ width: `${forecast.confidence}%` }}
                             />
                         </div>
-                        <span className="text-xs text-slate-500 whitespace-nowrap">{forecast.confidence}% confidence</span>
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">{forecast.confidence}% confidence</span>
                     </div>
                     <div className="flex items-center gap-1 text-xs text-emerald-400">
                         <TrendingUp className="w-3 h-3" />

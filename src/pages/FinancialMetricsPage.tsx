@@ -27,7 +27,7 @@ export function FinancialMetricsPage() {
     return (
         <div className="min-h-screen">
             {/* Page Header */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
                 <div>
                     <h1 className="text-3xl font-bold text-foreground tracking-tight">
                         Financial Metrics
@@ -66,7 +66,7 @@ export function FinancialMetricsPage() {
             </div>
 
             {/* Main Content Grid */}
-            <div className="space-y-8">
+            <div className="space-y-6">
                 {/* Cost Analysis Section */}
                 <CostSectionContainer
                     projectId={selectedProjectId}

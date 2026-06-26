@@ -14,7 +14,7 @@ interface ConversationSearchInterfaceProps {
 
 const sentimentIcons = {
     positive: { icon: Smile, color: 'text-emerald-500' },
-    neutral: { icon: Meh, color: 'text-slate-500' },
+    neutral: { icon: Meh, color: 'text-muted-foreground' },
     negative: { icon: Frown, color: 'text-rose-500' }
 };
 
@@ -115,19 +115,19 @@ export const ConversationSearchInterface: React.FC<ConversationSearchInterfacePr
 
     return (
         <div className="max-w-7xl mx-auto p-8">
-            <h1 className="text-4xl font-extrabold text-white mb-8">Search Conversations</h1>
+            <h1 className="text-4xl font-extrabold text-white mb-6">Search Conversations</h1>
 
             {/* Search Bar */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6">
+            <div className="bg-card border border-border rounded-lg p-6 mb-6">
                 <div className="flex items-center gap-3 mb-4">
                     <div className="flex-1 relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                         <input
                             type="text"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder="Search conversations by keyword..."
-                            className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500 transition-colors"
+                            className="w-full bg-background border border-border text-foreground rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500 transition-colors"
                         />
                     </div>
                 </div>
@@ -136,17 +136,17 @@ export const ConversationSearchInterface: React.FC<ConversationSearchInterfacePr
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     {/* Project Filter */}
                     <div>
-                        <label className="block text-sm font-bold text-slate-300 mb-2">Projects</label>
-                        <div className="bg-slate-950 border border-slate-800 rounded-xl p-3 max-h-32 overflow-y-auto">
+                        <label className="block text-sm font-bold text-foreground mb-2">Projects</label>
+                        <div className="bg-background border border-border rounded-xl p-3 max-h-32 overflow-y-auto">
                             {projects.map((project) => (
                                 <label key={project.id} className="flex items-center gap-2 py-1 cursor-pointer hover:text-blue-400 transition-colors">
                                     <input
                                         type="checkbox"
                                         checked={selectedProjectIds.includes(project.id)}
                                         onChange={() => handleProjectToggle(project.id)}
-                                        className="w-4 h-4 rounded border-slate-600 text-blue-600 focus:ring-blue-500"
+                                        className="w-4 h-4 rounded border-[var(--border-hover)] text-blue-600 focus:ring-blue-500"
                                     />
-                                    <span className="text-sm text-slate-300">{project.name}</span>
+                                    <span className="text-sm text-foreground">{project.name}</span>
                                 </label>
                             ))}
                         </div>
@@ -154,11 +154,11 @@ export const ConversationSearchInterface: React.FC<ConversationSearchInterfacePr
 
                     {/* Sentiment Filter */}
                     <div>
-                        <label className="block text-sm font-bold text-slate-300 mb-2">Sentiment</label>
+                        <label className="block text-sm font-bold text-foreground mb-2">Sentiment</label>
                         <select
                             value={selectedSentiment}
                             onChange={(e) => setSelectedSentiment(e.target.value as Sentiment | 'all')}
-                            className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors"
+                            className="w-full bg-background border border-border text-foreground rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors"
                         >
                             <option value="all">All</option>
                             <option value="positive">Positive</option>
@@ -169,19 +169,19 @@ export const ConversationSearchInterface: React.FC<ConversationSearchInterfacePr
 
                     {/* Date Range */}
                     <div>
-                        <label className="block text-sm font-bold text-slate-300 mb-2">Date Range</label>
+                        <label className="block text-sm font-bold text-foreground mb-2">Date Range</label>
                         <div className="flex gap-2">
                             <input
                                 type="date"
                                 value={dateFrom}
                                 onChange={(e) => setDateFrom(e.target.value)}
-                                className="flex-1 bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                className="flex-1 bg-background border border-border text-foreground rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
                             />
                             <input
                                 type="date"
                                 value={dateTo}
                                 onChange={(e) => setDateTo(e.target.value)}
-                                className="flex-1 bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                className="flex-1 bg-background border border-border text-foreground rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
                             />
                         </div>
                     </div>
@@ -198,7 +198,7 @@ export const ConversationSearchInterface: React.FC<ConversationSearchInterfacePr
                     </button>
                     <button
                         onClick={handleClearFilters}
-                        className="px-6 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl transition-all flex items-center gap-2"
+                        className="px-6 bg-muted hover:bg-muted text-foreground font-bold py-3 rounded-xl transition-all flex items-center gap-2"
                     >
                         <X className="w-5 h-5" />
                         Clear Filters
@@ -213,7 +213,7 @@ export const ConversationSearchInterface: React.FC<ConversationSearchInterfacePr
                 </div>
             ) : conversations.length > 0 ? (
                 <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                         {conversations.map((conversation) => {
                             const sentiment = conversation.sentiment || 'neutral';
                             const SentimentIcon = sentimentIcons[sentiment].icon;
@@ -223,28 +223,28 @@ export const ConversationSearchInterface: React.FC<ConversationSearchInterfacePr
                                 <div
                                     key={conversation.id}
                                     onClick={() => onConversationClick(conversation.id)}
-                                    className="bg-slate-900 border border-slate-800 rounded-2xl p-6 hover:shadow-2xl hover:shadow-blue-500/5 hover:border-blue-500/30 transition-all cursor-pointer group"
+                                    className="bg-card border border-border rounded-lg p-6 hover:shadow-2xl hover:shadow-blue-500/5 hover:border-blue-500/30 transition-all cursor-pointer group"
                                 >
                                     <div className="flex items-start justify-between mb-3">
-                                        <h3 className="text-lg font-bold text-slate-200 group-hover:text-blue-400 transition-colors line-clamp-1">
+                                        <h3 className="text-lg font-bold text-foreground group-hover:text-blue-400 transition-colors line-clamp-1">
                                             {conversation.title}
                                         </h3>
                                         <SentimentIcon className={`w-5 h-5 ${sentimentIcons[sentiment].color} flex-shrink-0`} />
                                     </div>
 
-                                    <div className="flex items-center gap-2 text-xs text-slate-500 mb-3">
+                                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
                                         <Calendar className="w-3.5 h-3.5" />
                                         <span>{new Date(conversation.conversation_date).toLocaleDateString()}</span>
                                         <span>•</span>
-                                        <span className="text-slate-400">{conversation.project.name}</span>
+                                        <span className="text-muted-foreground">{conversation.project.name}</span>
                                     </div>
 
-                                    <p className="text-sm text-slate-400 line-clamp-2 mb-4">
+                                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
                                         {snippet}...
                                     </p>
 
                                     <div className="flex items-center justify-between text-xs">
-                                        <span className="text-slate-500">
+                                        <span className="text-muted-foreground">
                                             {conversation.action_items?.length || 0} action item{conversation.action_items?.length !== 1 ? 's' : ''}
                                         </span>
                                         <span className="text-blue-400 font-medium group-hover:underline">View →</span>
@@ -260,7 +260,7 @@ export const ConversationSearchInterface: React.FC<ConversationSearchInterfacePr
                             <button
                                 onClick={handleLoadMore}
                                 disabled={loading}
-                                className="bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 font-bold py-3 px-8 rounded-xl transition-all disabled:opacity-50 flex items-center gap-2 mx-auto"
+                                className="bg-card border border-border hover:bg-muted text-foreground font-bold py-3 px-8 rounded-xl transition-all disabled:opacity-50 flex items-center gap-2 mx-auto"
                             >
                                 {loading ? (
                                     <>
@@ -275,8 +275,8 @@ export const ConversationSearchInterface: React.FC<ConversationSearchInterfacePr
                     )}
                 </>
             ) : (
-                <div className="text-center py-20 bg-slate-900/20 border border-dashed border-slate-800 rounded-3xl">
-                    <p className="text-slate-500 text-xl font-medium">No conversations found. Try different filters.</p>
+                <div className="text-center py-20 bg-card/20 border border-dashed border-border rounded-lg">
+                    <p className="text-muted-foreground text-xl font-medium">No conversations found. Try different filters.</p>
                 </div>
             )}
         </div>

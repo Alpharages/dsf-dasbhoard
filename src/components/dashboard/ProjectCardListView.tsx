@@ -22,10 +22,10 @@ const statusConfig: Record<string, { bg: string; text: string; border: string; l
         border: 'border-amber-500/20',
         label: 'On Hold'
     },
-    paused: { 
-        bg: 'bg-slate-500/10', 
-        text: 'text-slate-400', 
-        border: 'border-slate-500/20',
+    paused: {
+        bg: 'bg-muted',
+        text: 'text-muted-foreground',
+        border: 'border-border',
         label: 'Paused'
     },
     completed: { 
@@ -52,7 +52,7 @@ export const ProjectCardListView: React.FC<ProjectCardListViewProps> = ({ projec
     const navigate = useNavigate();
 
     return (
-        <div className="bg-[var(--surface-2)] border border-[var(--card-border)] rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-card border border-[var(--card-border)] rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
                 <table className="w-full min-w-max text-left border-collapse">
                     <thead>
@@ -79,14 +79,14 @@ export const ProjectCardListView: React.FC<ProjectCardListViewProps> = ({ projec
                                 >
                                     <td className="py-4 px-6">
                                         <h3
-                                            className="text-sm font-bold text-foreground group-hover:text-primary transition-colors cursor-pointer"
+                                            className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors cursor-pointer"
                                             onClick={() => navigate(`/projects/${project.id}`)}
                                         >
                                             {project.name}
                                         </h3>
                                     </td>
                                     <td className="py-4 px-6">
-                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border backdrop-blur-sm ${status.bg} ${status.text} ${status.border}`}>
+                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${status.bg} ${status.text} ${status.border}`}>
                                             {status.label}
                                         </span>
                                     </td>
@@ -94,12 +94,12 @@ export const ProjectCardListView: React.FC<ProjectCardListViewProps> = ({ projec
                                         {project.client_name}
                                     </td>
                                     <td className="py-4 px-6 text-center">
-                                        <span className="text-sm font-bold text-foreground">
+                                        <span className="data-figure tabular-nums text-sm font-semibold text-foreground">
                                             {project.tickets?.total ?? 0}
                                         </span>
                                     </td>
                                     <td className="py-4 px-6 text-center">
-                                        <span className={`text-sm font-bold ${(project.tickets?.blocked ?? 0) > 0 ? 'text-rose-400' : 'text-foreground'}`}>
+                                        <span className={`data-figure tabular-nums text-sm font-semibold ${(project.tickets?.blocked ?? 0) > 0 ? 'text-rose-400' : 'text-foreground'}`}>
                                             {project.tickets?.blocked ?? 0}
                                         </span>
                                     </td>
@@ -111,7 +111,7 @@ export const ProjectCardListView: React.FC<ProjectCardListViewProps> = ({ projec
                                             {(project.tickets?.awaiting_approval ?? 0) > 0 ? (
                                                 <button
                                                     onClick={() => onReview?.(project)}
-                                                    className="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all shadow-lg shadow-blue-500/20"
+                                                    className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold rounded-md flex items-center gap-1.5 transition-all"
                                                     title="Review Execution"
                                                 >
                                                     <CheckCircle className="w-3.5 h-3.5" />

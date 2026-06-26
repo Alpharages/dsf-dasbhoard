@@ -25,9 +25,9 @@ export const AdrReviewQueueTable: React.FC<AdrReviewQueueTableProps> = ({
 }) => {
     if (isLoading) {
         return (
-            <div className="bg-card border border-border rounded-2xl p-6 animate-pulse space-y-4">
+            <div className="bg-card border border-border rounded-lg p-6 animate-pulse space-y-4">
                 {[1, 2, 3, 4, 5].map(i => (
-                    <div key={i} className="h-16 bg-muted/50 rounded-xl"></div>
+                    <div key={i} className="h-16 bg-muted/50 rounded-md"></div>
                 ))}
             </div>
         );
@@ -35,11 +35,11 @@ export const AdrReviewQueueTable: React.FC<AdrReviewQueueTableProps> = ({
 
     if (items.length === 0) {
         return (
-            <div className="bg-card border border-border rounded-2xl p-12 text-center">
+            <div className="bg-card border border-border rounded-lg p-12 text-center">
                 <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                     <span className="text-2xl">🎉</span>
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-2">Queue Empty</h3>
+                <h3 className="text-xl font-semibold text-foreground mb-2">Queue Empty</h3>
                 <p className="text-muted-foreground">No architecture decisions pending review.</p>
             </div>
         );
@@ -60,7 +60,7 @@ export const AdrReviewQueueTable: React.FC<AdrReviewQueueTableProps> = ({
 
     return (
         <TooltipProvider>
-            <div className="bg-card border border-border rounded-2xl overflow-hidden">
+            <div className="bg-card border border-border rounded-lg overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
@@ -164,9 +164,9 @@ export const AdrReviewQueueTable: React.FC<AdrReviewQueueTableProps> = ({
                                         <td className="py-4 px-6 text-right">
                                             <button
                                                 onClick={() => onReview(item)}
-                                                className={`px-4 py-2 text-sm font-semibold rounded-xl shadow-lg transition-all hover:scale-105 active:scale-95 ${isEscalated
-                                                    ? 'bg-red-600 hover:bg-red-500 text-white shadow-red-500/20'
-                                                    : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-500/20'
+                                                className={`px-4 py-2 text-sm font-semibold rounded-md transition-all hover:scale-105 active:scale-95 ${isEscalated
+                                                    ? 'bg-rose-600 hover:bg-rose-500 text-white'
+                                                    : 'bg-primary hover:bg-primary/90 text-primary-foreground'
                                                     }`}
                                             >
                                                 {isEscalated ? 'Resolve' : 'Review'}

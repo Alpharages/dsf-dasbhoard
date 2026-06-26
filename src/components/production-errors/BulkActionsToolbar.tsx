@@ -115,9 +115,9 @@ function BulkActionsToolbarComponent({ selectedErrors, onClearSelection }: BulkA
 
   return (
     <>
-      <div className="flex items-center gap-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700">
+      <div className="flex items-center gap-4 p-4 bg-muted rounded-lg border border-border">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-slate-300">
+          <span className="text-sm font-medium text-foreground">
             {selectedErrors.length} selected
           </span>
           <Button variant="ghost" size="sm" onClick={onClearSelection}>
@@ -126,7 +126,7 @@ function BulkActionsToolbarComponent({ selectedErrors, onClearSelection }: BulkA
           </Button>
         </div>
 
-        <div className="h-6 w-px bg-slate-700" />
+        <div className="h-6 w-px bg-border" />
 
         <div className="flex items-center gap-2">
           <Button
@@ -163,16 +163,16 @@ function BulkActionsToolbarComponent({ selectedErrors, onClearSelection }: BulkA
 
       {/* Confirmation Dialogs */}
       <AlertDialog open={confirmAction === 'createTickets'} onOpenChange={() => setConfirmAction(null)}>
-        <AlertDialogContent className="bg-slate-900 border-slate-800 text-slate-200">
+        <AlertDialogContent className="bg-card border-border text-foreground">
           <AlertDialogHeader>
             <AlertDialogTitle>Create Fix Tickets?</AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-400">
+            <AlertDialogDescription className="text-muted-foreground">
               This will create ClickUp tickets for {selectedErrors.length} selected errors.
               Errors that already have tickets will be skipped.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
+            <AlertDialogCancel className="bg-muted border-border text-foreground hover:bg-muted">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
@@ -186,15 +186,15 @@ function BulkActionsToolbarComponent({ selectedErrors, onClearSelection }: BulkA
       </AlertDialog>
 
       <AlertDialog open={confirmAction === 'acknowledge'} onOpenChange={() => setConfirmAction(null)}>
-        <AlertDialogContent className="bg-slate-900 border-slate-800 text-slate-200">
+        <AlertDialogContent className="bg-card border-border text-foreground">
           <AlertDialogHeader>
             <AlertDialogTitle>Acknowledge Errors?</AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-400">
+            <AlertDialogDescription className="text-muted-foreground">
               This will mark {selectedErrors.length} selected errors as acknowledged.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
+            <AlertDialogCancel className="bg-muted border-border text-foreground hover:bg-muted">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction

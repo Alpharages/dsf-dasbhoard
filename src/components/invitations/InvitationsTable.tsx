@@ -200,7 +200,7 @@ export function InvitationsTable({
                             setPagination((current) => ({ ...current, pageIndex: 0 }));
                         }}
                         aria-label="Filter by status"
-                        className="h-9 w-[180px] rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                        className="h-9 w-[180px] rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
                     >
                         <option value="all">All Statuses</option>
                         <option value={InvitationStatus.PENDING}>Pending</option>
@@ -208,20 +208,20 @@ export function InvitationsTable({
                         <option value={InvitationStatus.EXPIRED}>Expired</option>
                         <option value={InvitationStatus.REVOKED}>Revoked</option>
                     </select>
-                    <span className="text-sm text-slate-400">
+                    <span className="text-sm text-muted-foreground">
                         Showing {table.getFilteredRowModel().rows.length} of {data.length} invitations
                     </span>
                 </div>
             </div>
 
-            <div className="hidden md:block rounded-md border border-slate-800">
+            <div className="hidden md:block rounded-md border border-border">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id} className="border-slate-800 hover:bg-slate-900/50">
+                            <TableRow key={headerGroup.id} className="border-border hover:bg-card/50">
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id} className="text-slate-400">
+                                        <TableHead key={header.id} className="text-muted-foreground">
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
@@ -240,10 +240,10 @@ export function InvitationsTable({
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className="border-slate-800 hover:bg-slate-800/50"
+                                    className="border-border hover:bg-muted/50"
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id} className="text-slate-200">
+                                        <TableCell key={cell.id} className="text-foreground">
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
@@ -251,7 +251,7 @@ export function InvitationsTable({
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center text-slate-400">
+                                <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
                                     No invitations found.
                                 </TableCell>
                             </TableRow>
@@ -266,12 +266,12 @@ export function InvitationsTable({
                         const invitation = row.original;
                         const isPending = invitation.status === InvitationStatus.PENDING;
                         return (
-                            <Card key={row.id} className="bg-slate-900 border-slate-800">
+                            <Card key={row.id} className="bg-card border-border">
                                 <CardHeader className="pb-2">
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            <div className="font-medium text-slate-200">{invitation.email}</div>
-                                            <div className="text-xs text-slate-500 mt-1">
+                                            <div className="font-medium text-foreground">{invitation.email}</div>
+                                            <div className="text-xs text-muted-foreground mt-1">
                                                 Expires: {new Date(invitation.expiresAt).toLocaleDateString()}
                                             </div>
                                         </div>
@@ -308,7 +308,7 @@ export function InvitationsTable({
                         );
                     })
                 ) : (
-                    <div className="text-center text-slate-400 py-8 border border-dashed border-slate-800 rounded-lg">
+                    <div className="text-center text-muted-foreground py-8 border border-dashed border-border rounded-lg">
                         No invitations found.
                     </div>
                 )}
@@ -316,14 +316,14 @@ export function InvitationsTable({
 
             <div className="flex items-center justify-between space-x-2 py-4">
                 <div className="flex items-center space-x-2">
-                    <p className="text-sm text-slate-400">
+                    <p className="text-sm text-muted-foreground">
                         Page {table.getState().pagination.pageIndex + 1} of {Math.max(1, table.getPageCount())}
                     </p>
                     <select
                         value={`${table.getState().pagination.pageSize}`}
                         onChange={(event) => table.setPageSize(Number(event.target.value))}
                         aria-label="Rows per page"
-                        className="h-8 w-[70px] rounded-md border border-slate-700 bg-slate-900 px-2 py-1 text-sm text-slate-100 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                        className="h-8 w-[70px] rounded-md border border-border bg-card px-2 py-1 text-sm text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
                     >
                         {PAGE_SIZES.map((pageSize) => (
                             <option key={pageSize} value={`${pageSize}`}>

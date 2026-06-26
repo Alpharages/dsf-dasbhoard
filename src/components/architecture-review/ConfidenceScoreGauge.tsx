@@ -21,7 +21,7 @@ export const ConfidenceScoreGauge: React.FC<ConfidenceScoreGaugeProps> = ({
     const pointerColor = isEscalated ? '#EF4444' : '#10B981';
 
     return (
-        <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-900/50 border border-slate-800">
+        <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-card/50 border border-border">
             <div className="w-24 relative">
                 <GaugeComponent
                     type="semicircle"

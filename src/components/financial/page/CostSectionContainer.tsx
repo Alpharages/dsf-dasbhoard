@@ -36,7 +36,7 @@ export function CostSectionContainer({ projectId, startDate, endDate }: CostSect
 
     if (!projectId) {
         return (
-            <div className="bg-card border border-border rounded-2xl p-8 text-center">
+            <div className="bg-card border border-border rounded-lg p-8 text-center">
                 <DollarSign className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                 <p className="text-muted-foreground font-medium">Select a project to view cost analysis</p>
             </div>
@@ -45,7 +45,7 @@ export function CostSectionContainer({ projectId, startDate, endDate }: CostSect
 
     if (isLoading) {
         return (
-            <div className="bg-card border border-border rounded-2xl p-8">
+            <div className="bg-card border border-border rounded-lg p-8">
                 <div className="animate-pulse space-y-4">
                     <div className="h-8 bg-muted rounded w-1/3"></div>
                     <div className="h-64 bg-muted rounded"></div>
@@ -63,7 +63,7 @@ export function CostSectionContainer({ projectId, startDate, endDate }: CostSect
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
-                        <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center">
+                        <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 rounded-md flex items-center justify-center">
                             <TrendingUp className="w-5 h-5 text-blue-500" />
                         </div>
                         Cost Analysis
@@ -77,13 +77,13 @@ export function CostSectionContainer({ projectId, startDate, endDate }: CostSect
             </div>
 
             {/* Reuse existing CostPerFeatureChart */}
-            <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
+            <div className="bg-card border border-border rounded-lg p-6 min-w-0">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Cost Per Feature</h3>
                 <CostPerFeatureChart projectId={projectId} />
             </div>
 
             {/* Epic Comparison Chart */}
-            <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
+            <div className="bg-card border border-border rounded-lg p-6 min-w-0">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Epic Comparison</h3>
                 <ResponsiveContainer width="100%" height={300} debounce={100}>
                     <BarChart data={epics.slice(0, 5)}>
@@ -105,8 +105,8 @@ export function CostSectionContainer({ projectId, startDate, endDate }: CostSect
             </div>
 
             {/* Provider Distribution */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="bg-card border border-border rounded-lg p-6 min-w-0">
                     <h3 className="text-lg font-semibold text-foreground mb-4">Provider Distribution</h3>
                     <ResponsiveContainer width="100%" height={250} debounce={100}>
                         <PieChart>
@@ -136,7 +136,7 @@ export function CostSectionContainer({ projectId, startDate, endDate }: CostSect
                 </div>
 
                 {/* Top Expensive Epics */}
-                <div className="bg-card border border-border rounded-2xl p-6">
+                <div className="bg-card border border-border rounded-lg p-6">
                     <h3 className="text-lg font-semibold text-foreground mb-4">Top 5 Expensive Epics</h3>
                     <div className="space-y-3">
                         {epics.slice(0, 5).map((epic, index) => (

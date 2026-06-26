@@ -125,7 +125,7 @@ export const CapabilitySummaryCards: React.FC<CapabilitySummaryCardsProps> = ({
                     <div
                         key={metric.label}
                         className={`
-                            group relative overflow-hidden rounded-2xl p-5 
+                            group relative overflow-hidden rounded-lg p-5 
                             border ${colors.border} bg-gradient-to-br ${colors.bg}
                             transition-all duration-300 ease-out
                             hover:scale-[1.02] hover:shadow-lg

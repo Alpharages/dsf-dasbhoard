@@ -9,9 +9,9 @@ interface DiffViewerProps {
 
 export const DiffViewer: React.FC<DiffViewerProps> = ({ oldCode, newCode, fileName }) => {
     return (
-        <div className="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden">
-            <div className="bg-slate-800/50 px-4 py-3 border-b border-slate-700 flex justify-between items-center">
-                <span className="text-sm font-mono text-slate-300">{fileName}</span>
+        <div className="bg-card border border-border rounded-lg overflow-hidden">
+            <div className="bg-muted px-4 py-3 border-b border-border flex justify-between items-center">
+                <span className="text-sm font-mono text-foreground">{fileName}</span>
                 <div className="flex gap-2">
                     <span className="text-xs px-2 py-1 rounded bg-emerald-500/10 text-emerald-400">Changed</span>
                 </div>

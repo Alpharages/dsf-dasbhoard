@@ -30,7 +30,7 @@ export function BudgetSectionContainer({ projectId, period }: BudgetSectionConta
 
     if (!projectId) {
         return (
-            <div className="bg-card border border-border rounded-2xl p-8 text-center">
+            <div className="bg-card border border-border rounded-lg p-8 text-center">
                 <Gauge className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                 <p className="text-muted-foreground font-medium">Select a project to view budget management</p>
             </div>
@@ -39,7 +39,7 @@ export function BudgetSectionContainer({ projectId, period }: BudgetSectionConta
 
     if (isLoading) {
         return (
-            <div className="bg-card border border-border rounded-2xl p-8">
+            <div className="bg-card border border-border rounded-lg p-8">
                 <div className="animate-pulse space-y-4">
                     <div className="h-8 bg-muted rounded w-1/3"></div>
                     <div className="h-64 bg-muted rounded"></div>
@@ -72,7 +72,7 @@ export function BudgetSectionContainer({ projectId, period }: BudgetSectionConta
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
-                        <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-center">
+                        <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 rounded-md flex items-center justify-center">
                             <Gauge className="w-5 h-5 text-amber-500" />
                         </div>
                         Budget Management
@@ -82,8 +82,8 @@ export function BudgetSectionContainer({ projectId, period }: BudgetSectionConta
             </div>
 
             {/* Budget Status Widget */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div className="bg-card border border-border rounded-lg p-6">
                     <div className="flex items-center justify-between mb-4">
                         <span className="text-sm font-semibold text-muted-foreground uppercase">Budget Utilization</span>
                         <div className={`px-2 py-1 rounded-lg text-xs font-bold ${utilizationPct > 80 ? 'bg-destructive/10 text-destructive' :
@@ -109,22 +109,22 @@ export function BudgetSectionContainer({ projectId, period }: BudgetSectionConta
                             />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ top: '40%' }}>
-                            <div className="text-4xl font-bold text-foreground">{utilizationPct}%</div>
+                            <div className="text-4xl font-semibold data-figure tabular-nums text-foreground">{utilizationPct}%</div>
                             <div className="text-xs text-muted-foreground mt-1">{daysRemaining} days remaining</div>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-card border border-border rounded-2xl p-6">
+                <div className="bg-card border border-border rounded-lg p-6">
                     <div className="flex items-center gap-2 mb-3">
                         <TrendingDown className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm font-semibold text-muted-foreground uppercase">Burn Rate</span>
                     </div>
-                    <div className="text-3xl font-bold text-foreground mb-2">${budgetData?.trends.burnRatePerDay || '0'}/day</div>
+                    <div className="text-3xl font-semibold data-figure tabular-nums text-foreground mb-2">${budgetData?.trends.burnRatePerDay || '0'}/day</div>
                     <div className="text-sm text-muted-foreground">Average daily spend</div>
                 </div>
 
-                <div className="bg-card border border-border rounded-2xl p-6">
+                <div className="bg-card border border-border rounded-lg p-6">
                     <div className="flex items-center gap-2 mb-3">
                         <Calendar className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm font-semibold text-muted-foreground uppercase">Exhaustion Date</span>
@@ -137,13 +137,13 @@ export function BudgetSectionContainer({ projectId, period }: BudgetSectionConta
             </div>
 
             {/* Reuse existing Budget Trend Chart */}
-            <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
+            <div className="bg-card border border-border rounded-lg p-6 min-w-0">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Budget Trends</h3>
                 <BudgetTrendChart projectId={projectId} />
             </div>
 
             {/* Burn Rate Chart with Moving Averages */}
-            <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
+            <div className="bg-card border border-border rounded-lg p-6 min-w-0">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Burn Rate Analysis</h3>
                 <ResponsiveContainer width="100%" height={300} debounce={100}>
                     <LineChart data={burnRateData}>
@@ -167,7 +167,7 @@ export function BudgetSectionContainer({ projectId, period }: BudgetSectionConta
 
             {/* Anomaly Alerts */}
             {budgetData && budgetData.anomalies.length > 0 && (
-                <div className="bg-card border border-border rounded-2xl p-6">
+                <div className="bg-card border border-border rounded-lg p-6">
                     <div className="flex items-center gap-2 mb-4">
                         <AlertTriangle className="w-5 h-5 text-amber-500" />
                         <h3 className="text-lg font-semibold text-foreground">Spending Anomalies</h3>

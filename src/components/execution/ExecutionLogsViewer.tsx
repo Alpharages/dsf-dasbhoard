@@ -41,7 +41,7 @@ interface ExecutionLogsViewerProps {
 }
 
 const LOG_LEVEL_COLORS: Record<LogLevel, string> = {
-  'DEBUG': 'text-slate-400',
+  'DEBUG': 'text-muted-foreground',
   'INFO': 'text-blue-400',
   'WARN': 'text-yellow-400',
   'ERROR': 'text-rose-400',
@@ -50,7 +50,7 @@ const LOG_LEVEL_COLORS: Record<LogLevel, string> = {
 };
 
 const LOG_LEVEL_BG: Record<LogLevel, string> = {
-  'DEBUG': 'bg-slate-500/10',
+  'DEBUG': 'bg-muted',
   'INFO': 'bg-blue-500/10',
   'WARN': 'bg-yellow-500/10',
   'ERROR': 'bg-rose-500/10',
@@ -184,12 +184,12 @@ export default function ExecutionLogsViewer({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] w-[95vw] h-[90vh] bg-slate-900 border-slate-800 p-0 flex flex-col">
-        <DialogHeader className="px-6 py-4 border-b border-slate-800">
+      <DialogContent className="max-w-[95vw] w-[95vw] h-[90vh] bg-card border-border p-0 flex flex-col">
+        <DialogHeader className="px-6 py-4 border-b border-border">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-slate-200 flex items-center gap-2">
+            <DialogTitle className="text-foreground flex items-center gap-2">
               Execution Logs
-              <Badge variant="outline" className="ml-2 text-slate-400 border-slate-700">
+              <Badge variant="outline" className="ml-2 text-muted-foreground border-border">
                 {executionId.slice(0, 8)}...
               </Badge>
             </DialogTitle>
@@ -199,7 +199,7 @@ export default function ExecutionLogsViewer({
                 size="sm"
                 onClick={handleExport}
                 disabled={exportLogs.isPending}
-                className="border-slate-700 text-slate-300"
+                className="border-border text-foreground"
               >
                 {exportLogs.isPending ? (
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -212,7 +212,7 @@ export default function ExecutionLogsViewer({
                 variant="ghost"
                 size="sm"
                 onClick={onClose}
-                className="text-slate-400"
+                className="text-muted-foreground"
               >
                 <X className="w-4 h-4" />
               </Button>
@@ -221,22 +221,22 @@ export default function ExecutionLogsViewer({
         </DialogHeader>
 
         {/* Filters Bar */}
-        <div className="px-6 py-3 border-b border-slate-800 bg-slate-950/50">
+        <div className="px-6 py-3 border-b border-border bg-background/50">
           <div className="flex items-center gap-4">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder="Search logs..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-slate-800 border-slate-700 text-slate-200"
+                className="pl-10 bg-muted border-border text-foreground"
               />
             </div>
             <Button
               variant="outline"
               size="sm"
               onClick={handleToggleActivity}
-              className={`border-slate-700 ${showActivityPanel ? 'bg-slate-800 text-blue-400' : ''}`}
+              className={`border-border ${showActivityPanel ? 'bg-muted text-blue-400' : ''}`}
             >
               <Activity className="w-4 h-4 mr-2" />
               Activity
@@ -245,7 +245,7 @@ export default function ExecutionLogsViewer({
               variant="outline"
               size="sm"
               onClick={handleToggleQAPanel}
-              className={`border-slate-700 ${showQAPanel ? 'bg-slate-800 text-emerald-400' : ''}`}
+              className={`border-border ${showQAPanel ? 'bg-muted text-emerald-400' : ''}`}
             >
               <ShieldCheck className="w-4 h-4 mr-2" />
               QA Results
@@ -259,7 +259,7 @@ export default function ExecutionLogsViewer({
               variant="outline"
               size="sm"
               onClick={() => setShowFilters(!showFilters)}
-              className={`border-slate-700 ${showFilters ? 'bg-slate-800' : ''}`}
+              className={`border-border ${showFilters ? 'bg-muted' : ''}`}
             >
               <Filter className="w-4 h-4 mr-2" />
               Filters
@@ -273,7 +273,7 @@ export default function ExecutionLogsViewer({
               variant="ghost"
               size="sm"
               onClick={() => setAutoScroll(!autoScroll)}
-              className={autoScroll ? 'text-blue-400' : 'text-slate-400'}
+              className={autoScroll ? 'text-blue-400' : 'text-muted-foreground'}
             >
               {autoScroll ? <ChevronDown className="w-4 h-4 mr-2" /> : <ChevronUp className="w-4 h-4 mr-2" />}
               Auto-scroll
@@ -282,8 +282,8 @@ export default function ExecutionLogsViewer({
 
           {/* Level Filters */}
           {showFilters && (
-            <div className="flex items-center gap-4 mt-3 pt-3 border-t border-slate-800">
-              <span className="text-sm text-slate-500">Log Levels:</span>
+            <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border">
+              <span className="text-sm text-muted-foreground">Log Levels:</span>
               {(['DEBUG', 'INFO', 'WARN', 'ERROR'] as LogLevel[]).map(level => (
                 <div key={level} className="flex items-center gap-2">
                   <Checkbox
@@ -315,17 +315,17 @@ export default function ExecutionLogsViewer({
         <div className="flex-1 flex overflow-hidden">
           {/* Left sidebar — Activity OR QA Results (mutually exclusive) */}
           {(showActivityPanel || showQAPanel) && (
-            <div className="w-72 border-r border-slate-800 bg-slate-900/50 overflow-auto flex-shrink-0">
+            <div className="w-72 border-r border-border bg-card/50 overflow-auto flex-shrink-0">
               {showActivityPanel && (
                 <>
                   <div className="flex items-center gap-2 p-4 pb-3">
                     <Activity className="w-4 h-4 text-blue-400" />
-                    <h3 className="text-sm font-bold text-slate-200">Container Activity</h3>
+                    <h3 className="text-sm font-bold text-foreground">Container Activity</h3>
                   </div>
                   <div className="px-4 pb-4">
                     <Suspense
                       fallback={
-                        <div className="flex items-center gap-2 py-4 text-xs text-slate-500">
+                        <div className="flex items-center gap-2 py-4 text-xs text-muted-foreground">
                           <Loader2 className="w-3 h-3 animate-spin" />
                           Loading...
                         </div>
@@ -347,7 +347,7 @@ export default function ExecutionLogsViewer({
                 <>
                   <div className="flex items-center gap-2 p-4 pb-3">
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                    <h3 className="text-sm font-bold text-slate-200">QA Results</h3>
+                    <h3 className="text-sm font-bold text-foreground">QA Results</h3>
                   </div>
                   <div className="px-4 pb-4">
                     <QAResultsPanel qaAttempts={executionDetail?.qaAttempts ?? null} isLive={isLive} />
@@ -361,10 +361,10 @@ export default function ExecutionLogsViewer({
           <div 
             ref={containerRef}
             onScroll={handleScroll}
-            className="flex-1 min-w-0 overflow-auto p-4 font-mono text-sm bg-slate-950"
+            className="flex-1 min-w-0 overflow-auto p-4 font-mono text-sm bg-background"
           >
           {isLoading ? (
-            <div className="flex items-center justify-center h-full text-slate-500">
+            <div className="flex items-center justify-center h-full text-muted-foreground">
               <Loader2 className="w-6 h-6 animate-spin mr-2" />
               Loading logs...
             </div>
@@ -374,7 +374,7 @@ export default function ExecutionLogsViewer({
               Failed to load logs: {error.message}
             </div>
           ) : displayLogs.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-slate-500">
+            <div className="flex items-center justify-center h-full text-muted-foreground">
               No logs found
             </div>
           ) : (
@@ -382,11 +382,11 @@ export default function ExecutionLogsViewer({
               {displayLogs.map((log, index) => (
                 <div 
                   key={`${log.id}-${index}`}
-                  className={`flex items-start gap-3 py-1 px-2 rounded hover:bg-slate-900/50 ${
+                  className={`flex items-start gap-3 py-1 px-2 rounded hover:bg-card/50 ${
                     log.level === 'ERROR' ? 'bg-rose-500/5' : ''
                   }`}
                 >
-                  <span className="text-slate-600 text-xs shrink-0 w-20">
+                  <span className="text-muted-foreground text-xs shrink-0 w-20">
                     {format(new Date(log.timestamp), 'HH:mm:ss.SSS')}
                   </span>
                   <Badge 
@@ -395,7 +395,7 @@ export default function ExecutionLogsViewer({
                   >
                     {log.level}
                   </Badge>
-                  <span className="text-slate-300 break-words whitespace-pre-wrap min-w-0">
+                  <span className="text-foreground break-words whitespace-pre-wrap min-w-0">
                     {log.message}
                   </span>
                 </div>
@@ -407,7 +407,7 @@ export default function ExecutionLogsViewer({
         </div>
 
         {/* Footer Stats */}
-        <div className="px-6 py-3 border-t border-slate-800 bg-slate-950/50 flex items-center justify-between text-xs text-slate-500">
+        <div className="px-6 py-3 border-t border-border bg-background/50 flex items-center justify-between text-xs text-muted-foreground">
           <span>
             {filteredLogs.length.toLocaleString()} logs
             {hasMoreLogs && ` (showing last ${MAX_LOG_LINES.toLocaleString()})`}

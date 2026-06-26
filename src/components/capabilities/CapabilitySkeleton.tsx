@@ -2,11 +2,11 @@ import React from 'react';
 
 export const CapabilitySkeleton: React.FC = () => {
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
             {/* Summary Cards Skeleton */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="card-theme rounded-2xl p-5">
+                    <div key={i} className="card-theme rounded-lg p-5">
                         <div className="flex items-start justify-between mb-3">
                             <div className="w-10 h-10 rounded-xl bg-[var(--color-bg-secondary)] animate-pulse" />
                             <div className="w-16 h-6 rounded-full bg-[var(--color-bg-secondary)] animate-pulse" />
@@ -28,7 +28,7 @@ export const CapabilitySkeleton: React.FC = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <div key={i} className="card-theme rounded-2xl p-5">
+                        <div key={i} className="card-theme rounded-lg p-5">
                             <div className="flex items-start justify-between mb-4">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-xl bg-[var(--color-bg-secondary)] animate-pulse" />
@@ -50,7 +50,7 @@ export const CapabilitySkeleton: React.FC = () => {
             </div>
 
             {/* Chart Skeleton */}
-            <div className="card-theme rounded-2xl p-6">
+            <div className="card-theme rounded-lg p-6">
                 <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 rounded-xl bg-[var(--color-bg-secondary)] animate-pulse" />
                     <div className="space-y-2">

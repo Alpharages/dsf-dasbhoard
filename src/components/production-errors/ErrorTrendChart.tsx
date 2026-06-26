@@ -53,7 +53,7 @@ function ErrorTrendChartComponent() {
 
   if (isLoading) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+      <div className="bg-card border border-border rounded-lg p-6">
         <Skeleton className="h-6 w-48 mb-4" />
         <Skeleton className="h-[300px] w-full" />
       </div>
@@ -61,8 +61,8 @@ function ErrorTrendChartComponent() {
   }
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 min-w-0">
-      <h3 className="text-lg font-semibold text-slate-200 mb-4">
+    <div className="bg-card border border-border rounded-lg p-6 min-w-0">
+      <h3 className="text-lg font-semibold text-foreground mb-4">
         Error Trends (7 Days)
       </h3>
       
@@ -129,19 +129,19 @@ function ErrorTrendChartComponent() {
       <div className="flex flex-wrap gap-4 mt-4 justify-center">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-red-500" />
-          <span className="text-sm text-slate-400">Critical</span>
+          <span className="text-sm text-muted-foreground">Critical</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-orange-500" />
-          <span className="text-sm text-slate-400">High</span>
+          <span className="text-sm text-muted-foreground">High</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-yellow-500" />
-          <span className="text-sm text-slate-400">Medium</span>
+          <span className="text-sm text-muted-foreground">Medium</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-blue-500" />
-          <span className="text-sm text-slate-400">Low</span>
+          <span className="text-sm text-muted-foreground">Low</span>
         </div>
       </div>
     </div>

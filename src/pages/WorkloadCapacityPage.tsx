@@ -102,11 +102,11 @@ export const WorkloadCapacityPage: React.FC = () => {
 
     if (authLoading) {
         return (
-            <div className="space-y-8 animate-pulse">
+            <div className="space-y-6 animate-pulse">
                 <div className="h-10 w-64 bg-muted rounded-xl"></div>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="h-[400px] bg-card/50 rounded-2xl border border-border"></div>
-                    <div className="lg:col-span-2 h-[400px] bg-card/50 rounded-2xl border border-border"></div>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="h-[400px] bg-card/50 rounded-lg border border-border"></div>
+                    <div className="lg:col-span-2 h-[400px] bg-card/50 rounded-lg border border-border"></div>
                 </div>
             </div>
         );
@@ -118,18 +118,18 @@ export const WorkloadCapacityPage: React.FC = () => {
 
     if ((isPm && (pmLoading || trendsLoading)) || (isManager && teamLoading)) {
         return (
-            <div className="space-y-8 animate-pulse">
+            <div className="space-y-6 animate-pulse">
                 <div className="h-10 w-64 bg-muted rounded-xl"></div>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="h-[400px] bg-card/50 rounded-2xl border border-border"></div>
-                    <div className="lg:col-span-2 h-[400px] bg-card/50 rounded-2xl border border-border"></div>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="h-[400px] bg-card/50 rounded-lg border border-border"></div>
+                    <div className="lg:col-span-2 h-[400px] bg-card/50 rounded-lg border border-border"></div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="space-y-10 pb-20">
+        <div className="space-y-6 pb-20">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
@@ -149,13 +149,13 @@ export const WorkloadCapacityPage: React.FC = () => {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => queryClient.invalidateQueries({ queryKey: ['workload'] })}
-                        className="p-3 bg-card border border-border text-muted-foreground hover:text-foreground rounded-2xl transition-all"
+                        className="p-3 bg-card border border-border text-muted-foreground hover:text-foreground rounded-lg transition-all"
                     >
                         <RefreshCw className="w-5 h-5" />
                     </button>
                     <button
                         onClick={() => setIsSettingsOpen(true)}
-                        className="flex items-center gap-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-bold py-3 px-6 rounded-2xl border border-secondary/50 shadow-lg transition-all"
+                        className="flex items-center gap-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-bold py-3 px-6 rounded-lg border border-secondary/50 shadow-lg transition-all"
                     >
                         <Settings2 className="w-5 h-5" />
                         Configure
@@ -165,7 +165,7 @@ export const WorkloadCapacityPage: React.FC = () => {
 
             {/* Top Stats — personal utilization is only available to PMs */}
             {isPm && (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     {/* PM Gauge */}
                     {pmWorkload && (
                         <UtilizationGauge
@@ -192,7 +192,7 @@ export const WorkloadCapacityPage: React.FC = () => {
                             Team Load Balancing
                         </h2>
                         {teamWorkload.data.some(pm => pm.utilization > 80) && (
-                            <div className="flex items-center gap-2 px-4 py-2 bg-rose-500/10 border border-rose-500/20 rounded-2xl">
+                            <div className="flex items-center gap-2 px-4 py-2 bg-rose-500/10 border border-rose-500/20 rounded-lg">
                                 <AlertTriangle className="w-4 h-4 text-rose-500" />
                                 <span className="text-xs font-bold text-rose-500 uppercase tracking-widest">Action Required: Overloaded Staff</span>
                             </div>
@@ -207,8 +207,8 @@ export const WorkloadCapacityPage: React.FC = () => {
                     />
 
                     {/* Quick Reassign Section */}
-                    <div className="p-8 bg-primary/5 border border-primary/10 rounded-3xl flex flex-col items-center text-center">
-                        <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mb-4">
+                    <div className="p-8 bg-primary/5 border border-primary/10 rounded-lg flex flex-col items-center text-center">
+                        <div className="w-16 h-16 bg-primary/20 rounded-lg flex items-center justify-center mb-4">
                             <RefreshCw className="w-8 h-8 text-primary" />
                         </div>
                         <h4 className="text-lg font-bold text-foreground mb-2">Need to rebalance?</h4>
@@ -217,7 +217,7 @@ export const WorkloadCapacityPage: React.FC = () => {
                         </p>
                         <button
                             onClick={handleQuickReassign}
-                            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 px-8 rounded-2xl transition-all shadow-lg shadow-primary/20"
+                            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 px-8 rounded-lg transition-all shadow-lg shadow-primary/20"
                         >
                             Quick Reassign
                         </button>

@@ -39,10 +39,10 @@ export const ConversationListWidget: React.FC<ConversationListWidgetProps> = ({
     }, []);
 
     return (
-        <div className="h-full min-h-[400px] bg-[var(--surface-2)] border border-[var(--card-border)] rounded-2xl p-5 backdrop-blur-sm flex flex-col">
+        <div className="h-full min-h-[400px] bg-[var(--surface-2)] border border-[var(--card-border)] rounded-lg p-5 backdrop-blur-sm flex flex-col">
             <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-400 flex items-center justify-center shadow-lg shadow-violet-500/20">
+                    <div className="h-9 w-9 rounded-xl bg-violet-500 flex items-center justify-center ">
                         <MessageSquare className="h-4 h-4 text-white" />
                     </div>
                     <h2 className="text-base font-bold text-foreground">Recent Conversations</h2>

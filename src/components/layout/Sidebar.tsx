@@ -65,7 +65,7 @@ export function Sidebar({ className }: SidebarProps) {
         <Link to="/" className="flex items-center gap-3 overflow-hidden">
           <motion.div 
             whileHover={{ scale: 1.05 }}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 shadow-lg shadow-blue-500/25"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground"
           >
             <Sparkles className="h-5 w-5 text-white" />
           </motion.div>

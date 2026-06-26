@@ -25,15 +25,15 @@ export function BurnRateChart(_props: BurnRateChartProps) {
         <div className="min-w-0 w-full">
         <ResponsiveContainer width="100%" height={300} debounce={100}>
             <LineChart data={burnRateData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} />
-                <YAxis stroke="#94a3b8" fontSize={12} unit="$" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis dataKey="date" stroke="var(--muted-foreground)" fontSize={12} />
+                <YAxis stroke="var(--muted-foreground)" fontSize={12} unit="$" />
                 <Tooltip
                     contentStyle={{
-                        backgroundColor: '#1e293b',
-                        border: '1px solid #334155',
+                        backgroundColor: 'var(--popover)',
+                        border: '1px solid var(--border)',
                         borderRadius: '8px',
-                        color: '#e2e8f0',
+                        color: 'var(--foreground)',
                     }}
                 />
                 <Legend />

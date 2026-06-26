@@ -61,14 +61,14 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center text-center p-8 rounded-2xl',
+        'flex flex-col items-center justify-center text-center p-8 rounded-lg',
         'bg-[var(--surface-1)] border border-dashed border-[var(--card-border)]',
         className
       )}
     >
       <div
         className={cn(
-          'rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 mb-4',
+          'rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 mb-4',
           sizes.iconBg
         )}
       >

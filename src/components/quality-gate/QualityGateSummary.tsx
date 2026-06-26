@@ -14,13 +14,13 @@ interface QualityGateSummaryProps {
 
 export const QualityGateSummary: React.FC<QualityGateSummaryProps> = ({ summary }) => {
     return (
-        <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-6 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold text-slate-100 mb-6">Quality Gate Summary</h3>
+        <div className="bg-card border border-border rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-foreground mb-6">Quality Gate Summary</h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Linting Status */}
                 <div className="flex flex-col items-center">
-                    <span className="text-sm font-medium text-slate-400 mb-2">Linting</span>
+                    <span className="text-sm font-medium text-muted-foreground mb-2">Linting</span>
                     <div className={`px-4 py-2 rounded-full text-sm font-bold ${summary.linting_passed ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
                         }`}>
                         {summary.linting_passed ? 'PASSED' : 'FAILED'}
@@ -29,7 +29,7 @@ export const QualityGateSummary: React.FC<QualityGateSummaryProps> = ({ summary 
 
                 {/* Tests Status */}
                 <div className="flex flex-col items-center">
-                    <span className="text-sm font-medium text-slate-400 mb-2">Tests</span>
+                    <span className="text-sm font-medium text-muted-foreground mb-2">Tests</span>
                     <div className={`px-4 py-2 rounded-full text-sm font-bold ${summary.tests_passed ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
                         }`}>
                         {summary.tests_passed ? 'PASSED' : 'FAILED'}
@@ -38,7 +38,7 @@ export const QualityGateSummary: React.FC<QualityGateSummaryProps> = ({ summary 
 
                 {/* Coverage Gauge */}
                 <div className="flex flex-col items-center">
-                    <span className="text-sm font-medium text-slate-400 mb-2">Coverage</span>
+                    <span className="text-sm font-medium text-muted-foreground mb-2">Coverage</span>
                     <div className="w-24 h-24">
                         <GaugeComponent
                             value={summary.test_coverage}
@@ -57,7 +57,7 @@ export const QualityGateSummary: React.FC<QualityGateSummaryProps> = ({ summary 
 
                 {/* Quality Score Gauge */}
                 <div className="flex flex-col items-center">
-                    <span className="text-sm font-medium text-slate-400 mb-2">Review Score</span>
+                    <span className="text-sm font-medium text-muted-foreground mb-2">Review Score</span>
                     <div className="w-24 h-24">
                         <GaugeComponent
                             value={summary.quality_score}

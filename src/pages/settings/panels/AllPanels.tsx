@@ -26,7 +26,7 @@ export const CleanupPanel = () => {
     const { getValue, handleUpdate, isUpdating } = usePanelLogic();
     return (
         <div>
-            <div className="flex items-center gap-3 mb-8">
+            <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-rose-500/10 rounded-xl text-rose-500"><Trash2 className="w-6 h-6" /></div>
                 <div><h1 className="text-2xl font-bold text-foreground">Cleanup Settings</h1><p className="text-muted-foreground">Manage data retention policies.</p></div>
             </div>
@@ -64,7 +64,7 @@ export const SelfHealingPanel = () => {
     const { getValue, handleUpdate, isUpdating } = usePanelLogic();
     return (
         <div>
-            <div className="flex items-center gap-3 mb-8">
+            <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-500"><Activity className="w-6 h-6" /></div>
                 <div><h1 className="text-2xl font-bold text-foreground">Self-Healing Settings</h1><p className="text-muted-foreground">Configure auto-recovery behavior.</p></div>
             </div>
@@ -94,7 +94,7 @@ export const DependencyPanel = () => {
     const { getValue, handleUpdate, isUpdating } = usePanelLogic();
     return (
         <div>
-            <div className="flex items-center gap-3 mb-8">
+            <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-blue-500/10 rounded-xl text-blue-500"><Share2 className="w-6 h-6" /></div>
                 <div><h1 className="text-2xl font-bold text-foreground">Dependency Management</h1><p className="text-muted-foreground">Circular dependency and locking settings.</p></div>
             </div>
@@ -124,7 +124,7 @@ export const AutoMergePanel = () => {
     const { getValue, handleUpdate, isUpdating } = usePanelLogic();
     return (
         <div>
-            <div className="flex items-center gap-3 mb-8">
+            <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-purple-500/10 rounded-xl text-purple-500"><GitMerge className="w-6 h-6" /></div>
                 <div><h1 className="text-2xl font-bold text-foreground">Auto-Merge & PRs</h1><p className="text-muted-foreground">Pull request automation policies.</p></div>
             </div>
@@ -153,7 +153,7 @@ export const CostPanel = () => {
     const { getValue, handleUpdate, isUpdating } = usePanelLogic();
     return (
         <div>
-            <div className="flex items-center gap-3 mb-8">
+            <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-yellow-500/10 rounded-xl text-yellow-500"><DollarSign className="w-6 h-6" /></div>
                 <div><h1 className="text-2xl font-bold text-foreground">Cost & AI Models</h1><p className="text-muted-foreground">Budget caps and model selection.</p></div>
             </div>
@@ -182,7 +182,7 @@ export const AuditPanel = () => {
     const { getValue, handleUpdate, isUpdating } = usePanelLogic();
     return (
         <div>
-            <div className="flex items-center gap-3 mb-8">
+            <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-amber-500/10 rounded-xl text-amber-500"><ShieldAlert className="w-6 h-6" /></div>
                 <div><h1 className="text-2xl font-bold text-foreground">Audit & Safety</h1><p className="text-muted-foreground">Compliance and safety thresholds.</p></div>
             </div>
@@ -212,7 +212,7 @@ export const HealthPanel = () => {
     const { getValue, handleUpdate, isUpdating } = usePanelLogic();
     return (
         <div>
-            <div className="flex items-center gap-3 mb-8">
+            <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-red-500/10 rounded-xl text-red-500"><HeartPulse className="w-6 h-6" /></div>
                 <div><h1 className="text-2xl font-bold text-foreground">Health & Rollback</h1><p className="text-muted-foreground">Deployment health monitoring.</p></div>
             </div>
@@ -270,7 +270,7 @@ export const IntegrationHealthPanel = () => {
 
     return (
         <div>
-            <div className="flex items-center gap-3 mb-8">
+            <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-indigo-500/10 rounded-xl text-indigo-500"><Blocks className="w-6 h-6" /></div>
                 <div><h1 className="text-2xl font-bold text-foreground">Integration Health</h1><p className="text-muted-foreground">Monitor the status of required third-party services.</p></div>
             </div>

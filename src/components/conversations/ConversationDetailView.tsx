@@ -11,12 +11,12 @@ interface ConversationDetailViewProps {
 
 const sentimentConfig = {
     positive: { color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20', icon: Smile, label: 'Positive' },
-    neutral: { color: 'text-slate-500 bg-slate-500/10 border-slate-500/20', icon: Meh, label: 'Neutral' },
+    neutral: { color: 'text-muted-foreground bg-muted/10 border-[var(--border-hover)]/20', icon: Meh, label: 'Neutral' },
     negative: { color: 'text-rose-500 bg-rose-500/10 border-rose-500/20', icon: Frown, label: 'Negative' }
 };
 
 const statusConfig = {
-    uploaded: { color: 'bg-slate-500/10 text-slate-500 border-slate-500/20', label: 'Uploaded' },
+    uploaded: { color: 'bg-muted/10 text-muted-foreground border-[var(--border-hover)]/20', label: 'Uploaded' },
     transcribing: { color: 'bg-blue-500/10 text-blue-500 border-blue-500/20 animate-pulse', label: 'Transcribing' },
     analyzing: { color: 'bg-purple-500/10 text-purple-500 border-purple-500/20 animate-pulse', label: 'Analyzing' },
     completed: { color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20', label: 'Completed' },
@@ -115,7 +115,7 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
             <div className="flex items-center justify-center min-h-screen">
                 <div className="flex flex-col items-center gap-4">
                     <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
-                    <p className="text-slate-500">Loading conversation...</p>
+                    <p className="text-muted-foreground">Loading conversation...</p>
                 </div>
             </div>
         );
@@ -124,10 +124,10 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
     if (error || !conversation) {
         return (
             <div className="flex items-center justify-center min-h-screen p-4">
-                <div className="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-8 max-w-md text-center">
+                <div className="bg-rose-500/10 border border-rose-500/20 rounded-lg p-8 max-w-md text-center">
                     <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
                     <p className="text-rose-400 font-bold text-lg mb-2">Error Loading Conversation</p>
-                    <p className="text-slate-400 text-sm">{error}</p>
+                    <p className="text-muted-foreground text-sm">{error}</p>
                 </div>
             </div>
         );
@@ -140,11 +140,11 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
     return (
         <div className="max-w-5xl mx-auto p-8">
             {/* Header */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 mb-6">
+            <div className="bg-card border border-border rounded-lg p-8 mb-6">
                 <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                         <h1 className="text-3xl font-bold text-white mb-2">{conversation.title}</h1>
-                        <div className="flex items-center gap-4 text-sm text-slate-400">
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
                             <span>
                                 {new Date(conversation.conversation_date).toLocaleDateString('en-US', {
                                     year: 'numeric',
@@ -153,9 +153,9 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
                                 })}
                             </span>
                             <span>•</span>
-                            <span>Project: <span className="text-slate-300 font-medium">{conversation.project.name}</span></span>
+                            <span>Project: <span className="text-foreground font-medium">{conversation.project.name}</span></span>
                             <span>•</span>
-                            <span>PM: <span className="text-slate-300 font-medium">{conversation.pm.name}</span></span>
+                            <span>PM: <span className="text-foreground font-medium">{conversation.pm.name}</span></span>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -172,10 +172,10 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
 
             {/* Audio Player */}
             {conversation.audio_file_url && (
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6">
+                <div className="bg-card border border-border rounded-lg p-6 mb-6">
                     <div className="flex items-center gap-3 mb-3">
                         <Volume2 className="w-5 h-5 text-blue-400" />
-                        <h3 className="text-lg font-bold text-slate-200">Audio Recording</h3>
+                        <h3 className="text-lg font-bold text-foreground">Audio Recording</h3>
                     </div>
                     <audio controls className="w-full">
                         <source src={conversation.audio_file_url} type="audio/mpeg" />
@@ -186,9 +186,9 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
 
             {/* Transcript */}
             {conversation.transcript && (
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6">
+                <div className="bg-card border border-border rounded-lg p-6 mb-6">
                     <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-lg font-bold text-slate-200">Transcript</h3>
+                        <h3 className="text-lg font-bold text-foreground">Transcript</h3>
                         <button
                             onClick={handleCopyTranscript}
                             className="text-sm text-blue-400 hover:text-blue-300 font-medium flex items-center gap-2"
@@ -197,7 +197,7 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
                             Copy
                         </button>
                     </div>
-                    <div className={`text-slate-400 text-sm ${transcriptExpanded ? '' : 'line-clamp-3'}`}>
+                    <div className={`text-muted-foreground text-sm ${transcriptExpanded ? '' : 'line-clamp-3'}`}>
                         {conversation.transcript}
                     </div>
                     {conversation.transcript.length > 200 && (
@@ -213,12 +213,12 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
 
             {/* AI Summary */}
             {conversation.summary && summary && (
-                <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-2xl p-6 mb-6">
+                <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 mb-6">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                             <span className="text-white font-bold">AI</span>
                         </div>
-                        <h3 className="text-lg font-bold text-slate-200">AI Summary</h3>
+                        <h3 className="text-lg font-bold text-foreground">AI Summary</h3>
                     </div>
 
                     {summary.keyPoints.length > 0 && (
@@ -226,7 +226,7 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
                             <h4 className="text-sm font-bold text-blue-400 uppercase mb-2">Key Points</h4>
                             <ul className="space-y-1">
                                 {summary.keyPoints.map((point, idx) => (
-                                    <li key={idx} className="text-slate-300 text-sm flex items-start gap-2">
+                                    <li key={idx} className="text-foreground text-sm flex items-start gap-2">
                                         <span className="text-blue-500">•</span>
                                         <span>{point}</span>
                                     </li>
@@ -240,7 +240,7 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
                             <h4 className="text-sm font-bold text-purple-400 uppercase mb-2">Decisions Made</h4>
                             <ul className="space-y-1">
                                 {summary.decisions.map((decision, idx) => (
-                                    <li key={idx} className="text-slate-300 text-sm flex items-start gap-2">
+                                    <li key={idx} className="text-foreground text-sm flex items-start gap-2">
                                         <span className="text-purple-500">•</span>
                                         <span>{decision}</span>
                                     </li>
@@ -254,7 +254,7 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
                             <h4 className="text-sm font-bold text-emerald-400 uppercase mb-2">Next Steps</h4>
                             <ul className="space-y-1">
                                 {summary.nextSteps.map((step, idx) => (
-                                    <li key={idx} className="text-slate-300 text-sm flex items-start gap-2">
+                                    <li key={idx} className="text-foreground text-sm flex items-start gap-2">
                                         <span className="text-emerald-500">•</span>
                                         <span>{step}</span>
                                     </li>
@@ -268,7 +268,7 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
 
             {/* Action Items */}
             {conversation.action_items && conversation.action_items.length > 0 && (
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6">
+                <div className="bg-card border border-border rounded-lg p-6 mb-6">
                     <ActionItemsTable
                         actionItems={conversation.action_items}
                         onSelectionChange={setSelectedActionItemIds}
@@ -276,7 +276,7 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
                     <button
                         onClick={handleCreateTickets}
                         disabled={selectedActionItemIds.length === 0}
-                        className="w-full mt-6 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-600 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-500/20 disabled:shadow-none"
+                        className="w-full mt-6 bg-blue-600 hover:bg-blue-500 disabled:bg-muted disabled:text-muted-foreground text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-500/20 disabled:shadow-none"
                     >
                         Create Tickets ({selectedActionItemIds.length})
                     </button>
@@ -285,8 +285,8 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
 
             {/* Processing Cost */}
             {conversation.processing_cost !== undefined && (
-                <div className="text-center text-sm text-slate-500">
-                    Processing Cost: <span className="text-slate-300 font-medium">${conversation.processing_cost.toFixed(2)}</span>
+                <div className="text-center text-sm text-muted-foreground">
+                    Processing Cost: <span className="text-foreground font-medium">${conversation.processing_cost.toFixed(2)}</span>
                 </div>
             )}
 

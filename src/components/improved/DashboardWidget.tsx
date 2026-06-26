@@ -88,24 +88,24 @@ export function DashboardWidget({
     <>
       <div
         className={cn(
-          'group relative flex flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 backdrop-blur-sm transition-all duration-300',
-          'hover:border-slate-700 hover:shadow-lg hover:shadow-black/10',
+          'group relative flex flex-col overflow-hidden rounded-lg border border-border bg-card/80 backdrop-blur-sm transition-all duration-300',
+          'hover:border-border hover:shadow-lg hover:shadow-black/10',
           sizeClasses[size],
           className
         )}
       >
         {/* Widget Header */}
-        <div className="flex items-center justify-between border-b border-slate-800/50 px-5 py-4">
+        <div className="flex items-center justify-between border-b border-border/50 px-5 py-4">
           <div className="flex items-center gap-3">
             {Icon && (
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800 text-slate-400">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                 <Icon className="h-4 w-4" />
               </div>
             )}
             <div>
-              <h3 className="font-semibold text-slate-200">{title}</h3>
+              <h3 className="font-semibold text-foreground">{title}</h3>
               {description && (
-                <p className="text-xs text-slate-500">{description}</p>
+                <p className="text-xs text-muted-foreground">{description}</p>
               )}
             </div>
           </div>
@@ -117,7 +117,7 @@ export function DashboardWidget({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-slate-500 hover:text-slate-300"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground"
                 onClick={handleRefresh}
                 disabled={isRefreshing}
               >
@@ -130,12 +130,12 @@ export function DashboardWidget({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-slate-500 hover:text-slate-300"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
                 >
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 border-slate-800 bg-slate-900">
+              <DropdownMenuContent align="end" className="w-48 border-border bg-card">
                 {expandable && (
                   <DropdownMenuItem onClick={() => setIsExpanded(true)}>
                     <Maximize2 className="mr-2 h-4 w-4" />
@@ -148,7 +148,7 @@ export function DashboardWidget({
                     Configure
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuSeparator className="bg-slate-800" />
+                <DropdownMenuSeparator className="bg-muted" />
                 {onRemove && (
                   <DropdownMenuItem onClick={onRemove} className="text-rose-400 focus:text-rose-400">
                     <X className="mr-2 h-4 w-4" />
@@ -173,15 +173,15 @@ export function DashboardWidget({
 
         {/* Widget Footer */}
         {footer && (
-          <div className="border-t border-slate-800/50 px-5 py-3">
+          <div className="border-t border-border/50 px-5 py-3">
             {footer}
           </div>
         )}
 
         {/* Hover Actions Overlay */}
         <div className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100">
-          <div className="flex items-center gap-1 rounded-lg bg-slate-800/90 p-1 shadow-lg">
-            <GripVertical className="h-4 w-4 cursor-grab text-slate-500" />
+          <div className="flex items-center gap-1 rounded-lg bg-muted/90 p-1 shadow-lg">
+            <GripVertical className="h-4 w-4 cursor-grab text-muted-foreground" />
           </div>
         </div>
       </div>
@@ -189,7 +189,7 @@ export function DashboardWidget({
       {/* Expanded View Dialog */}
       {expandable && (
         <Dialog open={isExpanded} onOpenChange={setIsExpanded}>
-          <DialogContent className="max-w-6xl border-slate-800 bg-slate-900">
+          <DialogContent className="max-w-6xl border-border bg-card">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-3">
                 {Icon && <Icon className="h-5 w-5 text-blue-400" />}
@@ -210,13 +210,13 @@ export function DashboardWidget({
 function WidgetSkeleton() {
   return (
     <div className="animate-pulse space-y-4">
-      <div className="h-4 w-3/4 rounded bg-slate-800" />
+      <div className="h-4 w-3/4 rounded bg-muted" />
       <div className="grid grid-cols-3 gap-4">
-        <div className="h-20 rounded-xl bg-slate-800" />
-        <div className="h-20 rounded-xl bg-slate-800" />
-        <div className="h-20 rounded-xl bg-slate-800" />
+        <div className="h-20 rounded-xl bg-muted" />
+        <div className="h-20 rounded-xl bg-muted" />
+        <div className="h-20 rounded-xl bg-muted" />
       </div>
-      <div className="h-32 rounded-xl bg-slate-800" />
+      <div className="h-32 rounded-xl bg-muted" />
     </div>
   );
 }
@@ -228,14 +228,14 @@ function WidgetError({ message, onRetry }: { message: string; onRetry?: () => vo
       <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-500/10">
         <X className="h-8 w-8 text-rose-500" />
       </div>
-      <h4 className="mb-2 font-semibold text-slate-300">Failed to load data</h4>
-      <p className="mb-4 max-w-xs text-sm text-slate-500">{message}</p>
+      <h4 className="mb-2 font-semibold text-foreground">Failed to load data</h4>
+      <p className="mb-4 max-w-xs text-sm text-muted-foreground">{message}</p>
       {onRetry && (
         <Button
           variant="outline"
           size="sm"
           onClick={onRetry}
-          className="border-slate-700 text-slate-300 hover:bg-slate-800"
+          className="border-border text-foreground hover:bg-muted"
         >
           <RefreshCw className="mr-2 h-4 w-4" />
           Try again
@@ -261,7 +261,7 @@ export function WidgetContainer({ children, className, columns = 2 }: WidgetCont
   };
 
   return (
-    <div className={cn('grid gap-6', columnClasses[columns], className)}>
+    <div className={cn('grid gap-4', columnClasses[columns], className)}>
       {children}
     </div>
   );
@@ -294,18 +294,18 @@ export function MetricListWidget({
         {metrics.map((metric, index) => (
           <div
             key={index}
-            className="flex items-center justify-between rounded-lg bg-slate-800/50 px-4 py-3 transition-colors hover:bg-slate-800"
+            className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-3 transition-colors hover:bg-muted"
           >
-            <span className="text-sm text-slate-400">{metric.label}</span>
+            <span className="text-sm text-muted-foreground">{metric.label}</span>
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-slate-200">{metric.value}</span>
+              <span className="font-semibold text-foreground">{metric.value}</span>
               {metric.change !== undefined && (
                 <span
                   className={cn(
                     'text-xs font-medium',
                     metric.trend === 'up' && 'text-emerald-400',
                     metric.trend === 'down' && 'text-rose-400',
-                    metric.trend === 'neutral' && 'text-slate-500'
+                    metric.trend === 'neutral' && 'text-muted-foreground'
                   )}
                 >
                   {metric.change > 0 ? '+' : ''}
@@ -352,8 +352,8 @@ export function ActivityFeedWidget({
           <div key={activity.id} className="flex gap-3">
             <div className={cn('h-2 w-2 shrink-0 rounded-full mt-2', typeColors[activity.type].split(' ')[0].replace('/20', ''))} />
             <div className="flex-1">
-              <p className="text-sm text-slate-300">{activity.message}</p>
-              <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
+              <p className="text-sm text-foreground">{activity.message}</p>
+              <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                 <span>{activity.timestamp}</span>
                 {activity.user && (
                   <>
@@ -395,14 +395,14 @@ export function QuickStatsWidget({
           return (
             <div
               key={index}
-              className="flex items-center gap-3 rounded-xl bg-slate-800/50 p-4 transition-colors hover:bg-slate-800"
+              className="flex items-center gap-3 rounded-xl bg-muted/50 p-4 transition-colors hover:bg-muted"
             >
               <div className={cn('flex h-10 w-10 items-center justify-center rounded-lg', stat.color)}>
                 <Icon className="h-5 w-5 text-white" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-white">{stat.value}</p>
-                <p className="text-xs text-slate-500">{stat.label}</p>
+                <p className="text-xs text-muted-foreground">{stat.label}</p>
               </div>
             </div>
           );

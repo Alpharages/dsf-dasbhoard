@@ -18,9 +18,9 @@ interface WorkloadTrendsChartProps {
 
 export const WorkloadTrendsChart: React.FC<WorkloadTrendsChartProps> = ({ data }) => {
     return (
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 h-[400px] flex flex-col">
-            <div className="flex items-center justify-between mb-8">
-                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+        <div className="bg-card border border-border rounded-lg p-6 h-[400px] flex flex-col">
+            <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
                     <BarChart3 className="w-5 h-5 text-blue-400" />
                     Utilization History (30 Days)
                 </h3>

@@ -76,7 +76,7 @@ export const ArchitectureReviewQueuePage: React.FC = () => {
             </div>
 
             {error && (
-                <div className="bg-destructive/10 border border-destructive/20 rounded-2xl p-4 flex items-center gap-3 text-destructive">
+                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 flex items-center gap-3 text-destructive">
                     <ShieldAlert className="w-5 h-5 flex-shrink-0" />
                     <p className="font-medium">Failed to load ADR queue. Please try refreshing.</p>
                 </div>

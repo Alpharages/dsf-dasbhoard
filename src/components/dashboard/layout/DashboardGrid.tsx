@@ -53,7 +53,7 @@ export function KpiGrid({ children, className }: { children: React.ReactNode; cl
 
 export function ChartGrid({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={cn('grid grid-cols-1 lg:grid-cols-3 gap-6', className)}>
+    <div className={cn('grid grid-cols-1 lg:grid-cols-3 gap-4', className)}>
       {children}
     </div>
   );
@@ -83,7 +83,7 @@ export function SplitLayout({
   };
 
   return (
-    <div className={cn('grid grid-cols-1 gap-6', ratioClasses[ratio], className)}>
+    <div className={cn('grid grid-cols-1 gap-4', ratioClasses[ratio], className)}>
       <div className={primarySpan[ratio]}>{primary}</div>
       <div>{secondary}</div>
     </div>

@@ -69,15 +69,15 @@ export const DelegateToArchitectModal: React.FC<DelegateToArchitectModalProps> =
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl flex flex-col scale-100 animate-in zoom-in-95 duration-200">
+            <div className="bg-card border border-border rounded-lg w-full max-w-lg flex flex-col scale-100 animate-in zoom-in-95 duration-200">
 
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-slate-800 bg-slate-900/50 rounded-t-2xl">
-                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                        <Users className="w-5 h-5 text-purple-500" />
+                <div className="flex items-center justify-between p-6 border-b border-border bg-card/50 rounded-t-lg">
+                    <h3 className="text-xl font-semibold text-foreground flex items-center gap-2">
+                        <Users className="w-5 h-5 text-violet-400" />
                         Delegate Review
                     </h3>
-                    <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+                    <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
@@ -85,40 +85,40 @@ export const DelegateToArchitectModal: React.FC<DelegateToArchitectModalProps> =
                 {/* Content */}
                 <div className="p-6 space-y-6">
                     <div className="relative">
-                        <Search className="absolute left-3 top-3 w-4 h-4 text-slate-500" />
+                        <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                         <input
                             type="text"
                             placeholder="Search architects..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                            className="w-full bg-background border border-border rounded-lg pl-10 pr-4 py-2.5 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-violet-500/50"
                         />
                     </div>
 
                     <div className="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
                         {loadingUsers ? (
-                            <div className="flex justify-center p-4 text-slate-500">Loading architects...</div>
+                            <div className="flex justify-center p-4 text-muted-foreground">Loading architects...</div>
                         ) : filteredArchitects.length === 0 ? (
-                            <div className="flex justify-center p-4 text-slate-500">No architects found</div>
+                            <div className="flex justify-center p-4 text-muted-foreground">No architects found</div>
                         ) : (
                             filteredArchitects.map(architect => (
                                 <div
                                     key={architect.id}
                                     onClick={() => setSelectedArchitect(architect.id)}
-                                    className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${selectedArchitect === architect.id
-                                        ? 'bg-purple-600/10 border-purple-600/50'
-                                        : 'bg-slate-900/50 border-slate-800 hover:border-slate-700 hover:bg-slate-800/50'
+                                    className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${selectedArchitect === architect.id
+                                        ? 'bg-violet-500/10 border-violet-500/50'
+                                        : 'bg-card/50 border-border hover:border-[var(--border-hover)] hover:bg-muted/50'
                                         }`}
                                 >
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center font-bold text-slate-400 border border-slate-700">
+                                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center font-bold text-muted-foreground border border-border">
                                             {architect.avatar}
                                         </div>
                                         <div>
-                                            <h4 className={`font-semibold ${selectedArchitect === architect.id ? 'text-purple-400' : 'text-slate-200'}`}>
+                                            <h4 className={`font-semibold ${selectedArchitect === architect.id ? 'text-violet-400' : 'text-foreground'}`}>
                                                 {architect.name}
                                             </h4>
-                                            <p className="text-xs text-slate-500">{architect.role}</p>
+                                            <p className="text-xs text-muted-foreground">{architect.role}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
@@ -138,7 +138,7 @@ export const DelegateToArchitectModal: React.FC<DelegateToArchitectModalProps> =
                                         </TooltipProvider>
 
                                         {selectedArchitect === architect.id && (
-                                            <UserCheck className="w-5 h-5 text-purple-500 animate-in zoom-in" />
+                                            <UserCheck className="w-5 h-5 text-violet-400 animate-in zoom-in" />
                                         )}
                                     </div>
                                 </div>
@@ -147,7 +147,7 @@ export const DelegateToArchitectModal: React.FC<DelegateToArchitectModalProps> =
                     </div>
 
                     <div>
-                        <label htmlFor="delegation-note" className="block text-sm font-medium text-slate-400 mb-2">
+                        <label htmlFor="delegation-note" className="block text-sm font-medium text-muted-foreground mb-2">
                             Delegation Note (Optional)
                         </label>
                         <textarea
@@ -155,23 +155,23 @@ export const DelegateToArchitectModal: React.FC<DelegateToArchitectModalProps> =
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                             placeholder="Why are you delegating this? Any specific context?"
-                            className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 min-h-[80px] text-sm resize-none"
+                            className="w-full bg-background border border-border rounded-lg p-3 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-violet-500/50 min-h-[80px] text-sm resize-none"
                         />
                     </div>
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 bg-slate-900/90 border-t border-slate-800 backdrop-blur rounded-b-2xl flex justify-end gap-3">
+                <div className="p-6 bg-card/90 border-t border-border backdrop-blur rounded-b-lg flex justify-end gap-3">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 text-slate-400 font-semibold hover:text-white transition-colors"
+                        className="px-4 py-2 text-muted-foreground font-semibold hover:text-foreground transition-colors"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleSubmit}
                         disabled={!selectedArchitect || isSubmitting}
-                        className="px-6 py-2 bg-purple-600 hover:bg-purple-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-semibold rounded-xl shadow-lg shadow-purple-500/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                        className="px-6 py-2 bg-violet-600 hover:bg-violet-500 disabled:bg-muted disabled:text-muted-foreground text-white font-semibold rounded-lg transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
                     >
                         {isSubmitting ? 'Delegating...' : 'Confirm Delegation'}
                     </button>

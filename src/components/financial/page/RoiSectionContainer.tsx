@@ -35,7 +35,7 @@ export function RoiSectionContainer({ projectId }: RoiSectionContainerProps) {
 
     if (!projectId) {
         return (
-            <div className="bg-card border border-border rounded-2xl p-8 text-center">
+            <div className="bg-card border border-border rounded-lg p-8 text-center">
                 <TrendingUp className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                 <p className="text-muted-foreground font-medium">Select a project to view ROI metrics</p>
             </div>
@@ -44,7 +44,7 @@ export function RoiSectionContainer({ projectId }: RoiSectionContainerProps) {
 
     if (isLoading) {
         return (
-            <div className="bg-card border border-border rounded-2xl p-8">
+            <div className="bg-card border border-border rounded-lg p-8">
                 <div className="animate-pulse space-y-4">
                     <div className="h-8 bg-muted rounded w-1/3"></div>
                     <div className="h-64 bg-muted rounded"></div>
@@ -114,13 +114,13 @@ export function RoiSectionContainer({ projectId }: RoiSectionContainerProps) {
             </div>
 
             {/* ROI Gauge - Reuse existing component */}
-            <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="bg-card border border-border rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Current ROI</h3>
                 <RoiGaugeWidget projectId={projectId} period={selectedPeriod} />
             </div>
 
             {/* ROI Trend Chart */}
-            <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
+            <div className="bg-card border border-border rounded-lg p-6 min-w-0">
                 <h3 className="text-lg font-semibold text-foreground mb-4">ROI Trend Over Time</h3>
                 <ResponsiveContainer width="100%" height={300} debounce={100}>
                     <LineChart data={trendData}>
@@ -142,7 +142,7 @@ export function RoiSectionContainer({ projectId }: RoiSectionContainerProps) {
             </div>
 
             {/* Cost vs Value Comparison */}
-            <div className="bg-card border border-border rounded-2xl p-6 min-w-0">
+            <div className="bg-card border border-border rounded-lg p-6 min-w-0">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Cost vs Value Comparison</h3>
                 <ResponsiveContainer width="100%" height={300} debounce={100}>
                     <AreaChart data={trendData}>
@@ -165,9 +165,9 @@ export function RoiSectionContainer({ projectId }: RoiSectionContainerProps) {
             </div>
 
             {/* ROI Forecast */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {forecasts.map((forecast) => (
-                    <div key={forecast.period} className="bg-card border border-border rounded-2xl p-6">
+                    <div key={forecast.period} className="bg-card border border-border rounded-lg p-6">
                         <div className="flex items-center gap-2 mb-3">
                             <Calendar className="w-4 h-4 text-muted-foreground" />
                             <span className="text-sm font-semibold text-muted-foreground uppercase">{forecast.period} Forecast</span>

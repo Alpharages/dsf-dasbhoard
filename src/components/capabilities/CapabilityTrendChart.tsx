@@ -24,7 +24,7 @@ const TrendIcon = ({ trend }: { trend: TrendIndicator }) => {
     const iconClass = 'w-4 h-4';
     if (trend === 'UP') return <TrendingUp className={iconClass + ' text-emerald-400'} />;
     if (trend === 'DOWN') return <TrendingDown className={iconClass + ' text-rose-400'} />;
-    return <Minus className={iconClass + ' text-slate-400'} />;
+    return <Minus className={iconClass + ' text-muted-foreground'} />;
 };
 
 export const CapabilityTrendChart: React.FC<CapabilityTrendChartProps> = ({ capabilities }) => {
@@ -37,7 +37,7 @@ export const CapabilityTrendChart: React.FC<CapabilityTrendChartProps> = ({ capa
     }));
 
     return (
-        <div className="card-theme rounded-2xl p-6 min-w-0">
+        <div className="card-theme rounded-lg p-6 min-w-0">
             {/* Header */}
             <div className="flex items-center gap-3 mb-6">
                 <div className="p-2.5 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/20">

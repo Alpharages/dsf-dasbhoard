@@ -108,14 +108,10 @@ export function NewProjectDialog({ isOpen, onOpenChange, onSuccess }: NewProject
       <DialogContent className="sm:max-w-[700px] p-0 overflow-hidden border-0 shadow-2xl shadow-primary/10">
         <div className="flex flex-col sm:flex-row h-full">
           {/* Decorative Sidebar */}
-          <div className="hidden sm:flex sm:w-[240px] bg-gradient-to-br from-primary/10 via-primary/5 to-background p-6 flex-col justify-between border-r border-border/50 relative overflow-hidden">
-            {/* Abstract ambient shapes */}
-            <div className="absolute -top-12 -left-12 w-32 h-32 bg-primary/20 rounded-full blur-3xl opacity-50" />
-            <div className="absolute -bottom-12 -right-12 w-32 h-32 bg-primary/20 rounded-full blur-3xl opacity-50" />
-            
+          <div className="hidden sm:flex sm:w-[240px] bg-muted p-6 flex-col justify-between border-r border-border relative overflow-hidden">
             <div className="relative z-10">
-              <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 mb-4">
-                <svg className="w-5 h-5 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="h-10 w-10 rounded-md bg-primary/10 text-primary flex items-center justify-center mb-4">
+                <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
               </div>
@@ -129,9 +125,9 @@ export function NewProjectDialog({ isOpen, onOpenChange, onSuccess }: NewProject
           </div>
 
           {/* Form Content */}
-          <div className="flex-1 p-6 sm:p-8 bg-background/50 backdrop-blur-xl">
+          <div className="flex-1 p-6 sm:p-8 bg-background">
             <DialogHeader className="mb-6">
-              <DialogTitle className="text-2xl font-bold tracking-tight">New Project</DialogTitle>
+              <DialogTitle className="text-2xl font-semibold tracking-tight">New Project</DialogTitle>
               <DialogDescription className="text-sm mt-1.5 opacity-80">
                 Setup the foundation for your new initiative.
               </DialogDescription>
@@ -224,7 +220,7 @@ export function NewProjectDialog({ isOpen, onOpenChange, onSuccess }: NewProject
                 <Button 
                   type="submit" 
                   disabled={isLoading}
-                  className="font-medium shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 transition-all active:scale-[0.98]"
+                  className="font-medium transition-all active:scale-[0.98]"
                 >
                   {isLoading ? (
                     <>

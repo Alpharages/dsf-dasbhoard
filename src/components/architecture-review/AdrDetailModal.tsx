@@ -104,22 +104,22 @@ export const AdrDetailModal: React.FC<AdrDetailModalProps> = ({ adr, onClose, on
     return (
         <TooltipProvider>
             <div className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] shadow-2xl flex flex-col scale-100 animate-in zoom-in-95 duration-200">
+                <div className="bg-card border border-border rounded-lg w-full max-w-4xl max-h-[90vh] flex flex-col scale-100 animate-in zoom-in-95 duration-200">
 
                     {/* Header */}
-                    <div className="flex items-start justify-between p-6 border-b border-slate-800 bg-slate-900/50 rounded-t-2xl">
+                    <div className="flex items-start justify-between p-6 border-b border-border bg-card/50 rounded-t-lg">
                         <div>
                             <div className="flex items-center gap-3 mb-2">
                                 <RiskBadge level={adr.risk_level} riskFactors={adr.risk_factors} />
-                                <span className={`text-sm font-medium ${isEscalated ? 'text-red-400 font-bold' : 'text-slate-400'}`}>
+                                <span className={`text-sm font-medium ${isEscalated ? 'text-red-400 font-bold' : 'text-muted-foreground'}`}>
                                     Confidence: {Math.round(adr.confidence * 100)}%
                                 </span>
                                 <span className="bg-yellow-500/10 text-yellow-500 text-xs px-2 py-0.5 rounded border border-yellow-500/20 font-bold uppercase">
                                     {adr.status}
                                 </span>
                             </div>
-                            <h2 className="text-2xl font-bold text-white mb-2">{adr.title}</h2>
-                            <div className="flex items-center gap-4 text-sm text-slate-400">
+                            <h2 className="text-2xl font-semibold text-foreground mb-2">{adr.title}</h2>
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                 <div className="flex items-center gap-1.5">
                                     <Ticket className="w-4 h-4" />
                                     <span>{adr.ticket.title} ({adr.ticket.clickup_task_id})</span>
@@ -133,14 +133,14 @@ export const AdrDetailModal: React.FC<AdrDetailModalProps> = ({ adr, onClose, on
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={() => setIsDelegateOpen(true)}
-                                className="flex items-center gap-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-colors text-sm font-medium"
+                                className="flex items-center gap-2 px-3 py-2 bg-muted hover:bg-muted/80 text-foreground hover:text-foreground rounded-lg transition-colors text-sm font-medium"
                             >
                                 <UserPlus className="w-4 h-4" />
                                 Delegate
                             </button>
                             <button
                                 onClick={onClose}
-                                className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg transition-colors"
+                                className="p-2 bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground rounded-lg transition-colors"
                             >
                                 <X className="w-5 h-5" />
                             </button>
@@ -148,7 +148,7 @@ export const AdrDetailModal: React.FC<AdrDetailModalProps> = ({ adr, onClose, on
                     </div>
 
                     {/* Content - Scrollable */}
-                    <div className="flex-1 overflow-y-auto p-8 space-y-8">
+                    <div className="flex-1 overflow-y-auto p-8 space-y-6">
                         {isEscalated && adr.escalation_reason && (
                             <EscalationContextCard
                                 reasonCode={adr.escalation_reason}
@@ -159,34 +159,34 @@ export const AdrDetailModal: React.FC<AdrDetailModalProps> = ({ adr, onClose, on
                         <RiskAnalysisCard riskFactors={adr.risk_factors} />
 
                         <section>
-                            <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                            <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
                                 <span className="w-1 h-6 bg-blue-500 rounded-full"></span>
                                 Context & Requirements
                             </h3>
-                            <div className="prose prose-invert prose-slate max-w-none text-slate-300">
+                            <div className="prose prose-invert prose-slate max-w-none text-foreground">
                                 <ReactMarkdown>{adr.context}</ReactMarkdown>
                             </div>
                         </section>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <section className="bg-blue-500/5 border border-blue-500/10 rounded-2xl p-6">
-                                <h3 className="text-lg font-bold text-blue-400 mb-3">Proposed Decision</h3>
-                                <div className="prose prose-invert prose-slate max-w-none text-slate-200">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <section className="bg-blue-500/5 border border-blue-500/10 rounded-lg p-6">
+                                <h3 className="text-lg font-semibold text-blue-400 mb-3">Proposed Decision</h3>
+                                <div className="prose prose-invert prose-slate max-w-none text-foreground">
                                     <ReactMarkdown>{adr.decision}</ReactMarkdown>
                                 </div>
                             </section>
 
-                            <section className="bg-slate-800/30 border border-slate-800 rounded-2xl p-6">
-                                <h3 className="text-lg font-bold text-slate-200 mb-3">Consequences</h3>
-                                <div className="prose prose-invert prose-slate max-w-none text-slate-400">
+                            <section className="bg-muted/30 border border-border rounded-lg p-6">
+                                <h3 className="text-lg font-semibold text-foreground mb-3">Consequences</h3>
+                                <div className="prose prose-invert prose-slate max-w-none text-muted-foreground">
                                     <ReactMarkdown>{adr.consequences}</ReactMarkdown>
                                 </div>
                             </section>
                         </div>
 
                         <section>
-                            <h3 className="text-lg font-bold text-white mb-3">Alternatives Considered</h3>
-                            <div className="bg-slate-950 border border-slate-800 rounded-xl p-6 text-slate-400 prose prose-invert max-w-none">
+                            <h3 className="text-lg font-semibold text-foreground mb-3">Alternatives Considered</h3>
+                            <div className="bg-background border border-border rounded-lg p-6 text-muted-foreground prose prose-invert max-w-none">
                                 <ReactMarkdown>{adr.alternatives}</ReactMarkdown>
                             </div>
                         </section>
@@ -201,7 +201,7 @@ export const AdrDetailModal: React.FC<AdrDetailModalProps> = ({ adr, onClose, on
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="p-6 bg-slate-900/90 border-t border-slate-800 backdrop-blur rounded-b-2xl">
+                    <div className="p-6 bg-card/90 border-t border-border backdrop-blur rounded-b-lg">
                         <ReviewActionButtons
                             onApprove={() => handleAction('APPROVE')}
                             onReject={() => setActiveAction('REJECT')}

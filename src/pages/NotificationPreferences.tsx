@@ -130,7 +130,7 @@ export function NotificationPreferences() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Notification Preferences</h1>
-          <p className="text-slate-500 mt-1">
+          <p className="text-muted-foreground mt-1">
             Configure how and when you receive notifications
           </p>
         </div>
@@ -146,7 +146,7 @@ export function NotificationPreferences() {
 
       {/* Error State */}
       {error && (
-        <div className="p-8 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-center">
+        <div className="p-8 bg-rose-500/10 border border-rose-500/20 rounded-lg text-center">
           <AlertCircle className="w-12 h-12 text-rose-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-rose-400 mb-2">
             Failed to load preferences
@@ -166,12 +166,12 @@ export function NotificationPreferences() {
 
       {/* Empty State */}
       {!isLoading && !error && filteredPreferences.length === 0 && (
-        <div className="text-center py-20 bg-slate-900/20 border border-dashed border-slate-800 rounded-3xl">
-          <Bell className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-slate-400 mb-2">
+        <div className="text-center py-20 bg-card/20 border border-dashed border-border rounded-lg">
+          <Bell className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-muted-foreground mb-2">
             No notification preferences
           </h3>
-          <p className="text-slate-500 max-w-md mx-auto mb-6">
+          <p className="text-muted-foreground max-w-md mx-auto mb-6">
             You haven&apos;t configured any notification preferences yet. 
             Create one to start receiving notifications.
           </p>
@@ -184,28 +184,28 @@ export function NotificationPreferences() {
 
       {/* Preferences Table */}
       {!isLoading && !error && filteredPreferences.length > 0 && (
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden">
+        <div className="bg-card/50 border border-border rounded-xl overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="border-slate-800 hover:bg-transparent">
-                <TableHead className="text-slate-400">Event Type</TableHead>
-                <TableHead className="text-slate-400">Channels</TableHead>
-                <TableHead className="text-slate-400">Filters</TableHead>
-                <TableHead className="text-slate-400">Status</TableHead>
-                <TableHead className="text-slate-400 text-right">Actions</TableHead>
+              <TableRow className="border-border hover:bg-transparent">
+                <TableHead className="text-muted-foreground">Event Type</TableHead>
+                <TableHead className="text-muted-foreground">Channels</TableHead>
+                <TableHead className="text-muted-foreground">Filters</TableHead>
+                <TableHead className="text-muted-foreground">Status</TableHead>
+                <TableHead className="text-muted-foreground text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredPreferences.map((preference) => (
                 <TableRow 
                   key={preference.id}
-                  className="border-slate-800 hover:bg-slate-800/50"
+                  className="border-border hover:bg-muted/50"
                 >
                   <TableCell>
-                    <div className="font-medium text-slate-200">
+                    <div className="font-medium text-foreground">
                       {getEventTypeLabel(preference.eventType)}
                     </div>
-                    <div className="text-xs text-slate-500 font-mono">
+                    <div className="text-xs text-muted-foreground font-mono">
                       {preference.eventType}
                     </div>
                   </TableCell>
@@ -216,7 +216,7 @@ export function NotificationPreferences() {
                         <Badge
                           key={channel}
                           variant="outline"
-                          className="border-slate-700 text-slate-400"
+                          className="border-border text-muted-foreground"
                         >
                           {CHANNEL_ICONS[channel]}
                           <span className="ml-1">{getChannelLabel(channel)}</span>
@@ -228,17 +228,17 @@ export function NotificationPreferences() {
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
                       {preference.filters?.severities && preference.filters.severities.length > 0 && (
-                        <Badge variant="secondary" className="bg-slate-800 text-slate-400 text-xs">
+                        <Badge variant="secondary" className="bg-muted text-muted-foreground text-xs">
                           {preference.filters.severities.length} severities
                         </Badge>
                       )}
                       {preference.filters?.projectIds && preference.filters.projectIds.length > 0 && (
-                        <Badge variant="secondary" className="bg-slate-800 text-slate-400 text-xs">
+                        <Badge variant="secondary" className="bg-muted text-muted-foreground text-xs">
                           {preference.filters.projectIds.length} projects
                         </Badge>
                       )}
                       {(!preference.filters?.severities?.length && !preference.filters?.projectIds?.length) && (
-                        <span className="text-slate-600 text-sm">No filters</span>
+                        <span className="text-muted-foreground text-sm">No filters</span>
                       )}
                     </div>
                   </TableCell>
@@ -255,7 +255,7 @@ export function NotificationPreferences() {
                         }
                         disabled={updatePreference.isPending}
                       />
-                      <span className={`text-sm ${preference.enabled ? 'text-emerald-400' : 'text-slate-500'}`}>
+                      <span className={`text-sm ${preference.enabled ? 'text-emerald-400' : 'text-muted-foreground'}`}>
                         {preference.enabled ? 'Enabled' : 'Disabled'}
                       </span>
                     </div>
@@ -267,7 +267,7 @@ export function NotificationPreferences() {
                         variant="ghost"
                         size="sm"
                         onClick={() => openEditForm(preference)}
-                        className="text-slate-400 hover:text-slate-200"
+                        className="text-muted-foreground hover:text-foreground"
                       >
                         <Edit2 className="w-4 h-4" />
                       </Button>
@@ -275,7 +275,7 @@ export function NotificationPreferences() {
                         variant="ghost"
                         size="sm"
                         onClick={() => setDeletingPreference(preference)}
-                        className="text-slate-400 hover:text-rose-400"
+                        className="text-muted-foreground hover:text-rose-400"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -307,25 +307,25 @@ export function NotificationPreferences() {
         open={!!deletingPreference} 
         onOpenChange={() => setDeletingPreference(null)}
       >
-        <AlertDialogContent className="bg-slate-900 border-slate-800">
+        <AlertDialogContent className="bg-card border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-slate-200">
+            <AlertDialogTitle className="text-foreground">
               Delete Notification Preference
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-400">
+            <AlertDialogDescription className="text-muted-foreground">
               Are you sure you want to delete this notification preference? 
               This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           {deletingPreference && (
             <div className="py-4">
-              <div className="p-3 bg-slate-800 rounded-lg">
-                <p className="text-sm text-slate-300">
-                  <span className="text-slate-500">Event:</span>{' '}
+              <div className="p-3 bg-muted rounded-lg">
+                <p className="text-sm text-foreground">
+                  <span className="text-muted-foreground">Event:</span>{' '}
                   {getEventTypeLabel(deletingPreference.eventType)}
                 </p>
-                <p className="text-sm text-slate-300">
-                  <span className="text-slate-500">Channels:</span>{' '}
+                <p className="text-sm text-foreground">
+                  <span className="text-muted-foreground">Channels:</span>{' '}
                   {deletingPreference.channels.map(getChannelLabel).join(', ')}
                 </p>
               </div>
@@ -334,7 +334,7 @@ export function NotificationPreferences() {
           <AlertDialogFooter>
             <AlertDialogCancel 
               onClick={() => setDeletingPreference(null)}
-              className="bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700"
+              className="bg-muted border-border text-foreground hover:bg-muted"
             >
               Cancel
             </AlertDialogCancel>

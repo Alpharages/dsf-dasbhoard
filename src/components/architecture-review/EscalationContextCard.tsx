@@ -21,12 +21,12 @@ export const EscalationContextCard: React.FC<EscalationContextCardProps> = ({ re
 
     if (!hasContent) {
         return (
-            <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-6 mb-8">
+            <div className="bg-red-500/5 border border-red-500/20 rounded-lg p-6 mb-6">
                 <div className="flex items-center gap-3 mb-2">
                     <EscalationBadge reasonCode={reasonCode} />
                     <span className="text-red-400 text-sm font-medium">Escalated for Review</span>
                 </div>
-                <p className="text-slate-400 text-sm">
+                <p className="text-muted-foreground text-sm">
                     This decision was escalated due to {reasonCode.toLowerCase().replace(/_/g, ' ')}. Please review carefully.
                 </p>
             </div>
@@ -34,7 +34,7 @@ export const EscalationContextCard: React.FC<EscalationContextCardProps> = ({ re
     }
 
     return (
-        <div className="bg-red-500/5 border border-red-500/20 rounded-2xl overflow-hidden mb-8">
+        <div className="bg-red-500/5 border border-red-500/20 rounded-lg overflow-hidden mb-6">
             <div className="p-4 bg-red-500/10 border-b border-red-500/10 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <EscalationBadge reasonCode={reasonCode} />
@@ -42,7 +42,7 @@ export const EscalationContextCard: React.FC<EscalationContextCardProps> = ({ re
                 </div>
             </div>
 
-            <div className="p-6 grid gap-6 md:grid-cols-2">
+            <div className="p-6 grid gap-4 md:grid-cols-2">
                 {questions && questions.length > 0 && (
                     <div className="space-y-3">
                         <h4 className="flex items-center gap-2 text-sm font-semibold text-sky-400">
@@ -51,7 +51,7 @@ export const EscalationContextCard: React.FC<EscalationContextCardProps> = ({ re
                         </h4>
                         <ul className="space-y-2">
                             {questions.map((q, i) => (
-                                <li key={i} className="text-sm text-slate-300 flex items-start gap-2 bg-slate-900/50 p-3 rounded-lg border border-slate-800">
+                                <li key={i} className="text-sm text-foreground flex items-start gap-2 bg-card/50 p-3 rounded-lg border border-border">
                                     <span className="text-sky-500 font-bold mt-0.5">?</span>
                                     {q}
                                 </li>
@@ -68,7 +68,7 @@ export const EscalationContextCard: React.FC<EscalationContextCardProps> = ({ re
                         </h4>
                         <ul className="space-y-2">
                             {trade_offs.map((t, i) => (
-                                <li key={i} className="text-sm text-slate-300 flex items-start gap-2 bg-slate-900/50 p-3 rounded-lg border border-slate-800">
+                                <li key={i} className="text-sm text-foreground flex items-start gap-2 bg-card/50 p-3 rounded-lg border border-border">
                                     <span className="text-amber-500 font-bold mt-0.5">⇄</span>
                                     {t}
                                 </li>
@@ -85,7 +85,7 @@ export const EscalationContextCard: React.FC<EscalationContextCardProps> = ({ re
                         </h4>
                         <ul className="space-y-2">
                             {uncertain_constraints.map((c, i) => (
-                                <li key={i} className="text-sm text-slate-300 flex items-start gap-2 bg-slate-900/50 p-3 rounded-lg border border-slate-800">
+                                <li key={i} className="text-sm text-foreground flex items-start gap-2 bg-card/50 p-3 rounded-lg border border-border">
                                     <span className="text-rose-500 font-bold mt-0.5">!</span>
                                     {c}
                                 </li>

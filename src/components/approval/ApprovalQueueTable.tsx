@@ -230,7 +230,7 @@ export const ApprovalQueueTable: React.FC<ApprovalQueueTableProps> = ({
   }
 
   return (
-    <div className="bg-card/50 border border-border rounded-2xl overflow-hidden">
+    <div className="bg-card/50 border border-border rounded-lg overflow-hidden">
       <table className="w-full text-left border-collapse">
         <thead className="bg-card border-b border-border">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -271,7 +271,7 @@ export const ApprovalQueueTable: React.FC<ApprovalQueueTableProps> = ({
                 className="px-6 py-16 text-center"
               >
                 <div className="flex flex-col items-center gap-3">
-                  <div className="p-4 bg-emerald-500/10 rounded-2xl">
+                  <div className="p-4 bg-emerald-500/10 rounded-lg">
                     <Zap className="w-8 h-8 text-emerald-500" />
                   </div>
                   <p className="text-lg font-bold text-foreground">

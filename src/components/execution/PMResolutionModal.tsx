@@ -169,8 +169,8 @@ export function PMResolutionModal({
 
         {/* Branch info */}
         <div className="space-y-4 py-2">
-          <div className="rounded-lg bg-slate-800/50 border border-slate-700/50 p-4 space-y-1">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest">
+          <div className="rounded-lg bg-muted/50 border border-border/50 p-4 space-y-1">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
               Pushed Branch
             </p>
             {branchName ? (
@@ -186,10 +186,10 @@ export function PMResolutionModal({
                   <ExternalLink className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
                 </a>
               ) : (
-                <p className="text-sm text-slate-300 font-mono break-all">{branchName}</p>
+                <p className="text-sm text-foreground font-mono break-all">{branchName}</p>
               )
             ) : (
-              <p className="text-sm text-slate-500 italic">No branch pushed</p>
+              <p className="text-sm text-muted-foreground italic">No branch pushed</p>
             )}
           </div>
 
@@ -198,7 +198,7 @@ export function PMResolutionModal({
             <p className="text-xs font-semibold text-rose-400 uppercase tracking-widest">
               Last QA Error
             </p>
-            <pre className="text-xs text-slate-300 whitespace-pre-wrap break-all max-h-40 overflow-y-auto font-mono leading-relaxed">
+            <pre className="text-xs text-foreground whitespace-pre-wrap break-all max-h-40 overflow-y-auto font-mono leading-relaxed">
               {errorMessage || 'No error details available.'}
             </pre>
           </div>
@@ -217,14 +217,14 @@ export function PMResolutionModal({
           {/* Cancel success message */}
           {step === 'success_cancel' && (
             <div
-              className="flex items-start gap-2 rounded-lg bg-slate-700/50 border border-slate-600 p-3 text-slate-300 text-sm"
+              className="flex items-start gap-2 rounded-lg bg-muted/50 border border-[var(--border-hover)] p-3 text-foreground text-sm"
               role="status"
             >
               <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-400" aria-hidden="true" />
               <span>
                 Execution cancelled — ticket moved to manual review.
                 {branchName && (
-                  <> Branch <span className="font-mono text-slate-200">{branchName}</span> is available for a developer to continue.</>
+                  <> Branch <span className="font-mono text-foreground">{branchName}</span> is available for a developer to continue.</>
                 )}
               </span>
             </div>

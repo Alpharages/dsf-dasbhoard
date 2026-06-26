@@ -55,58 +55,58 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-            <div className="bg-slate-900 border border-slate-700 rounded-3xl w-full max-w-6xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md">
+            <div className="bg-card border border-border rounded-lg w-full max-w-6xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
                 {/* Header */}
-                <div className="px-8 py-6 border-b border-slate-800 flex justify-between items-center bg-slate-800/20">
+                <div className="px-8 py-6 border-b border-border flex justify-between items-center bg-muted/20">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
                             <span className="text-xs font-bold text-blue-400 uppercase tracking-widest">{projectName}</span>
-                            <span className="text-slate-600">/</span>
-                            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{executionId.substring(0, 8)}</span>
+                            <span className="text-muted-foreground">/</span>
+                            <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{executionId.substring(0, 8)}</span>
                         </div>
-                        <h2 className="text-2xl font-bold text-white">{ticketTitle}</h2>
+                        <h2 className="text-2xl font-bold text-foreground">{ticketTitle}</h2>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-white">
+                    <button onClick={onClose} className="p-2 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-foreground">
                         <X className="w-6 h-6" />
                     </button>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-8 space-y-10">
+                <div className="flex-1 overflow-y-auto p-8 space-y-6">
                     {error && (
-                        <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 text-rose-500 flex items-center gap-3">
+                        <div className="bg-rose-500/10 border border-rose-500/20 rounded-lg p-4 text-rose-500 flex items-center gap-3">
                             <AlertCircle className="w-5 h-5 flex-shrink-0" />
                             <p className="text-sm font-medium">{error}</p>
                         </div>
                     )}
 
                     {/* QA Summary & Confidence */}
-                    <section className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <section className="grid grid-cols-1 lg:grid-cols-4 gap-4">
                         <div className="lg:col-span-3">
                             <QualityGateSummary summary={qaSummary} />
                         </div>
-                        <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-6 flex flex-col items-center justify-center backdrop-blur-sm">
-                            <span className="text-sm font-medium text-slate-400 mb-2">Overall Confidence</span>
-                            <div className="text-4xl font-black text-blue-400">
+                        <div className="bg-card border border-border rounded-lg p-6 flex flex-col items-center justify-center">
+                            <span className="text-sm font-medium text-muted-foreground mb-2">Overall Confidence</span>
+                            <div className="text-4xl font-semibold text-blue-400 data-figure tabular-nums">
                                 {Math.round(confidenceScore * 100)}%
                             </div>
-                            <div className="mt-2 text-xs text-slate-500 uppercase tracking-widest">AI Reliability Score</div>
+                            <div className="mt-2 text-xs text-muted-foreground uppercase tracking-widest">AI Reliability Score</div>
                         </div>
                     </section>
 
                     {/* Ticket Context */}
-                    <section className="bg-slate-800/20 border border-slate-700/30 rounded-2xl p-6">
-                        <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3">Ticket Requirements</h3>
-                        <div className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
+                    <section className="bg-muted/20 border border-border rounded-lg p-6">
+                        <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-3">Ticket Requirements</h3>
+                        <div className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
                             {ticketRequirements}
                         </div>
                     </section>
 
                     {/* Code Changes */}
                     <section className="space-y-6">
-                        <h3 className="text-lg font-semibold text-slate-100 px-1">Code Changes</h3>
-                        <div className="space-y-8">
+                        <h3 className="text-lg font-semibold text-foreground px-1">Code Changes</h3>
+                        <div className="space-y-6">
                             {diffs.map((diff, idx) => (
                                 <DiffViewer key={idx} {...diff} />
                             ))}

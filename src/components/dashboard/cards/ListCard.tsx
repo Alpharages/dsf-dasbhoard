@@ -45,7 +45,7 @@ export function ListCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
       className={cn(
-        'h-full flex flex-col rounded-2xl border border-[var(--card-border)] bg-[var(--surface-2)] backdrop-blur-sm overflow-hidden',
+        'h-full flex flex-col rounded-lg border border-[var(--card-border)] bg-[var(--surface-2)] backdrop-blur-sm overflow-hidden',
         className
       )}
       style={{ minHeight: `${minHeight}px` }}

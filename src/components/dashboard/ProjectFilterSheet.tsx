@@ -72,7 +72,7 @@ export function ProjectFilterSheet({
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto py-6 space-y-8 px-1">
+        <div className="flex-1 overflow-y-auto py-6 space-y-6 px-1">
           {/* Status Filter */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Project Status</h3>

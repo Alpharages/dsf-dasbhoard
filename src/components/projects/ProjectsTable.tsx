@@ -107,7 +107,7 @@ export function ProjectsTable({ projects, onProjectUpdated }: ProjectsTableProps
     };
 
     return (
-        <div className="border border-border rounded-2xl overflow-hidden bg-card">
+        <div className="border border-border rounded-lg overflow-hidden bg-card">
             <Table>
                 <TableHeader>
                     <TableRow className="border-border hover:bg-muted/50">
@@ -214,7 +214,7 @@ export function ProjectsTable({ projects, onProjectUpdated }: ProjectsTableProps
                 </TableBody>
             </Table>
             {projects.length === 0 && (
-                <div className="text-center py-12 text-slate-500">
+                <div className="text-center py-12 text-muted-foreground">
                     No projects found. Click "Add Project" to import from your provider.
                 </div>
             )}

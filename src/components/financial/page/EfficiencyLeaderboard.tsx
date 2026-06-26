@@ -33,40 +33,40 @@ export function EfficiencyLeaderboard({ models }: EfficiencyLeaderboardProps) {
             {modelsWithScore.slice(0, 5).map((model, index) => (
                 <div
                     key={model.modelName}
-                    className="flex items-center justify-between p-4 bg-slate-950 border border-slate-800 rounded-xl hover:border-blue-600/50 transition-all"
+                    className="flex items-center justify-between p-4 bg-background border border-border rounded-xl hover:border-blue-600/50 transition-all"
                 >
                     <div className="flex items-center gap-4">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${index === 0 ? 'bg-amber-500/10 border border-amber-500/20' :
-                                index === 1 ? 'bg-slate-400/10 border border-slate-400/20' :
+                        <div className={`w-10 h-10 rounded-md flex items-center justify-center ${index === 0 ? 'bg-amber-500/10 border border-amber-500/20' :
+                                index === 1 ? 'bg-muted border border-border' :
                                     index === 2 ? 'bg-orange-600/10 border border-orange-600/20' :
-                                        'bg-slate-800'
+                                        'bg-muted'
                             }`}>
                             {index < 3 ? (
                                 <Award className={`w-5 h-5 ${index === 0 ? 'text-amber-500' :
-                                        index === 1 ? 'text-slate-400' :
+                                        index === 1 ? 'text-muted-foreground' :
                                             'text-orange-600'
                                     }`} />
                             ) : (
-                                <span className="text-sm font-bold text-slate-500">#{index + 1}</span>
+                                <span className="text-sm font-bold text-muted-foreground">#{index + 1}</span>
                             )}
                         </div>
                         <div>
-                            <div className="text-sm font-semibold text-white">{model.modelName}</div>
-                            <div className="text-xs text-slate-500">{model.provider}</div>
+                            <div className="text-sm font-semibold text-foreground">{model.modelName}</div>
+                            <div className="text-xs text-muted-foreground">{model.provider}</div>
                         </div>
                     </div>
                     <div className="flex items-center gap-6">
                         <div className="text-right">
-                            <div className="text-xs text-slate-500">Success</div>
+                            <div className="text-xs text-muted-foreground">Success</div>
                             <div className="text-sm font-semibold text-emerald-400">{model.successRate}%</div>
                         </div>
                         <div className="text-right">
-                            <div className="text-xs text-slate-500">Cost/Exec</div>
+                            <div className="text-xs text-muted-foreground">Cost/Exec</div>
                             <div className="text-sm font-semibold text-blue-400">${model.costPerExecution}</div>
                         </div>
                         <div className="text-right">
-                            <div className="text-xs text-slate-500">Score</div>
-                            <div className="text-lg font-bold text-white">{model.efficiencyScore}</div>
+                            <div className="text-xs text-muted-foreground">Score</div>
+                            <div className="text-lg font-bold text-foreground">{model.efficiencyScore}</div>
                         </div>
                     </div>
                 </div>

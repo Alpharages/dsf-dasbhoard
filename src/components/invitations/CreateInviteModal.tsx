@@ -79,7 +79,7 @@ export function CreateInviteModal({ isOpen, onClose, onCreate }: CreateInviteMod
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="create-invite-title"
-                className="relative grid w-full max-w-[425px] gap-4 rounded-lg border border-slate-800 bg-slate-900 p-6 text-slate-50 shadow-lg"
+                className="relative grid w-full max-w-[425px] gap-4 rounded-lg border border-border bg-card p-6 text-foreground shadow-lg"
                 onClick={(event) => event.stopPropagation()}
             >
                 <div className="flex flex-col space-y-1.5 text-center sm:text-left">
@@ -98,7 +98,7 @@ export function CreateInviteModal({ isOpen, onClose, onCreate }: CreateInviteMod
                             placeholder="colleague@company.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="col-span-3 bg-slate-800 border-slate-700"
+                            className="col-span-3 bg-muted border-border"
                             disabled={isLoading}
                             autoFocus
                         />
@@ -116,7 +116,7 @@ export function CreateInviteModal({ isOpen, onClose, onCreate }: CreateInviteMod
                             value={role}
                             onChange={(event) => setRole(event.target.value as Role)}
                             disabled={isLoading}
-                            className="h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-50 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="h-9 w-full rounded-md border border-border bg-muted px-3 py-2 text-sm text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {ROLES.map((r) => (
                                 <option key={r} value={r}>
@@ -135,7 +135,7 @@ export function CreateInviteModal({ isOpen, onClose, onCreate }: CreateInviteMod
                             value={expiresInDays.toString()}
                             onChange={(event) => setExpiresInDays(Number(event.target.value))}
                             disabled={isLoading}
-                            className="h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-50 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="h-9 w-full rounded-md border border-border bg-muted px-3 py-2 text-sm text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {EXPIRATION_OPTIONS.map((opt) => (
                                 <option key={opt.value} value={opt.value.toString()}>

@@ -38,7 +38,7 @@ export function RevokeConfirmDialog({
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="revoke-invite-title"
-                className="relative grid w-full max-w-[425px] gap-4 rounded-lg border border-slate-800 bg-slate-900 p-6 text-slate-50 shadow-lg"
+                className="relative grid w-full max-w-[425px] gap-4 rounded-lg border border-border bg-card p-6 text-foreground shadow-lg"
                 onClick={(event) => event.stopPropagation()}
             >
                 <div className="flex flex-col space-y-1.5 text-center sm:text-left">
@@ -48,8 +48,8 @@ export function RevokeConfirmDialog({
                             Revoke Invitation?
                         </h2>
                     </div>
-                    <p className="text-sm text-slate-400">
-                        Are you sure you want to revoke the invitation for <span className="font-semibold text-slate-200">{invitation.email}</span>?
+                    <p className="text-sm text-muted-foreground">
+                        Are you sure you want to revoke the invitation for <span className="font-semibold text-foreground">{invitation.email}</span>?
                         <br />
                         This action cannot be undone. The invite link will become invalid immediately.
                     </p>

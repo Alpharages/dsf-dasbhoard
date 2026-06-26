@@ -30,7 +30,7 @@ export function BudgetGaugeWidget({ utilizationPct, daysRemaining }: BudgetGauge
                     cy="100"
                     r="80"
                     fill="none"
-                    stroke="#1e293b"
+                    stroke="var(--muted)"
                     strokeWidth="16"
                 />
                 {/* Progress circle */}
@@ -51,8 +51,8 @@ export function BudgetGaugeWidget({ utilizationPct, daysRemaining }: BudgetGauge
                 <div className={`flex items-center gap-2 mb-2 `}>
                     <Gauge className={`w-6 h-6 ${color.text}`} />
                 </div>
-                <div className="text-4xl font-bold text-white">{utilizationPct}%</div>
-                <div className="text-sm text-slate-400 mt-1">{daysRemaining} days remaining</div>
+                <div className="text-4xl font-semibold data-figure tabular-nums text-foreground">{utilizationPct}%</div>
+                <div className="text-sm text-muted-foreground mt-1">{daysRemaining} days remaining</div>
             </div>
         </div>
     );

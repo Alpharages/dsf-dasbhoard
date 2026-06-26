@@ -128,7 +128,7 @@ export function ObservabilityControlPanel({
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         {/* System Health - Spans full width */}
         <div className="lg:col-span-2">
           {systemHealthError ? (

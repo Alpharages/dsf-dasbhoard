@@ -51,9 +51,9 @@ const statusConfig: Record<ExecutionStatus, {
 }> = {
   'QUEUED': {
     label: 'Queued',
-    color: 'text-slate-500',
-    bgColor: 'bg-slate-500/10',
-    borderColor: 'border-slate-500/20'
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted',
+    borderColor: 'border-border'
   },
   'IN_PROGRESS': {
     label: 'In Progress',
@@ -87,9 +87,9 @@ const statusConfig: Record<ExecutionStatus, {
   },
   'CANCELLED': {
     label: 'Cancelled',
-    color: 'text-slate-500',
-    bgColor: 'bg-slate-500/10',
-    borderColor: 'border-slate-500/20'
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted',
+    borderColor: 'border-border'
   },
   'AWAITING_APPROVAL': {
     label: 'Awaiting Approval',
@@ -133,9 +133,9 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
 
   const status = statusConfig[execution.status] || {
     label: 'Unknown',
-    color: 'text-slate-500',
-    bgColor: 'bg-slate-500/10',
-    borderColor: 'border-slate-500/20'
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted',
+    borderColor: 'border-border'
   };
   const canControl = canControlExecution(user, execution);
   const availableControls = getAvailableControls(execution.status);
@@ -182,9 +182,8 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
 
   return (
     <TooltipProvider>
-      <div className="bg-card border border-border rounded-2xl p-6 hover:shadow-2xl hover:shadow-primary/5 transition-all group relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        
+      <div className="bg-card border border-border rounded-lg p-6 transition-all group relative overflow-hidden">
+
         {/* Header */}
         <div className="flex justify-between items-start mb-6">
           <div>
@@ -213,7 +212,7 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
         </div>
 
         {/* Progress */}
-        <div className="mb-8">
+        <div className="mb-6">
           <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">
             <span>{execution.currentStep || 'Initializing...'}</span>
             <span>{execution.percentComplete}%</span>
@@ -221,9 +220,9 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
           <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
              <div 
                className={`h-full rounded-full transition-all duration-1000 ${
-                execution.status === 'FAILED' || execution.status === 'QA_FAILED' ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]' :
-                execution.status === 'COMPLETED' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' :
-                'bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.5)]'
+                execution.status === 'FAILED' || execution.status === 'QA_FAILED' ? 'bg-rose-500' :
+                execution.status === 'COMPLETED' ? 'bg-emerald-500' :
+                'bg-blue-600'
               }`}
                style={{ width: `${execution.percentComplete}%` }}
              />
@@ -296,7 +295,7 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
             <Button
               size="sm"
               variant="destructive"
-              className="h-8 rounded-lg px-4 font-bold shadow-lg shadow-rose-500/20"
+              className="h-8 rounded-lg px-4 font-bold"
               onClick={() => onResolve?.(execution.id)}
               aria-label={`Resolve QA failure for execution ${execution.id}`}
             >
