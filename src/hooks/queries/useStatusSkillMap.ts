@@ -13,6 +13,7 @@ export const useStatusSkillMap = (enabled: boolean = true) => {
     queryFn: statusSkillMapApi.getStatusSkillMap,
     enabled,
     staleTime: 30 * 1000,
+    refetchOnWindowFocus: false, // don't clobber an admin's unsaved edits on tab refocus
   });
 };
 

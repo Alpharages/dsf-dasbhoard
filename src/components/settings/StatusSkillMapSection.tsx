@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Plus, Save, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { canAccess } from '@/utils/roleHelpers';
@@ -13,22 +13,27 @@ export const StatusSkillMapSection = () => {
   const { data, isLoading, isError } = useStatusSkillMap(canView);
   const updateMap = useUpdateStatusSkillMap();
 
-  const [draft, setDraft] = useState<StatusSkillEntry[]>([]);
+  // Draft rows carry a stable client-side _key so add/remove doesn't re-key
+  // (and steal focus from) the trailing rows. Stripped before PUT.
+  type DraftRow = StatusSkillEntry & { _key: number };
+  const keySeq = useRef(0);
+  const [draft, setDraft] = useState<DraftRow[]>([]);
 
   useEffect(() => {
-    if (data?.entries) setDraft(data.entries);
+    if (data?.entries) setDraft(data.entries.map((e) => ({ ...e, _key: keySeq.current++ })));
   }, [data?.entries]);
 
   if (!canView) return null;
 
-  const isDirty = JSON.stringify(draft) !== JSON.stringify(data?.entries ?? []);
+  const savedEntries = draft.map(({ _key, ...e }) => e);
+  const isDirty = JSON.stringify(savedEntries) !== JSON.stringify(data?.entries ?? []);
   const hasBlankStatus = draft.some((e) => !e.status.trim());
 
   const updateRow = (index: number, patch: Partial<StatusSkillEntry>) =>
     setDraft((rows) => rows.map((row, i) => (i === index ? { ...row, ...patch } : row)));
   const removeRow = (index: number) => setDraft((rows) => rows.filter((_, i) => i !== index));
   const addRow = () =>
-    setDraft((rows) => [...rows, { status: '', skill: SKILL_OPTIONS[0].value }]);
+    setDraft((rows) => [...rows, { status: '', skill: SKILL_OPTIONS[0].value, _key: keySeq.current++ }]);
 
   return (
     <div className="mt-8">
@@ -48,7 +53,7 @@ export const StatusSkillMapSection = () => {
         <div className="bg-card border border-border rounded-xl p-5">
           <div className="space-y-3">
             {draft.map((entry, index) => (
-              <div key={index} className="grid grid-cols-[1fr_1fr_auto] gap-3 items-center">
+              <div key={entry._key} className="grid grid-cols-[1fr_1fr_auto] gap-3 items-center">
                 <input
                   value={entry.status}
                   onChange={(e) => updateRow(index, { status: e.target.value })}
@@ -99,7 +104,7 @@ export const StatusSkillMapSection = () => {
               </button>
               {isDirty && (
                 <button
-                  onClick={() => updateMap.mutate(draft)}
+                  onClick={() => updateMap.mutate(savedEntries)}
                   disabled={updateMap.isPending || hasBlankStatus}
                   className="flex items-center gap-2 px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-lg transition-all disabled:opacity-50"
                 >
