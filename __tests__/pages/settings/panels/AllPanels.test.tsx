@@ -4,12 +4,19 @@ import '@testing-library/jest-dom';
 import { CleanupPanel, SelfHealingPanel, CostPanel } from '@/pages/settings/panels/AllPanels';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { useSystemConfig } from '@/hooks/queries/useSystemConfig';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSkillModelMap, useUpdateSkillModelMapEntry } from '@/hooks/queries/useSkillModelMap';
 import { Toaster } from 'react-hot-toast';
 
-// Mock hook
+// Mock hooks
 vi.mock('@/hooks/queries/useSystemConfig');
+vi.mock('@/contexts/AuthContext');
+vi.mock('@/hooks/queries/useSkillModelMap');
 
 const mockUseSystemConfig = useSystemConfig as jest.Mock;
+const mockUseAuth = useAuth as jest.Mock;
+const mockUseSkillModelMap = useSkillModelMap as jest.Mock;
+const mockUseUpdateSkillModelMapEntry = useUpdateSkillModelMapEntry as jest.Mock;
 
 describe('Settings Panels', () => {
     const mockGetValue = vi.fn();
@@ -26,6 +33,10 @@ describe('Settings Panels', () => {
         // Default implementation
         mockGetValue.mockImplementation((_key, def) => def);
         mockUpdateConfig.mockResolvedValue(undefined);
+
+        mockUseAuth.mockReturnValue({ user: { role: 'ADMIN' } });
+        mockUseSkillModelMap.mockReturnValue({ data: [], isLoading: false, isError: false });
+        mockUseUpdateSkillModelMapEntry.mockReturnValue({ mutate: vi.fn(), isPending: false });
     });
 
     // Cleanup Panel Tests

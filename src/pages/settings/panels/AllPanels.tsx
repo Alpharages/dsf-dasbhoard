@@ -1,4 +1,5 @@
 import { ConfigInput } from '@/components/settings/ConfigInput.tsx';
+import { SkillModelMapSection } from '@/components/settings/SkillModelMapSection';
 import { useSystemConfig } from '@/hooks/queries/useSystemConfig.ts';
 import { toast } from 'react-hot-toast';
 import { Trash2, Activity, Share2, GitMerge, DollarSign, ShieldAlert, HeartPulse, Blocks, CheckCircle2, AlertTriangle } from 'lucide-react';
@@ -173,6 +174,7 @@ export const CostPanel = () => {
                     isSaving={isUpdating}
                 />
             </div>
+            <SkillModelMapSection />
         </div>
     );
 };
