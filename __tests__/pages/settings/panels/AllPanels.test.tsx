@@ -7,6 +7,11 @@ import { useSystemConfig } from '@/hooks/queries/useSystemConfig';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSkillModelMap, useUpdateSkillModelMapEntry } from '@/hooks/queries/useSkillModelMap';
 import { useStatusSkillMap, useUpdateStatusSkillMap } from '@/hooks/queries/useStatusSkillMap';
+import {
+  useAiAccounts,
+  useImportAiAccounts,
+  useSetAiAccountEnabled,
+} from '@/hooks/queries/useAiAccounts';
 import { Toaster } from 'react-hot-toast';
 
 // Mock hooks
@@ -14,6 +19,7 @@ vi.mock('@/hooks/queries/useSystemConfig');
 vi.mock('@/contexts/AuthContext');
 vi.mock('@/hooks/queries/useSkillModelMap');
 vi.mock('@/hooks/queries/useStatusSkillMap');
+vi.mock('@/hooks/queries/useAiAccounts');
 
 const mockUseSystemConfig = useSystemConfig as jest.Mock;
 const mockUseAuth = useAuth as jest.Mock;
@@ -21,6 +27,9 @@ const mockUseSkillModelMap = useSkillModelMap as jest.Mock;
 const mockUseUpdateSkillModelMapEntry = useUpdateSkillModelMapEntry as jest.Mock;
 const mockUseStatusSkillMap = useStatusSkillMap as jest.Mock;
 const mockUseUpdateStatusSkillMap = useUpdateStatusSkillMap as jest.Mock;
+const mockUseAiAccounts = useAiAccounts as jest.Mock;
+const mockUseImportAiAccounts = useImportAiAccounts as jest.Mock;
+const mockUseSetAiAccountEnabled = useSetAiAccountEnabled as jest.Mock;
 
 describe('Settings Panels', () => {
     const mockGetValue = vi.fn();
@@ -47,6 +56,9 @@ describe('Settings Panels', () => {
             isError: false,
         });
         mockUseUpdateStatusSkillMap.mockReturnValue({ mutate: vi.fn(), isPending: false });
+        mockUseAiAccounts.mockReturnValue({ data: [], isLoading: false, isError: false });
+        mockUseImportAiAccounts.mockReturnValue({ mutate: vi.fn(), isPending: false, data: undefined });
+        mockUseSetAiAccountEnabled.mockReturnValue({ mutate: vi.fn(), isPending: false });
     });
 
     // Cleanup Panel Tests
