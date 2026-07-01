@@ -6,17 +6,21 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { useSystemConfig } from '@/hooks/queries/useSystemConfig';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSkillModelMap, useUpdateSkillModelMapEntry } from '@/hooks/queries/useSkillModelMap';
+import { useStatusSkillMap, useUpdateStatusSkillMap } from '@/hooks/queries/useStatusSkillMap';
 import { Toaster } from 'react-hot-toast';
 
 // Mock hooks
 vi.mock('@/hooks/queries/useSystemConfig');
 vi.mock('@/contexts/AuthContext');
 vi.mock('@/hooks/queries/useSkillModelMap');
+vi.mock('@/hooks/queries/useStatusSkillMap');
 
 const mockUseSystemConfig = useSystemConfig as jest.Mock;
 const mockUseAuth = useAuth as jest.Mock;
 const mockUseSkillModelMap = useSkillModelMap as jest.Mock;
 const mockUseUpdateSkillModelMapEntry = useUpdateSkillModelMapEntry as jest.Mock;
+const mockUseStatusSkillMap = useStatusSkillMap as jest.Mock;
+const mockUseUpdateStatusSkillMap = useUpdateStatusSkillMap as jest.Mock;
 
 describe('Settings Panels', () => {
     const mockGetValue = vi.fn();
@@ -37,6 +41,12 @@ describe('Settings Panels', () => {
         mockUseAuth.mockReturnValue({ user: { role: 'ADMIN' } });
         mockUseSkillModelMap.mockReturnValue({ data: [], isLoading: false, isError: false });
         mockUseUpdateSkillModelMapEntry.mockReturnValue({ mutate: vi.fn(), isPending: false });
+        mockUseStatusSkillMap.mockReturnValue({
+            data: { entries: [], loopTerminalStatuses: ['passed', 'done'], loopMaxIterations: 5 },
+            isLoading: false,
+            isError: false,
+        });
+        mockUseUpdateStatusSkillMap.mockReturnValue({ mutate: vi.fn(), isPending: false });
     });
 
     // Cleanup Panel Tests
@@ -118,6 +128,19 @@ describe('Settings Panels', () => {
         it('renders budget cap input', () => {
             render(<CostPanel />);
             expect(screen.getByText('Monthly Budget Cap ($)')).toBeInTheDocument();
+        });
+
+        it('renders the status -> skill defaults editor with an Add Entry control for admins', () => {
+            render(<CostPanel />);
+            expect(screen.getByText('Status → Skill Defaults')).toBeInTheDocument();
+            expect(screen.getByText('Add Entry')).toBeInTheDocument();
+        });
+
+        it('hides edit controls for non-admin (viewer) role', () => {
+            mockUseAuth.mockReturnValue({ user: { role: 'MANAGER' } });
+            render(<CostPanel />);
+            expect(screen.getByText('Status → Skill Defaults')).toBeInTheDocument();
+            expect(screen.queryByText('Add Entry')).not.toBeInTheDocument();
         });
     });
 });
