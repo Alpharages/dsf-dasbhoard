@@ -67,11 +67,15 @@ const LoginCommand = ({ id }: { id: string }) => {
   return (
     <button
       onClick={copy}
-      title="Copy the one-time login command"
-      className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground hover:text-foreground transition-colors"
+      title={cmd}
+      className="flex items-center gap-1.5 max-w-[240px] min-w-0 text-xs font-mono text-muted-foreground hover:text-foreground transition-colors"
     >
-      {copied ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
-      <span className="truncate">{cmd}</span>
+      {copied ? (
+        <Check className="w-3 h-3 shrink-0 text-green-500" />
+      ) : (
+        <Copy className="w-3 h-3 shrink-0" />
+      )}
+      <span className="truncate min-w-0">{cmd}</span>
     </button>
   );
 };
@@ -135,7 +139,7 @@ const ClaudeSessionsSubsection = ({ canView }: { canView: boolean }) => {
                     <TableCell className="text-muted-foreground text-xs">{s.email ?? '—'}</TableCell>
                     <TableCell>
                       <span
-                        className={`inline-block px-2 py-0.5 rounded-full text-xs font-bold ${badge.cls}`}
+                        className={`inline-block whitespace-nowrap px-2 py-0.5 rounded-full text-xs font-bold ${badge.cls}`}
                       >
                         {badge.label}
                       </span>
