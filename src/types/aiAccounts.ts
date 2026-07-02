@@ -31,6 +31,7 @@ export type ClaudeSessionStatus = 'active' | 'expiring' | 'expired' | 'unknown' 
 export interface ClaudeSessionInfo {
   id: string;
   label: string;
+  email: string | null;
   enabled: boolean;
   configDir: string;
   status: ClaudeSessionStatus;

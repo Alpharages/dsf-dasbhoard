@@ -114,6 +114,7 @@ const ClaudeSessionsSubsection = ({ canView }: { canView: boolean }) => {
             <TableHeader>
               <TableRow>
                 <TableHead>Account</TableHead>
+                <TableHead>Email</TableHead>
                 <TableHead>Session</TableHead>
                 <TableHead>Expires</TableHead>
                 <TableHead>Last login</TableHead>
@@ -131,6 +132,7 @@ const ClaudeSessionsSubsection = ({ canView }: { canView: boolean }) => {
                         <span className="ml-2 text-xs text-muted-foreground">(disabled)</span>
                       )}
                     </TableCell>
+                    <TableCell className="text-muted-foreground text-xs">{s.email ?? '—'}</TableCell>
                     <TableCell>
                       <span
                         className={`inline-block px-2 py-0.5 rounded-full text-xs font-bold ${badge.cls}`}
