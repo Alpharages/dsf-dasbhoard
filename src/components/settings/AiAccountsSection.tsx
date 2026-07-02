@@ -1,9 +1,10 @@
 import { useRef, useState } from 'react';
-import { Upload } from 'lucide-react';
+import { Upload, Copy, Check } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { canAccess } from '@/utils/roleHelpers';
 import {
   useAiAccounts,
+  useClaudeSessions,
   useImportAiAccounts,
   useSetAiAccountEnabled,
 } from '@/hooks/queries/useAiAccounts';
@@ -16,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import type { AiAccount } from '@/types/aiAccounts';
+import type { AiAccount, ClaudeSessionInfo, ClaudeSessionStatus } from '@/types/aiAccounts';
 
 const quotaSummary = (config: unknown): string => {
   if (!config || typeof config !== 'object') return '—';
@@ -41,6 +42,119 @@ const AiAccountRow = ({ account, readOnly }: { account: AiAccount; readOnly: boo
         />
       </TableCell>
     </TableRow>
+  );
+};
+
+const SESSION_BADGE: Record<ClaudeSessionStatus, { label: string; cls: string }> = {
+  active: { label: 'Active', cls: 'bg-green-500/15 text-green-600 dark:text-green-400' },
+  expiring: { label: 'Expiring soon', cls: 'bg-amber-500/15 text-amber-600 dark:text-amber-400' },
+  expired: { label: 'Expired', cls: 'bg-red-500/15 text-red-600 dark:text-red-400' },
+  missing: { label: 'Not logged in', cls: 'bg-red-500/15 text-red-600 dark:text-red-400' },
+  unknown: { label: 'Unknown', cls: 'bg-muted text-muted-foreground' },
+};
+
+const fmtDate = (iso: string | null): string => (iso ? new Date(iso).toLocaleString() : '—');
+
+/** One-time login command for an account, with copy-to-clipboard. */
+const LoginCommand = ({ id }: { id: string }) => {
+  const [copied, setCopied] = useState(false);
+  const cmd = `scripts/claude-account-login.sh ${id}`;
+  const copy = () => {
+    void navigator.clipboard.writeText(cmd);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+  return (
+    <button
+      onClick={copy}
+      title="Copy the one-time login command"
+      className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground hover:text-foreground transition-colors"
+    >
+      {copied ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
+      <span className="truncate">{cmd}</span>
+    </button>
+  );
+};
+
+const ClaudeSessionsSubsection = ({ canView }: { canView: boolean }) => {
+  const { data: sessions, isLoading, isError } = useClaudeSessions(canView);
+  if (!canView) return null;
+
+  const needsAttention = (sessions ?? []).some(
+    (s) => s.status === 'missing' || s.status === 'expired',
+  );
+
+  return (
+    <div className="mt-8">
+      <h3 className="text-md font-semibold text-foreground mb-1">Claude Login Sessions</h3>
+      <p className="text-sm text-muted-foreground mb-4">
+        Each Claude account runs under its own subscription login. Log in once per account (a browser
+        opens); runs then reuse the saved session automatically. Re-login when a session is expired
+        or missing — copy an account&apos;s command and run it in the backend shell.
+      </p>
+
+      {isError && (
+        <div className="text-sm text-destructive">Failed to load Claude session status.</div>
+      )}
+      {isLoading && <div className="text-sm text-muted-foreground">Loading sessions…</div>}
+
+      {sessions && sessions.length === 0 && (
+        <div className="text-sm text-muted-foreground">No Claude accounts in the pool yet.</div>
+      )}
+
+      {sessions && sessions.length > 0 && (
+        <>
+          {needsAttention && (
+            <div className="mb-3 text-sm text-amber-600 dark:text-amber-400">
+              One or more Claude accounts need a login — runs routed to them will fail until
+              re-authenticated.
+            </div>
+          )}
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Account</TableHead>
+                <TableHead>Session</TableHead>
+                <TableHead>Expires</TableHead>
+                <TableHead>Last login</TableHead>
+                <TableHead>Login command</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sessions.map((s: ClaudeSessionInfo) => {
+                const badge = SESSION_BADGE[s.status];
+                return (
+                  <TableRow key={s.id}>
+                    <TableCell className="font-medium text-foreground">
+                      {s.label}
+                      {!s.enabled && (
+                        <span className="ml-2 text-xs text-muted-foreground">(disabled)</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-block px-2 py-0.5 rounded-full text-xs font-bold ${badge.cls}`}
+                      >
+                        {badge.label}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground text-xs">
+                      {fmtDate(s.expiresAt)}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground text-xs">
+                      {fmtDate(s.lastLoginAt)}
+                    </TableCell>
+                    <TableCell>
+                      <LoginCommand id={s.id} />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </>
+      )}
+    </div>
   );
 };
 
@@ -136,6 +250,8 @@ export const AiAccountsSection = () => {
           </TableBody>
         </Table>
       )}
+
+      <ClaudeSessionsSubsection canView={canView} />
     </div>
   );
 };

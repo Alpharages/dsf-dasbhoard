@@ -5,6 +5,7 @@ import type { AiAccount } from '@/types/aiAccounts';
 
 export const aiAccountKeys = {
   all: ['ai-accounts'] as const,
+  claudeSessions: ['ai-accounts', 'claude-sessions'] as const,
 };
 
 export const useAiAccounts = (enabled: boolean = true) => {
@@ -13,6 +14,16 @@ export const useAiAccounts = (enabled: boolean = true) => {
     queryFn: aiAccountsApi.list,
     enabled,
     staleTime: 30 * 1000,
+  });
+};
+
+export const useClaudeSessions = (enabled: boolean = true) => {
+  return useQuery({
+    queryKey: aiAccountKeys.claudeSessions,
+    queryFn: aiAccountsApi.claudeSessions,
+    enabled,
+    staleTime: 30 * 1000,
+    refetchInterval: 60 * 1000, // sessions expire over time — keep the view fresh
   });
 };
 

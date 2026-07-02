@@ -24,3 +24,16 @@ export interface AiAccountImportSummary {
   skipped: number;
   errors: AiAccountImportRowError[];
 }
+
+// Claude login-session state per claude account (backend probes each account's CLAUDE_CONFIG_DIR).
+export type ClaudeSessionStatus = 'active' | 'expiring' | 'expired' | 'unknown' | 'missing';
+
+export interface ClaudeSessionInfo {
+  id: string;
+  label: string;
+  enabled: boolean;
+  configDir: string;
+  status: ClaudeSessionStatus;
+  expiresAt: string | null;
+  lastLoginAt: string | null;
+}

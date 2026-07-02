@@ -1,5 +1,9 @@
 import apiClient from '@/api/client';
-import type { AiAccount, AiAccountImportSummary } from '@/types/aiAccounts';
+import type {
+  AiAccount,
+  AiAccountImportSummary,
+  ClaudeSessionInfo,
+} from '@/types/aiAccounts';
 
 export const aiAccountsApi = {
   /** List pool accounts (redacted — no credentials). */
@@ -23,6 +27,12 @@ export const aiAccountsApi = {
   /** Enable/disable an account. */
   setEnabled: async (id: string, enabled: boolean): Promise<AiAccount> => {
     const response = await apiClient.patch<AiAccount>(`admin/ai-accounts/${id}`, { enabled });
+    return response.data;
+  },
+
+  /** Claude login-session status per claude account (active/expiring/expired/unknown/missing). */
+  claudeSessions: async (): Promise<ClaudeSessionInfo[]> => {
+    const response = await apiClient.get<ClaudeSessionInfo[]>('admin/ai-accounts/claude-sessions');
     return response.data;
   },
 };
