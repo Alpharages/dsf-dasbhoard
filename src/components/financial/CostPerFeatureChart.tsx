@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { financialApi } from '../../api/financialApi';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { Download, DollarSign, ChevronDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChartContainer } from '@/components/dashboard/charts/ChartContainer';
 
 interface CostPerFeatureChartProps {
     projectId?: string;
@@ -123,43 +124,41 @@ export const CostPerFeatureChart: React.FC<CostPerFeatureChartProps> = ({
                 </div>
 
                 {/* Bar chart */}
-                <div className="flex-1 min-h-0 w-full">
-                    <ResponsiveContainer width="100%" height="100%" debounce={100}>
-                        <BarChart data={chartData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
-                            <defs>
-                                <linearGradient id="costGradient" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.8} />
-                                    <stop offset="100%" stopColor="#6366f1" stopOpacity={0.3} />
-                                </linearGradient>
-                            </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                            <XAxis
-                                dataKey="name"
-                                stroke="var(--muted-foreground)"
-                                tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
-                            />
-                            <YAxis
-                                stroke="var(--muted-foreground)"
-                                tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
-                                tickFormatter={(value: number) => `$${value}`}
-                            />
-                            <Tooltip
-                                contentStyle={{
-                                    backgroundColor: 'var(--popover)',
-                                    border: '1px solid var(--border)',
-                                    borderRadius: '8px',
-                                    padding: '12px',
-                                }}
-                                labelStyle={{ color: 'var(--foreground)', fontWeight: 600, marginBottom: '8px' }}
-                                formatter={(value?: number, _name?: string, props?: any) => {
-                                    if (value === undefined) return ['', ''];
-                                    return [`$${value.toFixed(2)}`, props?.payload?.title || ''];
-                                }}
-                            />
-                            <Bar dataKey="cost" fill="url(#costGradient)" radius={[8, 8, 0, 0]} />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
+                <ChartContainer className="flex-1 min-h-0 w-full">
+                    <BarChart data={chartData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
+                        <defs>
+                            <linearGradient id="costGradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.8} />
+                                <stop offset="100%" stopColor="#6366f1" stopOpacity={0.3} />
+                            </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                        <XAxis
+                            dataKey="name"
+                            stroke="var(--muted-foreground)"
+                            tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
+                        />
+                        <YAxis
+                            stroke="var(--muted-foreground)"
+                            tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
+                            tickFormatter={(value: number) => `$${value}`}
+                        />
+                        <Tooltip
+                            contentStyle={{
+                                backgroundColor: 'var(--popover)',
+                                border: '1px solid var(--border)',
+                                borderRadius: '8px',
+                                padding: '12px',
+                            }}
+                            labelStyle={{ color: 'var(--foreground)', fontWeight: 600, marginBottom: '8px' }}
+                            formatter={(value?: number, _name?: string, props?: any) => {
+                                if (value === undefined) return ['', ''];
+                                return [`$${value.toFixed(2)}`, props?.payload?.title || ''];
+                            }}
+                        />
+                        <Bar dataKey="cost" fill="url(#costGradient)" radius={[8, 8, 0, 0]} />
+                    </BarChart>
+                </ChartContainer>
 
                 {/* Provider breakdown */}
                 {epicData.byProvider.length > 0 && (

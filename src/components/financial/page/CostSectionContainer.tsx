@@ -7,7 +7,8 @@ import { DollarSign, TrendingUp, Download } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { financialApi } from '../../../api/financialApi';
 import { CostPerFeatureChart } from '../CostPerFeatureChart';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell } from 'recharts';
+import { ChartContainer } from '@/components/dashboard/charts/ChartContainer';
 
 interface CostSectionContainerProps {
     projectId: string | null;
@@ -85,7 +86,7 @@ export function CostSectionContainer({ projectId, startDate, endDate }: CostSect
             {/* Epic Comparison Chart */}
             <div className="bg-card border border-border rounded-lg p-6 min-w-0">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Epic Comparison</h3>
-                <ResponsiveContainer width="100%" height={300} debounce={100}>
+                <ChartContainer height={300}>
                     <BarChart data={epics.slice(0, 5)}>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                         <XAxis dataKey="epicTitle" stroke="hsl(var(--muted-foreground))" fontSize={12} />
@@ -101,14 +102,14 @@ export function CostSectionContainer({ projectId, startDate, endDate }: CostSect
                         <Legend />
                         <Bar dataKey="totalCostUsd" name="Total Cost (USD)" fill="#3b82f6" />
                     </BarChart>
-                </ResponsiveContainer>
+                </ChartContainer>
             </div>
 
             {/* Provider Distribution */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="bg-card border border-border rounded-lg p-6 min-w-0">
                     <h3 className="text-lg font-semibold text-foreground mb-4">Provider Distribution</h3>
-                    <ResponsiveContainer width="100%" height={250} debounce={100}>
+                    <ChartContainer height={250}>
                         <PieChart>
                             <Pie
                                 data={providerBreakdown as any}
@@ -132,7 +133,7 @@ export function CostSectionContainer({ projectId, startDate, endDate }: CostSect
                                 }}
                             />
                         </PieChart>
-                    </ResponsiveContainer>
+                    </ChartContainer>
                 </div>
 
                 {/* Top Expensive Epics */}

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { financialApi } from '../../api/financialApi';
-import { Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart, ReferenceLine } from 'recharts';
+import { Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Area, AreaChart, ReferenceLine } from 'recharts';
 import { Download, TrendingUp, AlertTriangle, ChevronDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChartContainer } from '@/components/dashboard/charts/ChartContainer';
 
 interface BudgetTrendChartProps {
     projectId: string;
@@ -139,68 +140,66 @@ export const BudgetTrendChart: React.FC<BudgetTrendChartProps> = ({ projectId })
                 </div>
 
                 {/* Area chart */}
-                <div className="flex-1 min-h-0 w-full">
-                    <ResponsiveContainer width="100%" height="100%" debounce={100}>
-                        <AreaChart data={chartData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
-                            <defs>
-                                <linearGradient id="cumulativeGradient" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#6366f1" stopOpacity={0.4} />
-                                    <stop offset="100%" stopColor="#6366f1" stopOpacity={0.05} />
-                                </linearGradient>
-                            </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                            <XAxis
-                                dataKey="date"
-                                stroke="var(--muted-foreground)"
-                                tick={{ fill: 'var(--muted-foreground)', fontSize: 11 }}
-                            />
-                            <YAxis
-                                stroke="var(--muted-foreground)"
-                                tick={{ fill: 'var(--muted-foreground)', fontSize: 11 }}
-                                tickFormatter={(value: number) => `$${value}`}
-                            />
-                            <Tooltip
-                                contentStyle={{
-                                    backgroundColor: 'var(--popover)',
-                                    border: '1px solid var(--border)',
-                                    borderRadius: '8px',
-                                    padding: '12px',
-                                }}
-                                labelStyle={{ color: 'var(--foreground)', fontWeight: 600, marginBottom: '8px' }}
-                                formatter={(value?: number) => {
-                                    if (value === undefined) return ['', undefined];
-                                    return [`$${value.toFixed(2)}`, undefined];
-                                }}
-                            />
-                            <Legend
-                                wrapperStyle={{ paddingTop: '10px' }}
-                                iconType="line"
-                            />
-                            <ReferenceLine
-                                y={budgetLimit}
-                                stroke="#ef4444"
-                                strokeDasharray="5 5"
-                                label={{ value: 'Budget Limit', fill: '#ef4444', fontSize: 11 }}
-                            />
-                            <Area
-                                type="monotone"
-                                dataKey="cumulative"
-                                stroke="#6366f1"
-                                fill="url(#cumulativeGradient)"
-                                strokeWidth={2}
-                                name="Cumulative Cost"
-                            />
-                            <Line
-                                type="monotone"
-                                dataKey="daily"
-                                stroke="#8b5cf6"
-                                strokeWidth={2}
-                                dot={{ fill: '#8b5cf6', r: 3 }}
-                                name="Daily Cost"
-                            />
-                        </AreaChart>
-                    </ResponsiveContainer>
-                </div>
+                <ChartContainer className="flex-1 min-h-0 w-full">
+                    <AreaChart data={chartData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
+                        <defs>
+                            <linearGradient id="cumulativeGradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#6366f1" stopOpacity={0.4} />
+                                <stop offset="100%" stopColor="#6366f1" stopOpacity={0.05} />
+                            </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                        <XAxis
+                            dataKey="date"
+                            stroke="var(--muted-foreground)"
+                            tick={{ fill: 'var(--muted-foreground)', fontSize: 11 }}
+                        />
+                        <YAxis
+                            stroke="var(--muted-foreground)"
+                            tick={{ fill: 'var(--muted-foreground)', fontSize: 11 }}
+                            tickFormatter={(value: number) => `$${value}`}
+                        />
+                        <Tooltip
+                            contentStyle={{
+                                backgroundColor: 'var(--popover)',
+                                border: '1px solid var(--border)',
+                                borderRadius: '8px',
+                                padding: '12px',
+                            }}
+                            labelStyle={{ color: 'var(--foreground)', fontWeight: 600, marginBottom: '8px' }}
+                            formatter={(value?: number) => {
+                                if (value === undefined) return ['', undefined];
+                                return [`$${value.toFixed(2)}`, undefined];
+                            }}
+                        />
+                        <Legend
+                            wrapperStyle={{ paddingTop: '10px' }}
+                            iconType="line"
+                        />
+                        <ReferenceLine
+                            y={budgetLimit}
+                            stroke="#ef4444"
+                            strokeDasharray="5 5"
+                            label={{ value: 'Budget Limit', fill: '#ef4444', fontSize: 11 }}
+                        />
+                        <Area
+                            type="monotone"
+                            dataKey="cumulative"
+                            stroke="#6366f1"
+                            fill="url(#cumulativeGradient)"
+                            strokeWidth={2}
+                            name="Cumulative Cost"
+                        />
+                        <Line
+                            type="monotone"
+                            dataKey="daily"
+                            stroke="#8b5cf6"
+                            strokeWidth={2}
+                            dot={{ fill: '#8b5cf6', r: 3 }}
+                            name="Daily Cost"
+                        />
+                    </AreaChart>
+                </ChartContainer>
 
                 {/* Forecast summary */}
                 <div className="mt-3 bg-[var(--surface-1)] rounded-xl p-3 border border-[var(--card-border)]">
