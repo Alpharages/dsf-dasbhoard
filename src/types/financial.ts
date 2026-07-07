@@ -17,6 +17,11 @@ export interface ProviderBreakdownDto {
     percentage: number;
 }
 
+export interface EpicOptionDto {
+    epicId: string;
+    epicTitle: string;
+}
+
 export interface CostPerFeatureDto {
     epicId: string;
     epicTitle: string;

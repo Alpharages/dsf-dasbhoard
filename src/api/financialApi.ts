@@ -6,6 +6,7 @@
 import apiClient from './client';
 import type {
     CostPerFeatureDto,
+    EpicOptionDto,
     RoiMetricsDto,
     BudgetTrendsDto,
     ModelEfficiencyDto,
@@ -15,6 +16,16 @@ import type {
 } from '../types/financial';
 
 export const financialApi = {
+    /**
+     * BUG-04: List epics available for the cost-per-feature epic selector
+     */
+    getEpics: async (params: { projectId?: string }): Promise<EpicOptionDto[]> => {
+        const { data } = await apiClient.get('/financial-metrics/epics', {
+            params,
+        });
+        return data;
+    },
+
     /**
      * AC#1: Get cost breakdown per feature/epic
      */

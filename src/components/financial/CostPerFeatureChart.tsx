@@ -13,22 +13,31 @@ interface CostPerFeatureChartProps {
 
 export const CostPerFeatureChart: React.FC<CostPerFeatureChartProps> = ({
     projectId,
-    defaultEpicId = 'epic-5'
+    defaultEpicId
 }) => {
-    const [selectedEpic, setSelectedEpic] = useState(defaultEpicId);
+    const [selectedEpic, setSelectedEpic] = useState(defaultEpicId ?? '');
+
+    const { data: epics } = useQuery({
+        queryKey: ['costPerFeatureEpics', projectId],
+        queryFn: () => financialApi.getEpics({ projectId }),
+    });
+
+    // Data-driven default: fall back to the first real epic for this project once epics load (BUG-04).
+    const effectiveEpic = selectedEpic || epics?.[0]?.epicId || '';
 
     const { data, isLoading, error } = useQuery({
-        queryKey: ['costPerFeature', selectedEpic, projectId],
-        queryFn: () => financialApi.getCostPerFeature({ epicId: selectedEpic, projectId }),
+        queryKey: ['costPerFeature', effectiveEpic, projectId],
+        queryFn: () => financialApi.getCostPerFeature({ epicId: effectiveEpic, projectId }),
+        enabled: !!effectiveEpic,
     });
 
     const handleDownloadCsv = async () => {
         try {
-            const blob = await financialApi.downloadCostPerFeatureCsv({ epicId: selectedEpic, projectId });
+            const blob = await financialApi.downloadCostPerFeatureCsv({ epicId: effectiveEpic, projectId });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `cost-per-feature-${selectedEpic}-${new Date().toISOString().split('T')[0]}.csv`;
+            a.download = `cost-per-feature-${effectiveEpic}-${new Date().toISOString().split('T')[0]}.csv`;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
@@ -80,14 +89,15 @@ export const CostPerFeatureChart: React.FC<CostPerFeatureChartProps> = ({
                     {/* Epic selector dropdown */}
                     <div className="relative">
                         <select
-                            value={selectedEpic}
+                            value={effectiveEpic}
                             onChange={(e) => setSelectedEpic(e.target.value)}
                             className="appearance-none bg-[var(--surface-1)] border border-[var(--card-border)] text-sm text-foreground rounded-lg px-3 py-1.5 pr-8 cursor-pointer hover:bg-[var(--surface-2)] focus:outline-none focus:ring-2 focus:ring-primary"
                         >
-                            <option value="epic-5">Epic 5</option>
-                            <option value="epic-6">Epic 6</option>
-                            <option value="epic-13">Epic 13</option>
-                            <option value="epic-14">Epic 14</option>
+                            {(epics ?? []).map((epic) => (
+                                <option key={epic.epicId} value={epic.epicId}>
+                                    {epic.epicTitle}
+                                </option>
+                            ))}
                         </select>
                         <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
                     </div>
