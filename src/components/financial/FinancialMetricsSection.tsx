@@ -15,24 +15,17 @@ interface FinancialMetricsSectionProps {
 
 export const FinancialMetricsSection: React.FC<FinancialMetricsSectionProps> = ({ projectId }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const [selectedProject, setSelectedProject] = useState(projectId || '');
+    const selectedProject = projectId || '';
     const queryClient = useQueryClient();
     const { user } = useAuth();
 
-    // Store last selected project in localStorage
     useEffect(() => {
         if (selectedProject) {
             localStorage.setItem('lastSelectedFinancialProject', selectedProject);
+        } else {
+            localStorage.removeItem('lastSelectedFinancialProject');
         }
     }, [selectedProject]);
-
-    // Load last selected project on mount
-    useEffect(() => {
-        const savedProject = localStorage.getItem('lastSelectedFinancialProject');
-        if (savedProject && !projectId) {
-            setSelectedProject(savedProject);
-        }
-    }, [projectId]);
 
     // Guard: MANAGER/ADMIN only
     if (!canAccess(user?.role || 'VIEWER', 'MANAGER')) {
