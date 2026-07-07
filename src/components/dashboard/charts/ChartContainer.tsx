@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ResponsiveContainer } from 'recharts';
 import { cn } from '@/lib/utils';
 
@@ -17,36 +17,59 @@ export function ChartContainer({
   debounce = 100,
   minWidth = 0,
 }: ChartContainerProps) {
-  const [mounted, setMounted] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  // ResponsiveContainer seeds its size from initialDimension (default {-1,-1})
+  // and logs "width(-1)/height(-1)" on its FIRST render — before its own
+  // measuring effect runs — whenever both width and height are percentages.
+  // Deferring the mount by a tick doesn't help (the initial state is still -1).
+  // So we measure the wrapper ourselves, only mount once it has a real size,
+  // and seed initialDimension so the first render already has positive dims.
+  const [size, setSize] = useState<{ width: number; height: number } | null>(null);
 
   useEffect(() => {
-    // Defer rendering until after first paint to prevent recharts dimension errors
-    const timer = setTimeout(() => setMounted(true), 0);
-    return () => clearTimeout(timer);
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const measure = (w: number, h: number) => {
+      if (w > 0 && h > 0) setSize({ width: Math.round(w), height: Math.round(h) });
+    };
+    measure(el.clientWidth, el.clientHeight);
+    const ro = new ResizeObserver((entries) => {
+      const box = entries[0].contentRect;
+      measure(box.width, box.height);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
 
-  if (!mounted) {
-    return (
-      <div
-        className={cn('w-full flex items-end justify-center gap-2', className)}
-        style={{ height }}
-      >
-        {[...Array(8)].map((_, i) => (
-          <div
-            key={i}
-            className="w-full max-w-[40px] bg-muted rounded-t animate-pulse"
-            style={{ height: `${Math.random() * 40 + 20}%` }}
-          />
-        ))}
-      </div>
-    );
-  }
+  const isNumericHeight = typeof height === 'number';
 
   return (
-    <div className={cn('w-full h-full min-w-0', className)} style={{ minWidth }}>
-      <ResponsiveContainer width="100%" height={height as number} debounce={debounce}>
-        {children as any}
-      </ResponsiveContainer>
+    <div
+      ref={ref}
+      className={cn('w-full min-w-0', !isNumericHeight && 'h-full', className)}
+      style={isNumericHeight ? { minWidth, height } : { minWidth }}
+    >
+      {size ? (
+        <ResponsiveContainer
+          width="100%"
+          height="100%"
+          debounce={debounce}
+          initialDimension={size}
+        >
+          {children as any}
+        </ResponsiveContainer>
+      ) : (
+        <div className="w-full h-full flex items-end justify-center gap-2">
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              className="w-full max-w-[40px] bg-muted rounded-t animate-pulse"
+              // ponytail: deterministic skeleton bars — Math.random() re-rolled every render
+              style={{ height: `${((i * 37) % 40) + 20}%` }}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
