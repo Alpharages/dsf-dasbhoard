@@ -1,4 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { QueueMetricsDto, QueueName } from "../types";
@@ -11,12 +17,12 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
   Cell,
   LineChart,
   Line,
   Legend,
 } from "recharts";
+import { ChartContainer } from "@/components/dashboard/charts/ChartContainer";
 
 interface QueueMetricsChartProps {
   queueMetrics: QueueMetricsDto | undefined;
@@ -62,7 +68,7 @@ function QueueTooltip({
 
 /**
  * QueueMetricsChart component - AC#2
- * 
+ *
  * Displays queue depth and processing rates using Recharts:
  * - Bar chart for queue depths
  * - Line chart for processing rates
@@ -75,17 +81,20 @@ export function QueueMetricsChart({
 }: QueueMetricsChartProps) {
   // Transform data for charts
   const chartData = queueMetrics
-    ? (Object.entries(queueMetrics) as [QueueName, typeof queueMetrics[QueueName]][]).map(
-        ([name, metrics]) => ({
-          name: formatQueueName(name),
-          queueKey: name,
-          depth: metrics.depth,
-          rate: metrics.rate,
-          age: metrics.oldest_message_age_seconds,
-          depthAlert: metrics.depth > DEPTH_THRESHOLD,
-          ageAlert: metrics.oldest_message_age_seconds > AGE_THRESHOLD_SECONDS,
-        })
-      )
+    ? (
+        Object.entries(queueMetrics) as [
+          QueueName,
+          (typeof queueMetrics)[QueueName],
+        ][]
+      ).map(([name, metrics]) => ({
+        name: formatQueueName(name),
+        queueKey: name,
+        depth: metrics.depth,
+        rate: metrics.rate,
+        age: metrics.oldest_message_age_seconds,
+        depthAlert: metrics.depth > DEPTH_THRESHOLD,
+        ageAlert: metrics.oldest_message_age_seconds > AGE_THRESHOLD_SECONDS,
+      }))
     : [];
 
   // Check if any queue has alerts
@@ -130,9 +139,11 @@ export function QueueMetricsChart({
               {alertingQueues.map((q) => (
                 <span key={q.queueKey} className="block">
                   <strong>{q.name}:</strong>{" "}
-                  {q.depthAlert && `Depth (${q.depth}) exceeds threshold (${DEPTH_THRESHOLD})`}
+                  {q.depthAlert &&
+                    `Depth (${q.depth}) exceeds threshold (${DEPTH_THRESHOLD})`}
                   {q.depthAlert && q.ageAlert && "; "}
-                  {q.ageAlert && `Oldest message is ${formatDuration(q.age)} old`}
+                  {q.ageAlert &&
+                    `Oldest message is ${formatDuration(q.age)} old`}
                 </span>
               ))}
             </AlertDescription>
@@ -148,54 +159,52 @@ export function QueueMetricsChart({
               <Badge variant="destructive">Alert</Badge>
             )}
           </h4>
-          <div className="h-[250px] min-w-0">
-            <ResponsiveContainer width="100%" height="100%" debounce={100}>
-              <BarChart
-                data={chartData}
-                margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip content={<QueueTooltip />} />
-                <Bar dataKey="depth" name="Messages" radius={[4, 4, 0, 0]}>
-                  {chartData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={entry.depthAlert ? "#ef4444" : "#3b82f6"}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <ChartContainer className="h-[250px] min-w-0">
+            <BarChart
+              data={chartData}
+              margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+              <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+              <YAxis tick={{ fontSize: 12 }} />
+              <Tooltip content={<QueueTooltip />} />
+              <Bar dataKey="depth" name="Messages" radius={[4, 4, 0, 0]}>
+                {chartData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={entry.depthAlert ? "#ef4444" : "#3b82f6"}
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ChartContainer>
         </div>
 
         {/* Processing Rate Line Chart */}
         <div>
-          <h4 className="text-sm font-semibold mb-3">Processing Rate (tickets/hour)</h4>
-          <div className="h-[200px] min-w-0">
-            <ResponsiveContainer width="100%" height="100%" debounce={100}>
-              <LineChart
-                data={chartData}
-                margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip content={<QueueTooltip />} />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="rate"
-                  name="Processing Rate"
-                  stroke="#10b981"
-                  strokeWidth={2}
-                  dot={{ fill: "#10b981", r: 6 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+          <h4 className="text-sm font-semibold mb-3">
+            Processing Rate (tickets/hour)
+          </h4>
+          <ChartContainer className="h-[200px] min-w-0">
+            <LineChart
+              data={chartData}
+              margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+              <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+              <YAxis tick={{ fontSize: 12 }} />
+              <Tooltip content={<QueueTooltip />} />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="rate"
+                name="Processing Rate"
+                stroke="#10b981"
+                strokeWidth={2}
+                dot={{ fill: "#10b981", r: 6 }}
+              />
+            </LineChart>
+          </ChartContainer>
         </div>
 
         {/* Queue Summary Cards */}

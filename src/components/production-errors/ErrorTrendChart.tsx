@@ -3,16 +3,16 @@
  * Story 9-U-5: Production Error Dashboard - AC#5
  *
  * 7-day rolling error trend chart with severity stacking.
- * 
+ *
  * Optimizations:
  * - Direct imports from recharts (avoiding barrel file)
  * - useMemo for data transformation (prevent unnecessary re-computation)
  * - React.memo to prevent re-renders when props don't change
  */
 
-import { memo, useMemo } from 'react';
-import { useProductionErrorTrends } from '@/hooks/useProductionErrors';
-import { Skeleton } from '@/components/ui/skeleton';
+import { memo, useMemo } from "react";
+import { useProductionErrorTrends } from "@/hooks/useProductionErrors";
+import { Skeleton } from "@/components/ui/skeleton";
 // Note: Using barrel import from recharts - Vite handles tree-shaking via ESM
 import {
   LineChart,
@@ -21,9 +21,9 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
-import { format, parseISO } from 'date-fns';
+} from "recharts";
+import { ChartContainer } from "@/components/dashboard/charts/ChartContainer";
+import { format, parseISO } from "date-fns";
 
 interface ChartDataPoint {
   date: string;
@@ -43,7 +43,7 @@ function ErrorTrendChartComponent() {
     if (!trends) return [];
     return trends.dates.map((date, index) => ({
       date,
-      displayDate: format(parseISO(date), 'EEE MM/dd'),
+      displayDate: format(parseISO(date), "EEE MM/dd"),
       CRITICAL: trends.trendsBySeverity.CRITICAL[index] || 0,
       HIGH: trends.trendsBySeverity.HIGH[index] || 0,
       MEDIUM: trends.trendsBySeverity.MEDIUM[index] || 0,
@@ -65,65 +65,66 @@ function ErrorTrendChartComponent() {
       <h3 className="text-lg font-semibold text-foreground mb-4">
         Error Trends (7 Days)
       </h3>
-      
-      <div className="h-[300px] min-w-0">
-        <ResponsiveContainer width="100%" height="100%" debounce={100}>
-          <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-            <XAxis 
-              dataKey="displayDate" 
-              stroke="#64748b"
-              tick={{ fill: '#64748b', fontSize: 12 }}
-            />
-            <YAxis 
-              stroke="#64748b"
-              tick={{ fill: '#64748b', fontSize: 12 }}
-              allowDecimals={false}
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: '#0f172a',
-                border: '1px solid #1e293b',
-                borderRadius: '8px',
-                color: '#e2e8f0',
-              }}
-              labelStyle={{ color: '#94a3b8' }}
-            />
-            <Line
-              type="monotone"
-              dataKey="CRITICAL"
-              stroke="#ef4444"
-              strokeWidth={2}
-              dot={{ fill: '#ef4444', strokeWidth: 0, r: 4 }}
-              name="Critical"
-            />
-            <Line
-              type="monotone"
-              dataKey="HIGH"
-              stroke="#f97316"
-              strokeWidth={2}
-              dot={{ fill: '#f97316', strokeWidth: 0, r: 4 }}
-              name="High"
-            />
-            <Line
-              type="monotone"
-              dataKey="MEDIUM"
-              stroke="#eab308"
-              strokeWidth={2}
-              dot={{ fill: '#eab308', strokeWidth: 0, r: 4 }}
-              name="Medium"
-            />
-            <Line
-              type="monotone"
-              dataKey="LOW"
-              stroke="#3b82f6"
-              strokeWidth={2}
-              dot={{ fill: '#3b82f6', strokeWidth: 0, r: 4 }}
-              name="Low"
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+
+      <ChartContainer className="h-[300px] min-w-0">
+        <LineChart
+          data={chartData}
+          margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+          <XAxis
+            dataKey="displayDate"
+            stroke="#64748b"
+            tick={{ fill: "#64748b", fontSize: 12 }}
+          />
+          <YAxis
+            stroke="#64748b"
+            tick={{ fill: "#64748b", fontSize: 12 }}
+            allowDecimals={false}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "#0f172a",
+              border: "1px solid #1e293b",
+              borderRadius: "8px",
+              color: "#e2e8f0",
+            }}
+            labelStyle={{ color: "#94a3b8" }}
+          />
+          <Line
+            type="monotone"
+            dataKey="CRITICAL"
+            stroke="#ef4444"
+            strokeWidth={2}
+            dot={{ fill: "#ef4444", strokeWidth: 0, r: 4 }}
+            name="Critical"
+          />
+          <Line
+            type="monotone"
+            dataKey="HIGH"
+            stroke="#f97316"
+            strokeWidth={2}
+            dot={{ fill: "#f97316", strokeWidth: 0, r: 4 }}
+            name="High"
+          />
+          <Line
+            type="monotone"
+            dataKey="MEDIUM"
+            stroke="#eab308"
+            strokeWidth={2}
+            dot={{ fill: "#eab308", strokeWidth: 0, r: 4 }}
+            name="Medium"
+          />
+          <Line
+            type="monotone"
+            dataKey="LOW"
+            stroke="#3b82f6"
+            strokeWidth={2}
+            dot={{ fill: "#3b82f6", strokeWidth: 0, r: 4 }}
+            name="Low"
+          />
+        </LineChart>
+      </ChartContainer>
 
       {/* Legend */}
       <div className="flex flex-wrap gap-4 mt-4 justify-center">
