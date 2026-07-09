@@ -22,7 +22,6 @@ export const ConversationListWidget: React.FC<ConversationListWidgetProps> = ({
         queryKey: ['recent-conversations', 5, 0],
         queryFn: () => searchConversations({ limit: 5, offset: 0 }).then((result) => result.conversations),
         staleTime: 60_000,
-        retry: 1,
     });
 
     return (

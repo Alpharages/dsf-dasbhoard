@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import type { Socket } from 'socket.io-client';
 import { useProjectUpdates } from '@/hooks/useProjectUpdates';
 import type { Project, TicketCounts } from '@/types';
@@ -26,17 +26,32 @@ function makeProject(id: string, overrides: Partial<Project> = {}): Project {
     } as Project;
 }
 
-/** Minimal socket double: records handlers registered via `on`, drops them on `off`. */
+type Handler = (payload: unknown) => void;
+
+/**
+ * Minimal socket double. Holds a *set* of handlers per event, like socket.io does, so that
+ * `off(event)` dropping every listener is distinguishable from `off(event, handler)` dropping one.
+ */
 function makeSocket() {
-    const handlers = new Map<string, (payload: unknown) => void>();
+    const handlers = new Map<string, Set<Handler>>();
     const socket = {
-        on: (event: string, cb: (payload: unknown) => void) => handlers.set(event, cb),
-        off: (event: string) => handlers.delete(event),
+        on: (event: string, cb: Handler) => {
+            const set = handlers.get(event) ?? new Set<Handler>();
+            set.add(cb);
+            handlers.set(event, set);
+        },
+        off: (event: string, cb?: Handler) => {
+            const set = handlers.get(event);
+            if (!set) return;
+            if (cb) set.delete(cb);
+            else set.clear();
+            if (set.size === 0) handlers.delete(event);
+        },
     } as unknown as Socket;
 
     return {
         socket,
-        emit: (event: string, payload: unknown) => handlers.get(event)?.(payload),
+        emit: (event: string, payload: unknown) => handlers.get(event)?.forEach((cb) => cb(payload)),
         registered: () => [...handlers.keys()],
     };
 }
@@ -55,7 +70,7 @@ describe('useProjectUpdates', () => {
     function mount() {
         const { socket, emit, registered } = makeSocket();
         const view = renderHook(() => useProjectUpdates(socket, PROJECTS_KEY), { wrapper });
-        return { emit, registered, ...view };
+        return { socket, emit, registered, ...view };
     }
 
     it('writes project-updated into the projects query cache', () => {
@@ -107,5 +122,18 @@ describe('useProjectUpdates', () => {
         unmount();
 
         expect(registered()).toEqual([]);
+    });
+
+    // Regression: Dashboard registers its own pm-sync-failed toast listener on the same socket.
+    // Cleaning up with the one-arg `socket.off('pm-sync-failed')` would drop that one too.
+    it('leaves another listener on the same event intact when it unmounts', () => {
+        const { socket, emit, unmount } = mount();
+        const sibling = vi.fn();
+        socket.on('pm-sync-failed', sibling);
+
+        unmount();
+        emit('pm-sync-failed', { projectId: 'p1' });
+
+        expect(sibling).toHaveBeenCalledTimes(1);
     });
 });

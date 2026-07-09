@@ -68,14 +68,16 @@ export function Dashboard() {
   // CS3-4: Toast alert when PM tool sync fails (best-effort, separate from state update in useProjectUpdates)
   useEffect(() => {
     if (!socket) return;
-    socket.on('pm-sync-failed', (data: { provider: string }) => {
+    const onPmSyncFailed = (data: { provider: string }) => {
       toast(`PM tool update needed — ${data.provider} sync failed`, {
         icon: '⚠️',
         style: { background: '#92400e', color: '#fef3c7' },
       });
-    });
+    };
+    socket.on('pm-sync-failed', onPmSyncFailed);
+    // Pass the handler to `off` — the one-arg form would also drop useProjectUpdates' listener.
     return () => {
-      socket.off('pm-sync-failed');
+      socket.off('pm-sync-failed', onPmSyncFailed);
     };
   }, [socket]);
 
@@ -109,9 +111,11 @@ export function Dashboard() {
   });
 
   // isLoading is only true on the first load (isPending && isFetching), so it drives the
-  // skeletons; isFetching also covers manual refetches, so it drives the refresh spinner.
+  // skeletons; isFetching also covers manual refetches, so it drives the refresh spinner —
+  // excluding the first load, where the skeletons already signal the fetch.
   const loading = projectsLoading;
-  const refreshing = projectsFetching || summaryFetching;
+  const refreshing =
+    (projectsFetching || summaryFetching) && !projectsLoading && !summaryLoading;
   const hasError = projectsError || summaryError;
 
   const [sortPreference, setSortPreference] = useState<SortOption>(() => {

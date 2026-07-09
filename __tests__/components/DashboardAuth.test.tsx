@@ -170,6 +170,19 @@ describe('Dashboard Auth & Role Guards', () => {
         expect(apiClient.get).toHaveBeenCalledTimes(2);
     });
 
+    // The skeletons already signal the first load; the spinner means "manual refresh in flight".
+    it('does not spin the refresh icon during the initial load', async () => {
+        vi.mocked(apiClient.get).mockReturnValue(new Promise(() => {})); // never settles
+        vi.spyOn(AuthContext, 'useAuth').mockReturnValue(makeAuthMock(
+            { id: 'u9', role: 'MANAGER', email: 'a@a.com', fullName: 'A', isActive: true, lastLoginAt: null },
+        ));
+
+        render(<Dashboard />, { wrapper });
+
+        const refreshButton = await screen.findByTitle('Refresh Data');
+        expect(refreshButton.querySelector('.animate-spin')).toBeNull();
+    });
+
     it('shows the error state, not the empty state, when the dashboard requests fail', async () => {
         vi.mocked(apiClient.get).mockRejectedValue(new Error('backend down'));
         vi.spyOn(AuthContext, 'useAuth').mockReturnValue(makeAuthMock(

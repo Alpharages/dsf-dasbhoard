@@ -96,6 +96,9 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 60 * 1000, // 60 seconds (AC#1)
       gcTime: 300 * 1000, // 5 minutes (AC#1)
+      // v5 defaults to 3 retries, which turns one failed dashboard load into 4 requests
+      // and delays the error banner by the backoff (1s + 2s + 4s).
+      retry: 1,
     },
   },
 });
