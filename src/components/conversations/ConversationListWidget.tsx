@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
-import { MessageSquare, Loader2, ChevronRight, Smile, Meh, Frown } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { MessageSquare, Loader2, ChevronRight, Smile, Meh, Frown, AlertCircle } from 'lucide-react';
 import { searchConversations } from '../../api/conversations';
-import type { ConversationResponseDto } from '../../types/conversation';
 import { motion } from 'framer-motion';
 
 interface ConversationListWidgetProps {
@@ -19,24 +18,12 @@ export const ConversationListWidget: React.FC<ConversationListWidgetProps> = ({
     onConversationClick,
     onViewAll
 }) => {
-    const [conversations, setConversations] = useState<ConversationResponseDto[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchRecentConversations = async () => {
-            setLoading(true);
-            try {
-                const result = await searchConversations({ limit: 5, offset: 0 });
-                setConversations(result.conversations);
-            } catch (err) {
-                console.error('Error fetching recent conversations:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchRecentConversations();
-    }, []);
+    const { data: conversations = [], isLoading: loading, isError } = useQuery({
+        queryKey: ['recent-conversations', 5, 0],
+        queryFn: () => searchConversations({ limit: 5, offset: 0 }).then((result) => result.conversations),
+        staleTime: 60_000,
+        retry: 1,
+    });
 
     return (
         <div className="h-full min-h-[400px] bg-[var(--surface-2)] border border-[var(--card-border)] rounded-lg p-5 backdrop-blur-sm flex flex-col">
@@ -59,6 +46,11 @@ export const ConversationListWidget: React.FC<ConversationListWidgetProps> = ({
             {loading ? (
                 <div className="flex-1 flex items-center justify-center">
                     <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                </div>
+            ) : isError ? (
+                <div className="flex-1 flex flex-col items-center justify-center py-10 bg-[var(--surface-1)] border border-dashed border-rose-500/30 rounded-xl">
+                    <AlertCircle className="w-8 h-8 text-rose-400/70 mx-auto mb-2" />
+                    <p className="text-muted-foreground text-sm">Couldn't load conversations</p>
                 </div>
             ) : conversations.length > 0 ? (
                 <div className="flex-1 overflow-y-auto space-y-2">

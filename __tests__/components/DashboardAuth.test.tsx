@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import { StrictMode } from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -147,6 +148,41 @@ describe('Dashboard Auth & Role Guards', () => {
         await waitFor(() => {
             expect(screen.queryByTestId('financial-metrics')).not.toBeInTheDocument();
         });
+    });
+
+    it('dedupes initial PM dashboard requests under StrictMode', async () => {
+        vi.spyOn(AuthContext, 'useAuth').mockReturnValue(makeAuthMock(
+            { id: 'u7', role: 'MANAGER', email: 'a@a.com', fullName: 'A', isActive: true, lastLoginAt: null },
+        ));
+
+        render(
+            <StrictMode>
+                <Dashboard />
+            </StrictMode>,
+            { wrapper },
+        );
+
+        await waitFor(() => {
+            expect(apiClient.get).toHaveBeenCalledWith('/pm-dashboard/summary');
+            expect(apiClient.get).toHaveBeenCalledWith('/pm-dashboard/projects');
+        });
+
+        expect(apiClient.get).toHaveBeenCalledTimes(2);
+    });
+
+    it('shows the error state, not the empty state, when the dashboard requests fail', async () => {
+        vi.mocked(apiClient.get).mockRejectedValue(new Error('backend down'));
+        vi.spyOn(AuthContext, 'useAuth').mockReturnValue(makeAuthMock(
+            { id: 'u8', role: 'MANAGER', email: 'a@a.com', fullName: 'A', isActive: true, lastLoginAt: null },
+        ));
+
+        render(<Dashboard />, { wrapper });
+
+        await waitFor(() => {
+            expect(screen.getByText('Failed to load dashboard')).toBeInTheDocument();
+        });
+
+        expect(screen.queryByText('No projects found')).not.toBeInTheDocument();
     });
 
     it('refetches data when user session changes (reactivity)', async () => {

@@ -54,15 +54,16 @@ interface ReviewDiff {
   newCode: string;
 }
 
+/** Stable identity so the filter/sort memos don't recompute on every render while the query is pending. */
+const EMPTY_PROJECTS: Project[] = [];
+
 export function Dashboard() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
   const { socket, connected, isConnecting } = useSocket();
-  useProjectUpdates(socket, setProjects);
+  const projectsQueryKey = useMemo(() => ['pm-dashboard-projects', user?.id] as const, [user?.id]);
+  useProjectUpdates(socket, projectsQueryKey);
 
   // CS3-4: Toast alert when PM tool sync fails (best-effort, separate from state update in useProjectUpdates)
   useEffect(() => {
@@ -79,13 +80,39 @@ export function Dashboard() {
   }, [socket]);
 
   // M3: React Query with staleTime: 60s per Technical Guardrails
-  const { data: summaryData, refetch: refetchSummary, isLoading: summaryLoading } = useQuery<DashboardSummary>({
+  const {
+    data: summaryData,
+    refetch: refetchSummary,
+    isLoading: summaryLoading,
+    isFetching: summaryFetching,
+    isError: summaryError,
+  } = useQuery<DashboardSummary>({
     queryKey: ['pm-dashboard-summary', user?.id],
     queryFn: () => apiClient.get('/pm-dashboard/summary').then((r) => r.data as DashboardSummary),
     staleTime: 60_000,
     enabled: !!user?.id,
   });
   const summary = summaryData ?? null;
+
+  const {
+    data: projects = EMPTY_PROJECTS,
+    refetch: refetchProjects,
+    isLoading: projectsLoading,
+    isFetching: projectsFetching,
+    isError: projectsError,
+  } = useQuery<Project[]>({
+    queryKey: projectsQueryKey,
+    queryFn: () =>
+      apiClient.get('/pm-dashboard/projects').then((r) => r.data.data as Project[]),
+    staleTime: 60_000,
+    enabled: !!user?.id,
+  });
+
+  // isLoading is only true on the first load (isPending && isFetching), so it drives the
+  // skeletons; isFetching also covers manual refetches, so it drives the refresh spinner.
+  const loading = projectsLoading;
+  const refreshing = projectsFetching || summaryFetching;
+  const hasError = projectsError || summaryError;
 
   const [sortPreference, setSortPreference] = useState<SortOption>(() => {
     return (localStorage.getItem('dsf_project_sort') as SortOption) || 'activity-desc';
@@ -162,6 +189,26 @@ export function Dashboard() {
     [filteredProjects, sortPreference],
   );
 
+  const [reviewState, setReviewState] = useState<{
+    isOpen: boolean;
+    projectName: string;
+    ticketTitle: string;
+    executionId: string;
+    qaSummary: ReviewQaSummary | null;
+    diffs: ReviewDiff[];
+    ticketRequirements: string;
+    confidenceScore: number;
+  }>({
+    isOpen: false,
+    projectName: '',
+    ticketTitle: '',
+    executionId: '',
+    qaSummary: null,
+    diffs: [],
+    ticketRequirements: '',
+    confidenceScore: 0,
+  });
+
   useHotkeys('mod+k, /', (e) => {
     e.preventDefault();
     setIsPaletteOpen((prev) => !prev);
@@ -185,40 +232,11 @@ export function Dashboard() {
     if (reviewState.isOpen) setReviewState((prev) => ({ ...prev, isOpen: false }));
   });
 
+  // refetch() never rejects — it resolves with the query result and surfaces failures via
+  // isError — so errors are read off the queries above rather than caught here.
   const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const projectsRes = await apiClient.get('/pm-dashboard/projects');
-      setProjects(projectsRes.data.data);
-      void refetchSummary();
-    } catch (err: unknown) {
-      console.error('Error fetching dashboard data:', err);
-      setError('Failed to fetch dashboard data');
-    } finally {
-      setLoading(false);
-    }
-  }, [refetchSummary]);
-
-  const [reviewState, setReviewState] = useState<{
-    isOpen: boolean;
-    projectName: string;
-    ticketTitle: string;
-    executionId: string;
-    qaSummary: ReviewQaSummary | null;
-    diffs: ReviewDiff[];
-    ticketRequirements: string;
-    confidenceScore: number;
-  }>({
-    isOpen: false,
-    projectName: '',
-    ticketTitle: '',
-    executionId: '',
-    qaSummary: null,
-    diffs: [],
-    ticketRequirements: '',
-    confidenceScore: 0,
-  });
+    await Promise.all([refetchProjects(), refetchSummary()]);
+  }, [refetchProjects, refetchSummary]);
 
   const handleReview = async (project: Project) => {
     setReviewState({
@@ -241,10 +259,6 @@ export function Dashboard() {
       }],
     });
   };
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData, user?.id]);
 
   return (
     <>
@@ -287,7 +301,7 @@ export function Dashboard() {
             className="p-3 rounded-xl bg-[var(--surface-2)] border border-[var(--card-border)] text-muted-foreground hover:text-foreground transition-all"
             title="Refresh Data"
           >
-            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.02, y: -1 }}
@@ -302,10 +316,10 @@ export function Dashboard() {
       </motion.div>
 
       {/* Error State */}
-      {error && (
+      {hasError && (
         <ErrorState
           title="Failed to load dashboard"
-          description={error}
+          description="Failed to fetch dashboard data"
           onRetry={fetchData}
           size="md"
           className="mb-6"
@@ -498,7 +512,7 @@ export function Dashboard() {
               </div>
             )}
           </div>
-        ) : !error ? (
+        ) : !hasError ? (
           projects.length === 0 ? (
             <EmptyState
               icon={Zap}
