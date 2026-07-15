@@ -23,6 +23,11 @@ export interface ApprovalExecution {
   updatedAt: string;
   durationMs: number;
   qaResult: ApprovalQaResult | null;
+  branchName: string | null;
+  commitSha: string | null;
+  prUrl: string | null;
+  reviewUrl: string | null;
+  reviewEvidenceAvailable: boolean;
 }
 
 export interface ApprovalQaResult {

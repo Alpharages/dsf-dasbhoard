@@ -8,7 +8,6 @@ import { useAuth } from '../contexts';
 import apiClient from '../api/client';
 import type {
   ApprovalExecution,
-  ApprovalDetailData,
   ApprovalActionPayload,
   ApprovalActionResponse,
   ApprovalQueueSummary,
@@ -17,7 +16,6 @@ import { toast } from 'react-hot-toast';
 
 const QUERY_KEYS = {
   approvalQueue: 'approval-queue',
-  approvalDetail: 'approval-detail',
   approvalSummary: 'approval-summary',
 } as const;
 
@@ -32,60 +30,11 @@ export const useApprovals = () => {
     return useQuery({
       queryKey: [QUERY_KEYS.approvalQueue],
       queryFn: async () => {
-        const { data } = await apiClient.get('/executions/active', {
-          params: { status: 'AWAITING_APPROVAL' },
-        });
-        return (data.executions || data.data || data) as ApprovalExecution[];
+        const { data } = await apiClient.get('/executions/approval-gate/pending');
+        return (data.data || data) as ApprovalExecution[];
       },
       refetchInterval: 30000, // Poll every 30 seconds (AC#3, was 15s)
       enabled: !!user,
-    });
-  };
-
-  /**
-   * Fetch detailed info for a specific execution (diffs, QA results, history)
-   */
-  const useApprovalDetail = (executionId: string | null) => {
-    return useQuery({
-      queryKey: [QUERY_KEYS.approvalDetail, executionId],
-      queryFn: async () => {
-        if (!executionId) return null;
-
-        // Fetch execution details. QA results now travel on the execution
-        // payload itself — the standalone `/qa-results/:executionId` route was
-        // removed in OHP-3.4, so we no longer fire a (now-404) request for it.
-        const [executionRes] = await Promise.allSettled([
-          apiClient.get(`/executions/${executionId}`),
-        ]);
-
-        const execution =
-          executionRes.status === 'fulfilled'
-            ? executionRes.value.data?.data || executionRes.value.data
-            : null;
-
-        const qaResult = execution?.qaResult ?? null;
-
-        // Build diffs from code_output or files_changed
-        const diffs: ApprovalDetailData['diffs'] = [];
-        if (execution?.filesChanged && Array.isArray(execution.filesChanged)) {
-          execution.filesChanged.forEach((filePath: string) => {
-            diffs.push({
-              fileName: filePath,
-              oldCode: '// Original file content not available',
-              newCode: execution.codeOutput || '// Generated code',
-              language: detectLanguage(filePath),
-            });
-          });
-        }
-
-        return {
-          execution: execution as ApprovalExecution,
-          diffs,
-          approvalHistory: [],
-          qaResult,
-        } as ApprovalDetailData & { qaResult: unknown };
-      },
-      enabled: !!executionId && !!user,
     });
   };
 
@@ -144,9 +93,6 @@ export const useApprovals = () => {
       onSuccess: (_data, variables) => {
         queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.approvalQueue] });
         queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.approvalSummary] });
-        queryClient.invalidateQueries({
-          queryKey: [QUERY_KEYS.approvalDetail, variables.executionId],
-        });
 
         const decisionLabels: Record<string, string> = {
           APPROVE: '✅ Execution approved — PR merged',
@@ -165,33 +111,7 @@ export const useApprovals = () => {
 
   return {
     useApprovalQueue,
-    useApprovalDetail,
     useApprovalSummary,
     useSubmitDecision,
   };
 };
-
-/**
- * Detect file language from extension
- */
-function detectLanguage(filePath: string): string | undefined {
-  const ext = filePath.split('.').pop()?.toLowerCase();
-  const map: Record<string, string> = {
-    ts: 'typescript',
-    tsx: 'typescript',
-    js: 'javascript',
-    jsx: 'javascript',
-    py: 'python',
-    go: 'go',
-    rs: 'rust',
-    java: 'java',
-    css: 'css',
-    html: 'html',
-    json: 'json',
-    yaml: 'yaml',
-    yml: 'yaml',
-    md: 'markdown',
-    sql: 'sql',
-  };
-  return ext ? map[ext] : undefined;
-}

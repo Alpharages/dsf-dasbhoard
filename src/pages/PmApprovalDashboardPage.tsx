@@ -7,7 +7,6 @@ import React, { useState } from 'react';
 import { useApprovals } from '../hooks/useApprovals';
 import { ApprovalQueueTable } from '../components/approval/ApprovalQueueTable';
 import { ApprovalDecisionPanel } from '../components/approval/ApprovalDecisionPanel';
-import { CodeDiffViewer } from '../components/qa-review/CodeDiffViewer';
 import type { ApprovalExecution, ApprovalDecision } from '../types/approval';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 import {
@@ -27,7 +26,6 @@ import {
 export const PmApprovalDashboardPage: React.FC = () => {
   const {
     useApprovalQueue,
-    useApprovalDetail,
     useApprovalSummary,
     useSubmitDecision,
   } = useApprovals();
@@ -39,8 +37,6 @@ export const PmApprovalDashboardPage: React.FC = () => {
   const [selectedExecution, setSelectedExecution] =
     useState<ApprovalExecution | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-
-  const { data: detail } = useApprovalDetail(selectedExecution?.id ?? null);
 
   const handleReview = (execution: ApprovalExecution) => {
     setSelectedExecution(execution);
@@ -72,9 +68,8 @@ export const PmApprovalDashboardPage: React.FC = () => {
 
   // ─── Detail View ───────────────────────────────────────────────
   if (selectedExecution) {
-    const exec = detail?.execution || selectedExecution;
-    const qaResult = exec.qaResult || (detail as any)?.qaResult;
-    const diffs = detail?.diffs || [];
+    const exec = selectedExecution;
+    const qaResult = exec.qaResult;
 
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500 pb-20">
@@ -271,27 +266,29 @@ export const PmApprovalDashboardPage: React.FC = () => {
               )}
           </div>
 
-          {/* Right Column: Diffs + Decision */}
+          {/* Right Column: Review evidence + decision */}
           <div className="col-span-12 lg:col-span-8 space-y-6">
-            {/* Code Diffs */}
-            {diffs.length > 0 ? (
-              <CodeDiffViewer diffs={diffs} />
-            ) : (
-              <Card className="bg-card/50 border-border rounded-lg">
-                <CardContent className="p-12 text-center">
-                  <div className="flex flex-col items-center gap-3">
-                    <FileCode className="w-10 h-10 text-muted-foreground/50" />
-                    <p className="text-muted-foreground font-medium">
-                      Code diffs not available for this execution.
-                    </p>
-                    <p className="text-xs text-muted-foreground/70">
-                      The workspace may have already been cleaned up, or diffs
-                      were not captured.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            <Card className="bg-card/50 border-border rounded-lg">
+              <CardHeader className="border-b border-border/50 py-4 px-6">
+                <CardTitle className="text-sm font-bold text-card-foreground">
+                  Persisted Review Evidence
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 space-y-3 text-sm">
+                <div><span className="text-muted-foreground">Branch: </span>{exec.branchName || '—'}</div>
+                <div><span className="text-muted-foreground">Commit: </span><span className="font-mono">{exec.commitSha || '—'}</span></div>
+                {exec.reviewUrl && (
+                  <a href={exec.reviewUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                    Open code diff on GitHub
+                  </a>
+                )}
+                {!exec.reviewEvidenceAvailable && (
+                  <p role="alert" className="text-amber-500">
+                    Approval is blocked until DSF persists changed files and a pushed commit.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Decision Form */}
             <div className="pt-6 border-t border-border/50">
@@ -302,6 +299,8 @@ export const PmApprovalDashboardPage: React.FC = () => {
               <ApprovalDecisionPanel
                 onSubmit={handleDecision}
                 isSubmitting={submitDecision.isPending}
+                canApprove={exec.reviewEvidenceAvailable}
+                approvalBlockedReason="Approve is unavailable because persisted changed-file and pushed-commit evidence is missing."
               />
             </div>
           </div>

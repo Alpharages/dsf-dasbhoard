@@ -18,6 +18,8 @@ import {
 interface ApprovalDecisionPanelProps {
   onSubmit: (decision: ApprovalDecision, reasoning: string) => void;
   isSubmitting: boolean;
+  canApprove: boolean;
+  approvalBlockedReason?: string;
 }
 
 const decisionOptions: {
@@ -85,16 +87,20 @@ const decisionOptions: {
 export const ApprovalDecisionPanel: React.FC<ApprovalDecisionPanelProps> = ({
   onSubmit,
   isSubmitting,
+  canApprove,
+  approvalBlockedReason,
 }) => {
   const [selectedDecision, setSelectedDecision] =
-    useState<ApprovalDecision>('APPROVE');
+    useState<ApprovalDecision>(canApprove ? 'APPROVE' : 'REWORK');
   const [reasoning, setReasoning] = useState('');
 
   const activeOption = decisionOptions.find(
     (o) => o.value === selectedDecision,
   )!;
   const needsReason = activeOption.requiresReason;
-  const canSubmit = !needsReason || reasoning.trim().length > 0;
+  const canSubmit =
+    (selectedDecision !== 'APPROVE' || canApprove) &&
+    (!needsReason || reasoning.trim().length > 0);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,15 +114,18 @@ export const ApprovalDecisionPanel: React.FC<ApprovalDecisionPanelProps> = ({
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {decisionOptions.map((option) => {
           const isActive = selectedDecision === option.value;
+          const isDisabled = option.value === 'APPROVE' && !canApprove;
           return (
             <button
               key={option.value}
               type="button"
+              disabled={isDisabled}
               onClick={() => setSelectedDecision(option.value)}
               className={`flex flex-col items-center gap-3 p-5 rounded-lg border-2 transition-all duration-200 ${
                 isActive
                   ? option.color.active
                   : 'bg-card border-border text-muted-foreground hover:border-muted-foreground/50'
+              } ${isDisabled ? 'opacity-40 cursor-not-allowed' : ''
               }`}
             >
               <div
@@ -136,6 +145,12 @@ export const ApprovalDecisionPanel: React.FC<ApprovalDecisionPanelProps> = ({
           );
         })}
       </div>
+
+      {!canApprove && approvalBlockedReason && (
+        <p role="alert" className="text-sm text-amber-500">
+          {approvalBlockedReason}
+        </p>
+      )}
 
       {/* Reasoning / Feedback */}
       <div

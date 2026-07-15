@@ -47,6 +47,14 @@ export async function getActiveExecutions(
 }
 
 /**
+ * Get recent executions, including completed and failed history.
+ */
+export async function getExecutions(): Promise<ActiveExecutionsResponse> {
+  const response = await apiClient.get(BASE_URL);
+  return response.data;
+}
+
+/**
  * Get execution by ID
  */
 export async function getExecution(executionId: string): Promise<Execution> {

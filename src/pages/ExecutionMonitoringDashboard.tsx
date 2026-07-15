@@ -20,7 +20,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { useSocketIO, useExecutionEvents } from '@/lib/socket/useSocketIO';
 import { type QAFailedEventPayload } from '@/lib/socket/socketEvents';
-import { useActiveExecutions, executionKeys } from '@/hooks/queries/useExecutions';
+import { useExecutions, executionKeys } from '@/hooks/queries/useExecutions';
 import { useUserProjects } from '@/hooks/queries/useProjects';
 import { ExecutionCard } from '@/components/execution/ExecutionCard';
 const ExecutionLogsViewer = lazy(() => import('@/components/execution/ExecutionLogsViewer'));
@@ -122,18 +122,18 @@ export function ExecutionMonitoringDashboard() {
     projectIds: userProjects.map(p => p.id)
   });
 
-  // Fetch active executions (initial load + 30s fallback poll)
+  // Fetch recent executions (initial load + 30s fallback poll)
   const { 
     data: executions = [], 
     isLoading, 
     error, 
     refetch 
-  } = useActiveExecutions();
+  } = useExecutions();
 
   // Helper: optimistically update a single execution's status in cache
   const updateExecutionStatus = useCallback((executionId: string, status: string) => {
     queryClient.setQueryData(
-      executionKeys.activeFiltered(undefined),
+      executionKeys.recent(),
       (oldData: any[] | undefined) => {
         if (!oldData) return oldData;
         return oldData.map((exec) =>
@@ -163,7 +163,7 @@ export function ExecutionMonitoringDashboard() {
     onProgress: (payload) => {
       // Optimistically update cache from WebSocket payload — zero HTTP calls
       queryClient.setQueryData(
-        executionKeys.activeFiltered(undefined),
+        executionKeys.recent(),
         (oldData: any[] | undefined) => {
           if (!oldData) return oldData;
           
@@ -216,7 +216,7 @@ export function ExecutionMonitoringDashboard() {
         `Execution ${payload.executionId.slice(0, 8)} — QA failed after ${payload.payload.qaRetryCount ?? '?'} retries. Resolve required.`
       );
       queryClient.setQueryData(
-        executionKeys.activeFiltered(undefined),
+        executionKeys.recent(),
         (oldData: any[] | undefined) => {
           if (!oldData) return oldData;
           const exists = oldData.some((exec) => exec.id === payload.executionId);
@@ -315,7 +315,7 @@ export function ExecutionMonitoringDashboard() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-4 mb-2">
-            <h1 className="text-3xl font-bold text-foreground tracking-tight">Active Executions</h1>
+            <h1 className="text-3xl font-bold text-foreground tracking-tight">Executions</h1>
             <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
               connected 
                 ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' 
@@ -426,7 +426,7 @@ export function ExecutionMonitoringDashboard() {
         <div className="text-center py-24 bg-card/30 border border-dashed border-border rounded-lg">
           <Activity className="w-16 h-16 text-muted-foreground/50 mx-auto mb-6" />
           <h3 className="text-xl font-bold text-muted-foreground mb-2">
-            No active executions
+            No executions found
           </h3>
           <p className="text-muted-foreground/70 max-w-md mx-auto">
             {selectedStatus === 'ALL' 

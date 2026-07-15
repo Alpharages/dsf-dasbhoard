@@ -13,6 +13,7 @@ import { useAuth } from '@/contexts';
 import { toast } from 'react-hot-toast';
 import {
   getActiveExecutions,
+  getExecutions,
   getExecution,
   getExecutionLogs,
   getExecutionActivities,
@@ -37,6 +38,7 @@ import type {
 export const executionKeys = {
   all: ['executions'] as const,
   active: () => [...executionKeys.all, 'active'] as const,
+  recent: () => [...executionKeys.all, 'recent'] as const,
   activeFiltered: (filters: ExecutionFilters | undefined) => 
     [...executionKeys.active(), { filters }] as const,
   detail: (id: string) => [...executionKeys.all, 'detail', id] as const,
@@ -65,6 +67,23 @@ export function useActiveExecutions(
     queryFn: () => getActiveExecutions(filters).then(r => r.executions),
     staleTime: 30 * 1000, // 30 seconds
     refetchInterval: 30 * 1000, // Poll every 30s as fallback
+    ...options,
+    enabled: !!user,
+  });
+}
+
+/**
+ * Hook to fetch recent executions, including terminal history.
+ */
+export function useExecutions(
+  options?: Omit<UseQueryOptions<Execution[], Error>, 'queryKey' | 'queryFn'>
+) {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: executionKeys.recent(),
+    queryFn: () => getExecutions().then(r => r.executions),
+    staleTime: 30 * 1000,
+    refetchInterval: 30 * 1000,
     ...options,
     enabled: !!user,
   });
