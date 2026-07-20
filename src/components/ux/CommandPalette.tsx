@@ -18,8 +18,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    if (!isOpen) return null;
-
+    // NOTE: the early `if (!isOpen) return null` that used to sit here ran *before*
+    // useEffect, so toggling the palette changed the hook count and crashed React.
+    // The bail-out now lives below, after every hook has been called.
     useEffect(() => {
         if (search.length > 2) {
             const delayDebounceFn = setTimeout(() => {

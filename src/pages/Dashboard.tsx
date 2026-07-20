@@ -15,8 +15,6 @@ import { ProjectFilterSheet } from '../components/dashboard/ProjectFilterSheet';
 import { ReviewModal } from '../components/quality-gate/ReviewModal';
 import { ConversationListWidget } from '../components/conversations/ConversationListWidget';
 import { FinancialMetricsSection } from '../components/financial/FinancialMetricsSection';
-import { CommandPalette } from '../components/ux/CommandPalette';
-import { HelpModal } from '../components/ux/HelpModal';
 import { ProjectCardListView } from '../components/dashboard/ProjectCardListView';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../components/ui/dropdown-menu';
 import type { Project, DashboardSummary } from '@/types';
@@ -143,8 +141,7 @@ export function Dashboard() {
     localStorage.setItem('dsf_project_view_mode', viewMode);
   }, [viewMode]);
 
-  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
-  const [isHelpOpen, setIsHelpOpen] = useState(false);
+  // Command palette + shortcuts help are mounted app-wide in DashboardLayout (App.tsx).
   const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -213,26 +210,14 @@ export function Dashboard() {
     confidenceScore: 0,
   });
 
-  useHotkeys('mod+k, /', (e) => {
-    e.preventDefault();
-    setIsPaletteOpen((prev) => !prev);
-  }, { enableOnFormTags: true });
-
-  useHotkeys('shift+?', (e) => {
-    e.preventDefault();
-    setIsHelpOpen(true);
-  });
-
   useHotkeys('n', (e) => {
     e.preventDefault();
-    if (isPaletteOpen || isHelpOpen || reviewState.isOpen) return;
+    if (reviewState.isOpen) return;
     setIsNewProjectOpen(true);
   });
 
   useHotkeys('esc', (e) => {
     e.preventDefault();
-    if (isPaletteOpen) setIsPaletteOpen(false);
-    if (isHelpOpen) setIsHelpOpen(false);
     if (reviewState.isOpen) setReviewState((prev) => ({ ...prev, isOpen: false }));
   });
 
@@ -580,12 +565,6 @@ export function Dashboard() {
         onClearFilters={handleClearFilters}
       />
 
-      <CommandPalette
-        isOpen={isPaletteOpen}
-        onClose={() => setIsPaletteOpen(false)}
-        onOpenHelp={() => setIsHelpOpen(true)}
-      />
-      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
     </>
   );
 }

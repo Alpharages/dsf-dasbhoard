@@ -135,11 +135,13 @@ apiClient.interceptors.response.use(
             }
         }
 
-        // Handle 403 Forbidden (permission denied)
+        // Handle 403 Forbidden (permission denied).
+        // Deliberately does NOT navigate: a 403 from one background poll or secondary
+        // widget must not tear down a page the user is otherwise authorized for. The
+        // rejection below lets the calling component/query render its own inline error.
+        // Route-level authorization still redirects to /forbidden via ProtectedRoute.
         if (error.response?.status === 403) {
             toast.error("You don't have permission to access this resource");
-            // Redirect to forbidden page
-            window.location.href = '/forbidden';
         }
 
         return Promise.reject(error);

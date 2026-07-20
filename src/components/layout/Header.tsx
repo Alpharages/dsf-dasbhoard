@@ -21,7 +21,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { MobileSidebar } from './MobileSidebar';
 
-export const Header: FC = () => {
+interface HeaderProps {
+  /** Opens the app-wide command palette (also bound to ⌘K / Ctrl+K in DashboardLayout). */
+  onOpenSearch: () => void;
+}
+
+export const Header: FC<HeaderProps> = ({ onOpenSearch }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -50,21 +55,23 @@ export const Header: FC = () => {
           )}
         />
 
-        <div className="relative w-full max-w-md group hidden sm:block">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-          <input
-            type="text"
-            placeholder="Search projects, clients, tickets..."
-            className="w-full bg-[var(--surface-1)] border border-[var(--card-border)] rounded-md py-2 pl-10 pr-12 text-sm text-foreground
-                       focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30
-                       transition-all placeholder:text-muted-foreground"
-          />
-          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:block 
-                          px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground 
+        {/* Opens the command palette rather than accepting inline typing — the palette
+            owns the search input, so this is a button styled to read as a search box. */}
+        <button
+          type="button"
+          onClick={onOpenSearch}
+          aria-label="Search projects, clients and tickets"
+          className="relative w-full max-w-md group hidden sm:block text-left bg-[var(--surface-1)] border border-[var(--card-border)] rounded-md py-2 pl-10 pr-12 text-sm text-muted-foreground
+                     hover:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
+        >
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+          Search projects, clients, tickets...
+          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:block
+                          px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground
                           bg-[var(--surface-2)] border border-[var(--card-border)] rounded">
             ⌘K
           </kbd>
-        </div>
+        </button>
       </div>
 
       {/* Right Actions */}

@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { Routes, Route, Navigate, useNavigate, useParams, Outlet, useLocation, type NavigateFunction } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './contexts';
@@ -8,6 +9,8 @@ import { TooltipProvider } from './components/ui/tooltip';
 import { ImprovedSidebar } from './components/improved/Sidebar';
 import { Header } from './components/layout/Header';
 import { Toaster } from 'react-hot-toast';
+import { CommandPalette } from './components/ux/CommandPalette';
+import { HelpModal } from './components/ux/HelpModal';
 
 import { Dashboard } from './pages/Dashboard';
 import { LoginPage } from './pages/LoginPage';
@@ -58,6 +61,26 @@ import { ResourceManagerPage } from './features/resource-manager';
 
 // Shared Layout component
 function DashboardLayout() {
+  // Command palette lives here, not in a page, so ⌘K and the header search box work
+  // on every authenticated route and the palette is only ever mounted once.
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+
+  useHotkeys('mod+k', (e) => {
+    e.preventDefault();
+    setIsPaletteOpen((prev) => !prev);
+  }, { enableOnFormTags: true });
+
+  useHotkeys('shift+?', (e) => {
+    e.preventDefault();
+    setIsHelpOpen(true);
+  });
+
+  useHotkeys('esc', () => {
+    setIsPaletteOpen(false);
+    setIsHelpOpen(false);
+  }, { enableOnFormTags: true });
+
   return (
     <div className="flex min-h-screen bg-background text-foreground transition-colors duration-200">
       {/* Desktop Sidebar - visibility wrapper (fixed position handled by ImprovedSidebar internally) */}
@@ -68,13 +91,20 @@ function DashboardLayout() {
       {/* Main Content - margin to account for sidebar */}
       <main className="flex-1 md:ml-[72px] lg:ml-[280px] min-h-screen flex flex-col">
         {/* Header - full width within main content */}
-        <Header />
+        <Header onOpenSearch={() => setIsPaletteOpen(true)} />
 
         {/* Page Content - consistent padding */}
         <div className="flex-1 px-6 py-6">
           <Outlet />
         </div>
       </main>
+
+      <CommandPalette
+        isOpen={isPaletteOpen}
+        onClose={() => setIsPaletteOpen(false)}
+        onOpenHelp={() => setIsHelpOpen(true)}
+      />
+      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
 
       <Toaster
         position="bottom-right"

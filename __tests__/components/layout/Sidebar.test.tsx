@@ -93,7 +93,7 @@ describe('Header mobile drawer integration', () => {
   });
 
   it('opens mobile sidebar from Header Open menu button and closes on navigation click', async () => {
-    renderWithRouter(<Header />, '/');
+    renderWithRouter(<Header onOpenSearch={vi.fn()} />, '/');
 
     fireEvent.click(screen.getByRole('button', { name: /open menu/i }));
     await waitFor(() => {
@@ -107,7 +107,7 @@ describe('Header mobile drawer integration', () => {
   });
 
   it('closes mobile sidebar when pressing Escape', async () => {
-    renderWithRouter(<Header />, '/');
+    renderWithRouter(<Header onOpenSearch={vi.fn()} />, '/');
 
     fireEvent.click(screen.getByRole('button', { name: /open menu/i }));
     await waitFor(() => {
