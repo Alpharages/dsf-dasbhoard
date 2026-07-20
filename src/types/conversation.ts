@@ -59,9 +59,3 @@ export interface CreateConversationDto {
     conversation_date: string;
     title?: string;
 }
-
-export interface CreateTicketsResponseDto {
-    message: string;
-    count: number;
-    clickup_task_ids?: string[];
-}

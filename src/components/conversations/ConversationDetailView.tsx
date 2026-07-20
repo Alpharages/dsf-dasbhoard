@@ -3,7 +3,6 @@ import { Copy, Volume2, Smile, Meh, Frown, Loader2, AlertCircle } from 'lucide-r
 import { getConversation } from '../../api/conversations';
 import type { ConversationResponseDto } from '../../types/conversation';
 import { ActionItemsTable } from './ActionItemsTable';
-import { CreateTicketsModal } from './CreateTicketsModal';
 
 interface ConversationDetailViewProps {
     conversationId: string;
@@ -28,8 +27,6 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [transcriptExpanded, setTranscriptExpanded] = useState(false);
-    const [selectedActionItemIds, setSelectedActionItemIds] = useState<string[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchConversation = async () => {
@@ -55,18 +52,7 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
         }
     };
 
-    const handleCreateTickets = () => {
-        setIsModalOpen(true);
-    };
 
-    const handleTicketsCreated = () => {
-        // Refresh conversation to get updated action items
-        const fetchConversation = async () => {
-            const data = await getConversation(conversationId);
-            setConversation(data);
-        };
-        fetchConversation();
-    };
 
     const parseSummary = (summary: string | undefined) => {
         if (!summary) return null;
@@ -269,17 +255,7 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
             {/* Action Items */}
             {conversation.action_items && conversation.action_items.length > 0 && (
                 <div className="bg-card border border-border rounded-lg p-6 mb-6">
-                    <ActionItemsTable
-                        actionItems={conversation.action_items}
-                        onSelectionChange={setSelectedActionItemIds}
-                    />
-                    <button
-                        onClick={handleCreateTickets}
-                        disabled={selectedActionItemIds.length === 0}
-                        className="w-full mt-6 bg-blue-600 hover:bg-blue-500 disabled:bg-muted disabled:text-muted-foreground text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-500/20 disabled:shadow-none"
-                    >
-                        Create Tickets ({selectedActionItemIds.length})
-                    </button>
+                    <ActionItemsTable actionItems={conversation.action_items} />
                 </div>
             )}
 
@@ -290,14 +266,6 @@ export const ConversationDetailView: React.FC<ConversationDetailViewProps> = ({ 
                 </div>
             )}
 
-            {/* Create Tickets Modal */}
-            <CreateTicketsModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                conversationId={conversationId}
-                selectedActionItemIds={selectedActionItemIds}
-                onSuccess={handleTicketsCreated}
-            />
         </div>
     );
 };

@@ -3,8 +3,7 @@ import type {
     ConversationResponseDto,
     CreateConversationDto,
     SearchConversationsDto,
-    PaginatedConversationsResponseDto,
-    CreateTicketsResponseDto
+    PaginatedConversationsResponseDto
 } from '../types/conversation';
 
 /**
@@ -61,24 +60,6 @@ export async function searchConversations(
     const response = await apiClient.get('/conversations/search', {
         params: filters
     });
-    return response.data;
-}
-
-/**
- * Create ClickUp tickets from selected action items
- */
-export async function createTicketsFromActionItems(
-    conversationId: string,
-    actionItemIds: string[],
-    clickupListId?: string
-): Promise<CreateTicketsResponseDto> {
-    const response = await apiClient.post(
-        `/conversations/${conversationId}/create-tickets`,
-        {
-            action_item_ids: actionItemIds,
-            clickup_list_id: clickupListId
-        }
-    );
     return response.data;
 }
 
