@@ -27,23 +27,41 @@ export function GeneralSettingsPanel() {
   const [name, setName] = useState('');
   const [clientName, setClientName] = useState('');
   const [defaultBranch, setDefaultBranch] = useState('');
+  // Kept as a string so a blank input is distinguishable from 0 — blank means "inherit".
+  const [concurrencyLimit, setConcurrencyLimit] = useState('');
 
   useEffect(() => {
     if (project) {
       setName(project.name);
       setClientName(project.client_name ?? '');
       setDefaultBranch(project.default_branch ?? 'main');
+      setConcurrencyLimit(
+        project.execution_concurrency_limit == null ? '' : String(project.execution_concurrency_limit),
+      );
     }
   }, [project]);
+
+  const savedConcurrency =
+    project?.execution_concurrency_limit == null ? '' : String(project.execution_concurrency_limit);
+  const parsedConcurrency = concurrencyLimit.trim() === '' ? null : Number(concurrencyLimit);
+  const concurrencyValid =
+    parsedConcurrency === null || (Number.isInteger(parsedConcurrency) && parsedConcurrency >= 1);
 
   const hasChanges =
     project &&
     (name !== project.name ||
       clientName !== (project.client_name ?? '') ||
-      defaultBranch !== (project.default_branch ?? 'main'));
+      defaultBranch !== (project.default_branch ?? 'main') ||
+      concurrencyLimit.trim() !== savedConcurrency);
 
   const updateMutation = useMutation({
-    mutationFn: () => updateProject(projectId!, { name, client_name: clientName, default_branch: defaultBranch }),
+    mutationFn: () =>
+      updateProject(projectId!, {
+        name,
+        client_name: clientName,
+        default_branch: defaultBranch,
+        execution_concurrency_limit: parsedConcurrency,
+      }),
     onSuccess: () => {
       toast.success('Project settings saved');
       queryClient.invalidateQueries({ queryKey: projectKeys.all });
@@ -121,11 +139,34 @@ export function GeneralSettingsPanel() {
                 />
               </div>
 
+              <div className="space-y-1.5">
+                <Label htmlFor="execution-concurrency-limit" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Max Concurrent Executions
+                </Label>
+                <Input
+                  id="execution-concurrency-limit"
+                  type="number"
+                  min={1}
+                  step={1}
+                  value={concurrencyLimit}
+                  onChange={(e) => setConcurrencyLimit(e.target.value)}
+                  className="bg-background/50 h-9 text-sm"
+                  placeholder="Inherit global default"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Leave blank to inherit the global default from Settings → Cost &amp; AI Models.
+                  Enter a number (minimum 1) to override it for this project only.
+                </p>
+                {!concurrencyValid && (
+                  <p className="text-xs text-destructive">Must be a whole number of 1 or greater, or blank to inherit.</p>
+                )}
+              </div>
+
               <div className="flex justify-end pt-2">
                 <Button
                   size="sm"
                   className="h-9"
-                  disabled={!hasChanges || updateMutation.isPending || !name.trim()}
+                  disabled={!hasChanges || updateMutation.isPending || !name.trim() || !concurrencyValid}
                   onClick={() => updateMutation.mutate()}
                 >
                   {updateMutation.isPending ? (

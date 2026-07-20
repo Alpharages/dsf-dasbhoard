@@ -18,6 +18,8 @@ export interface UpdateProjectPayload {
   name?: string;
   client_name?: string;
   default_branch?: string;
+  /** null clears the per-project override so the global default applies */
+  execution_concurrency_limit?: number | null;
 }
 
 const BASE_URL = '/projects';

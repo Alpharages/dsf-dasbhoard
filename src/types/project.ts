@@ -13,6 +13,8 @@ export interface Project {
   status: string;
   is_active: boolean;
   client_name?: string;
+  /** null = inherit the global `execution.concurrency_limit` system setting */
+  execution_concurrency_limit?: number | null;
   created_at: string;
   updated_at: string;
   deactivated_at?: string | null;

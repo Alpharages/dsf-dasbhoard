@@ -169,6 +169,14 @@ export const CostPanel = () => {
                     isSaving={isUpdating}
                 />
                 <ConfigInput
+                    label="Max Concurrent Executions"
+                    description="Global default for how many AI executions run at once. Individual projects can override this in their General settings. Takes effect after a backend restart — the value is applied as the RabbitMQ prefetch when the consumer starts."
+                    value={getValue('execution.concurrency_limit', '1')}
+                    type="number"
+                    onSave={(val) => handleUpdate('execution.concurrency_limit', val)}
+                    isSaving={isUpdating}
+                />
+                <ConfigInput
                     label="Model Override"
                     description="Force specific model (e.g. gpt-4)."
                     value={getValue('cost.model_override', '')}
