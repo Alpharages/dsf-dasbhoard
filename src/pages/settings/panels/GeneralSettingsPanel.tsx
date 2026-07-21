@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'react-hot-toast';
-import { getProject, updateProject } from '@/api/projectsApi';
+import { getProject, updateProject, type UpdateProjectPayload } from '@/api/projectsApi';
 import { projectKeys } from '@/hooks/queries/useProjects';
 import { GithubRepoSelector } from '@/features/projects/components/GithubRepoSelector';
 
@@ -29,6 +29,11 @@ export function GeneralSettingsPanel() {
   const [defaultBranch, setDefaultBranch] = useState('');
   // Kept as a string so a blank input is distinguishable from 0 — blank means "inherit".
   const [concurrencyLimit, setConcurrencyLimit] = useState('');
+  const [loreServerUrl, setLoreServerUrl] = useState('');
+  // Write-only: always starts blank. Non-empty = set a new key; empty = leave the
+  // stored key untouched, unless `clearLoreKey` is checked to reset to the global.
+  const [loreKey, setLoreKey] = useState('');
+  const [clearLoreKey, setClearLoreKey] = useState(false);
 
   useEffect(() => {
     if (project) {
@@ -38,6 +43,9 @@ export function GeneralSettingsPanel() {
       setConcurrencyLimit(
         project.execution_concurrency_limit == null ? '' : String(project.execution_concurrency_limit),
       );
+      setLoreServerUrl(project.lore_server_url ?? '');
+      setLoreKey('');
+      setClearLoreKey(false);
     }
   }, [project]);
 
@@ -47,21 +55,32 @@ export function GeneralSettingsPanel() {
   const concurrencyValid =
     parsedConcurrency === null || (Number.isInteger(parsedConcurrency) && parsedConcurrency >= 1);
 
+  const savedLoreUrl = project?.lore_server_url ?? '';
+  const loreChanged =
+    loreServerUrl !== savedLoreUrl || loreKey.trim() !== '' || clearLoreKey;
+
   const hasChanges =
     project &&
     (name !== project.name ||
       clientName !== (project.client_name ?? '') ||
       defaultBranch !== (project.default_branch ?? 'main') ||
-      concurrencyLimit.trim() !== savedConcurrency);
+      concurrencyLimit.trim() !== savedConcurrency ||
+      loreChanged);
 
   const updateMutation = useMutation({
-    mutationFn: () =>
-      updateProject(projectId!, {
+    mutationFn: () => {
+      const payload: UpdateProjectPayload = {
         name,
         client_name: clientName,
         default_branch: defaultBranch,
         execution_concurrency_limit: parsedConcurrency,
-      }),
+      };
+      if (loreServerUrl !== savedLoreUrl) payload.lore_server_url = loreServerUrl;
+      // Empty string clears (inherit global); a typed key sets it; otherwise leave as-is.
+      if (clearLoreKey) payload.lore_api_key = '';
+      else if (loreKey.trim() !== '') payload.lore_api_key = loreKey.trim();
+      return updateProject(projectId!, payload);
+    },
     onSuccess: () => {
       toast.success('Project settings saved');
       queryClient.invalidateQueries({ queryKey: projectKeys.all });
@@ -160,6 +179,58 @@ export function GeneralSettingsPanel() {
                 {!concurrencyValid && (
                   <p className="text-xs text-destructive">Must be a whole number of 1 or greater, or blank to inherit.</p>
                 )}
+              </div>
+
+              <div className="space-y-1.5 border-t border-border/50 pt-4">
+                <Label htmlFor="lore-server-url" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Lore Server URL
+                </Label>
+                <Input
+                  id="lore-server-url"
+                  value={loreServerUrl}
+                  onChange={(e) => setLoreServerUrl(e.target.value)}
+                  className="bg-background/50 h-9 text-sm"
+                  placeholder="Inherit global LORE_SERVER_URL"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="lore-api-key" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Lore API Key
+                </Label>
+                <Input
+                  id="lore-api-key"
+                  type="password"
+                  autoComplete="off"
+                  value={loreKey}
+                  onChange={(e) => {
+                    setLoreKey(e.target.value);
+                    if (e.target.value) setClearLoreKey(false);
+                  }}
+                  disabled={clearLoreKey}
+                  className="bg-background/50 h-9 text-sm"
+                  placeholder={
+                    project?.lore_configured
+                      ? '•••••••• configured — leave blank to keep'
+                      : 'Not set — inherit global LORE_API_KEY'
+                  }
+                />
+                <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <input
+                    type="checkbox"
+                    checked={clearLoreKey}
+                    onChange={(e) => {
+                      setClearLoreKey(e.target.checked);
+                      if (e.target.checked) setLoreKey('');
+                    }}
+                    disabled={!project?.lore_configured}
+                  />
+                  Clear stored key (revert this project to the global Lore key)
+                </label>
+                <p className="text-xs text-muted-foreground">
+                  Each project uses its own Lore key so memory never mixes across projects.
+                  The stored key is encrypted and never shown. Format: <code>lore_&lt;slug&gt;_…</code>
+                </p>
               </div>
 
               <div className="flex justify-end pt-2">

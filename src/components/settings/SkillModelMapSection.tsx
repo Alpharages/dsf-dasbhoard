@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { canAccess } from '@/utils/roleHelpers';
 import { useSkillModelMap, useUpdateSkillModelMapEntry } from '@/hooks/queries/useSkillModelMap';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { RUNTIME_OPTIONS, SKILL_LABELS, type SkillModelMapEntry, type SkillModelRuntime } from '@/types/skillModelMap';
+import { MODEL_OPTIONS, RUNTIME_OPTIONS, SKILL_LABELS, type SkillModelMapEntry, type SkillModelRuntime } from '@/types/skillModelMap';
 
 const SkillModelRow = ({ entry, readOnly }: { entry: SkillModelMapEntry; readOnly: boolean }) => {
   const [model, setModel] = useState(entry.model);
@@ -17,6 +17,16 @@ const SkillModelRow = ({ entry, readOnly }: { entry: SkillModelMapEntry; readOnl
   }, [entry.model, entry.runtime]);
 
   const isDirty = model !== entry.model || runtime !== entry.runtime;
+
+  // Keep whatever the DB holds selectable even if it's not in our known list.
+  const modelOptions = MODEL_OPTIONS[runtime].includes(model)
+    ? MODEL_OPTIONS[runtime]
+    : [...MODEL_OPTIONS[runtime], model];
+
+  const handleRuntimeChange = (value: SkillModelRuntime) => {
+    setRuntime(value);
+    if (!MODEL_OPTIONS[value].includes(model)) setModel(MODEL_OPTIONS[value][0]);
+  };
 
   const handleSave = () => {
     const provider = RUNTIME_OPTIONS.find((option) => option.value === runtime)!.provider;
@@ -42,16 +52,25 @@ const SkillModelRow = ({ entry, readOnly }: { entry: SkillModelMapEntry; readOnl
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <input
+        <Select
           value={model}
-          onChange={(e) => setModel(e.target.value)}
+          onValueChange={setModel}
           disabled={readOnly || updateEntry.isPending}
-          placeholder="Model id, e.g. gpt-5.4 or opus"
-          className="w-full bg-background border border-input rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50"
-        />
+        >
+          <SelectTrigger className="bg-background border-input">
+            <SelectValue placeholder="Model" />
+          </SelectTrigger>
+          <SelectContent>
+            {modelOptions.map((option) => (
+              <SelectItem key={option} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Select
           value={runtime}
-          onValueChange={(value) => setRuntime(value as SkillModelRuntime)}
+          onValueChange={(value) => handleRuntimeChange(value as SkillModelRuntime)}
           disabled={readOnly || updateEntry.isPending}
         >
           <SelectTrigger className="bg-background border-input">

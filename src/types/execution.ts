@@ -19,6 +19,12 @@ export type LogLevel = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'STDOUT' | 'STDERR'
 export interface Execution {
   id: string;
   ticketId: string;
+  /** PM-tool task id (e.g. ClickUp `86exzg6tz`). */
+  externalId?: string | null;
+  /** PM platform the ticket lives on (e.g. `ClickUp`). */
+  platform?: string;
+  /** PAUSED because the agent asked a question on the ticket. Resume = re-dispatch. */
+  awaitingInput?: boolean;
   projectId: string;
   projectName: string;
   status: ExecutionStatus;

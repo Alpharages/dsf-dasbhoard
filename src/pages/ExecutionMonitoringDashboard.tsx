@@ -123,11 +123,12 @@ export function ExecutionMonitoringDashboard() {
   });
 
   // Fetch recent executions (initial load + 30s fallback poll)
-  const { 
-    data: executions = [], 
-    isLoading, 
-    error, 
-    refetch 
+  const {
+    data: executions = [],
+    isLoading,
+    isFetching,
+    error,
+    refetch
   } = useExecutions();
 
   // Helper: optimistically update a single execution's status in cache
@@ -332,11 +333,11 @@ export function ExecutionMonitoringDashboard() {
 
         <button
           onClick={() => refetch()}
-          disabled={isLoading}
-          className="p-3 bg-secondary/50 border border-border text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-all"
+          disabled={isFetching}
+          className="p-3 bg-secondary/50 border border-border text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-all disabled:opacity-60"
           title="Refresh Data"
         >
-          <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-5 h-5 ${isFetching ? 'animate-spin' : ''}`} />
         </button>
       </div>
 

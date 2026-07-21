@@ -9,16 +9,26 @@ import {
   ShieldAlert,
   MoreVertical,
   ChevronRight,
-  Activity
+  Activity,
+  RotateCcw,
+  Terminal as TerminalIcon,
+  Copy
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  canControlExecution, 
+import {
+  canControlExecution,
   getAvailableControls,
-  checkExecutionControlPermission 
+  checkExecutionControlPermission
 } from '@/lib/auth/permissions';
-import { useControlExecution } from '@/hooks/queries/useExecutions';
+import { useControlExecution, useRetryExecution } from '@/hooks/queries/useExecutions';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 import type { Execution, ExecutionStatus } from '@/types/execution';
 import { Button } from '@/components/ui/button';
 import {
@@ -112,6 +122,7 @@ const ContainerActivityTimeline = lazy(() => import('./ContainerActivityTimeline
 export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs, onResolve, socket }: ExecutionCardProps) {
   const { user } = useAuth();
   const controlMutation = useControlExecution();
+  const retryMutation = useRetryExecution();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingAction, setPendingAction] = useState<'pause' | 'resume' | 'emergency-stop' | null>(null);
   const [liveDuration, setLiveDuration] = useState(execution.duration || 0);
@@ -139,6 +150,22 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
   };
   const canControl = canControlExecution(user, execution);
   const availableControls = getAvailableControls(execution.status);
+
+  // Retry re-runs the implement skill; only terminal-failure states qualify
+  // (mirrors the backend's retryable set — EMERGENCY_STOPPED is also retryable
+  // server-side but isn't modelled in the frontend status type). Same RBAC as
+  // other controls.
+  const TERMINAL_RETRYABLE: ExecutionStatus[] = ['FAILED', 'TIMEOUT', 'CANCELLED'];
+  const canRetry = canControl && TERMINAL_RETRYABLE.includes(execution.status);
+
+  const handleRetry = () => {
+    retryMutation.mutate(execution.id);
+  };
+
+  const handleCopyId = () => {
+    void navigator.clipboard?.writeText(execution.id);
+    toast.success('Execution ID copied');
+  };
 
   const handleControlAction = (action: 'pause' | 'resume' | 'emergency-stop') => {
     const check = checkExecutionControlPermission(user, execution, action);
@@ -195,9 +222,19 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
                 {status.label}
               </span>
             </div>
-            <p className="text-sm text-muted-foreground flex items-center gap-1.5">
-              Ticket: <span className="text-foreground/80 font-medium font-mono">{execution.ticketId}</span>
-            </p>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              {execution.platform && (
+                <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+                  Platform: <span className="text-foreground/80 font-medium">{execution.platform}</span>
+                </p>
+              )}
+              <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+                {execution.externalId ? `${execution.platform ?? 'Task'} ID` : 'Ticket'}:{' '}
+                <span className="text-foreground/80 font-medium font-mono">
+                  {execution.externalId ?? execution.ticketId}
+                </span>
+              </p>
+            </div>
           </div>
           <div className="flex gap-3 items-center">
             {execution.status === 'IN_PROGRESS' && (
@@ -205,9 +242,31 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
                 RUNNING
               </span>
             )}
-            <button className="text-muted-foreground hover:text-foreground transition-colors">
-              <MoreVertical className="w-5 h-5" />
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className="text-muted-foreground hover:text-foreground transition-colors outline-none"
+                aria-label="Execution actions"
+              >
+                <MoreVertical className="w-5 h-5" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onViewLogs?.(execution.id)}>
+                  <TerminalIcon className="w-4 h-4 mr-2" />
+                  View logs
+                </DropdownMenuItem>
+                {canRetry && (
+                  <DropdownMenuItem onClick={handleRetry} disabled={retryMutation.isPending}>
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    {retryMutation.isPending ? 'Retrying…' : 'Retry execution'}
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleCopyId}>
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copy execution ID
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -304,8 +363,28 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
           </div>
         )}
 
+        {/* Awaiting-input prompt: agent asked a question on the ticket */}
+        {execution.awaitingInput && (
+          <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-amber-500 text-sm">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span className="font-medium">
+                Waiting for your input — reply on the ticket (auto-resumes), or Resume to re-run now
+              </span>
+            </div>
+            <Button
+              size="sm"
+              className="h-8 rounded-lg px-4 font-bold bg-amber-500 hover:bg-amber-600 text-white"
+              onClick={handleRetry}
+              disabled={retryMutation.isPending}
+            >
+              {retryMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Resume'}
+            </Button>
+          </div>
+        )}
+
         {/* Error message if failed */}
-        {execution.errorMessage && execution.status !== 'QA_FAILED' && (
+        {execution.errorMessage && execution.status !== 'QA_FAILED' && !execution.awaitingInput && (
           <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg">
             <p className="text-xs text-rose-500 font-medium flex items-center gap-1.5">
               <AlertTriangle className="w-3.5 h-3.5" />
@@ -359,10 +438,15 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
                     variant="outline"
                     size="sm"
                     className="h-8 border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/10 hover:text-emerald-400 bg-transparent"
-                    onClick={() => handleControlAction('resume')}
-                    disabled={controlMutation.isPending}
+                    // An awaiting-input pause resumes by re-dispatching the agent
+                    // (retry), not the no-op container resume — otherwise it
+                    // strands as IN_PROGRESS with nothing running.
+                    onClick={() =>
+                      execution.awaitingInput ? handleRetry() : handleControlAction('resume')
+                    }
+                    disabled={controlMutation.isPending || retryMutation.isPending}
                   >
-                     {controlMutation.isPending ? (
+                     {controlMutation.isPending || retryMutation.isPending ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     ) : (
                       <Play className="w-3.5 h-3.5 mr-1" />

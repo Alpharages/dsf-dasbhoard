@@ -20,3 +20,9 @@ export const RUNTIME_OPTIONS: { value: SkillModelRuntime; label: string; provide
   { value: 'oh', label: 'OpenAI (oh)', provider: 'openai' },
   { value: 'claude', label: 'Claude', provider: 'claude' },
 ];
+
+// ponytail: hardcoded list; move to a backend endpoint if models start changing often.
+export const MODEL_OPTIONS: Record<SkillModelRuntime, string[]> = {
+  oh: ['gpt-5.4', 'gpt-5.4-codex', 'gpt-5.4-mini'],
+  claude: ['opus', 'sonnet', 'haiku'],
+};

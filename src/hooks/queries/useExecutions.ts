@@ -23,6 +23,8 @@ import {
   emergencyStopExecution,
   controlExecution,
   exportExecutionLogs,
+  retryExecution,
+  type RetryExecutionResponse,
 } from '@/api/executionsApi';
 import type { 
   Execution, 
@@ -225,6 +227,31 @@ export function useEmergencyStopExecution() {
     },
     onError: (error) => {
       toast.error(`Failed to stop execution: ${error.message}`);
+    },
+  });
+}
+
+/**
+ * Hook to retry a terminal execution. On success the backend has dispatched a
+ * fresh execution; refresh the list so it appears. `dispatched: false` is a
+ * soft outcome (loop cap, still active, not retryable) — surface the reason.
+ */
+export function useRetryExecution() {
+  const queryClient = useQueryClient();
+
+  return useMutation<RetryExecutionResponse, Error, string>({
+    mutationFn: retryExecution,
+    onSuccess: (data) => {
+      if (data.dispatched) {
+        toast.success('Retry started');
+        queryClient.invalidateQueries({ queryKey: executionKeys.recent() });
+        queryClient.invalidateQueries({ queryKey: executionKeys.active() });
+      } else {
+        toast.error(`Retry not started: ${data.reason ?? 'unknown reason'}`);
+      }
+    },
+    onError: (error) => {
+      toast.error(`Failed to retry execution: ${error.message}`);
     },
   });
 }

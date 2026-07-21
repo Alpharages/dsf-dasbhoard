@@ -151,7 +151,9 @@ export async function exportExecutionLogs(executionId: string): Promise<string> 
 export async function pauseExecution(
   executionId: string
 ): Promise<ExecutionControlResponse> {
-  const response = await apiClient.post(`${BASE_URL}/${executionId}/pause`);
+  const response = await apiClient.post(`${BASE_URL}/${executionId}/pause`, {
+    reason: 'Paused from dashboard',
+  });
   return response.data;
 }
 
@@ -171,7 +173,27 @@ export async function resumeExecution(
 export async function emergencyStopExecution(
   executionId: string
 ): Promise<ExecutionControlResponse> {
-  const response = await apiClient.post(`${BASE_URL}/${executionId}/emergency-stop`);
+  const response = await apiClient.post(`${BASE_URL}/${executionId}/emergency-stop`, {
+    reason: 'Emergency stop from dashboard',
+  });
+  return response.data;
+}
+
+/**
+ * Retry a terminal execution — re-runs the implement skill for its ticket.
+ * The backend returns a DispatchResult; `dispatched: false` carries a reason.
+ */
+export interface RetryExecutionResponse {
+  dispatched: boolean;
+  executionId?: string;
+  reason?: string;
+  skill?: string;
+}
+
+export async function retryExecution(
+  executionId: string
+): Promise<RetryExecutionResponse> {
+  const response = await apiClient.post(`${BASE_URL}/${executionId}/retry`);
   return response.data;
 }
 

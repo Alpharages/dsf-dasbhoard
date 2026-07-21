@@ -15,6 +15,10 @@ export interface Project {
   client_name?: string;
   /** null = inherit the global `execution.concurrency_limit` system setting */
   execution_concurrency_limit?: number | null;
+  /** Per-project Lore MCP server URL; null = inherit global LORE_SERVER_URL */
+  lore_server_url?: string | null;
+  /** True when a per-project Lore key is stored. The key itself is never returned. */
+  lore_configured?: boolean;
   created_at: string;
   updated_at: string;
   deactivated_at?: string | null;

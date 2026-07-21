@@ -29,12 +29,12 @@ function DropdownMenu({ children, open: controlledOpen, onOpenChange }: Dropdown
   )
 }
 
-interface DropdownMenuTriggerProps {
-  children: React.ReactNode
+interface DropdownMenuTriggerProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   asChild?: boolean
 }
 
-function DropdownMenuTrigger({ children, asChild }: DropdownMenuTriggerProps) {
+function DropdownMenuTrigger({ children, asChild, onClick: _onClick, ...props }: DropdownMenuTriggerProps) {
   const { open, setOpen, triggerRef } = React.useContext(DropdownMenuContext)
   const localRef = React.useRef<HTMLButtonElement>(null)
 
@@ -63,7 +63,7 @@ function DropdownMenuTrigger({ children, asChild }: DropdownMenuTriggerProps) {
   }
 
   return (
-    <button ref={setRefs} onClick={handleClick} data-dropdown-trigger="true">
+    <button ref={setRefs} onClick={handleClick} data-dropdown-trigger="true" {...props}>
       {children}
     </button>
   )
@@ -155,12 +155,14 @@ interface DropdownMenuItemProps {
   children: React.ReactNode
   className?: string
   onClick?: () => void
+  disabled?: boolean
 }
 
-function DropdownMenuItem({ children, className, onClick }: DropdownMenuItemProps) {
+function DropdownMenuItem({ children, className, onClick, disabled }: DropdownMenuItemProps) {
   const { setOpen } = React.useContext(DropdownMenuContext)
 
   const handleClick = () => {
+    if (disabled) return
     onClick?.()
     setOpen(false)
   }
@@ -168,9 +170,11 @@ function DropdownMenuItem({ children, className, onClick }: DropdownMenuItemProp
   return (
     <button
       onClick={handleClick}
+      disabled={disabled}
       className={cn(
         "relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors",
         "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+        "disabled:pointer-events-none disabled:opacity-50",
         className
       )}
     >

@@ -20,6 +20,10 @@ export interface UpdateProjectPayload {
   default_branch?: string;
   /** null clears the per-project override so the global default applies */
   execution_concurrency_limit?: number | null;
+  /** Empty string clears it (inherit global LORE_SERVER_URL) */
+  lore_server_url?: string;
+  /** Write-only plaintext Lore key; empty string clears it (inherit global LORE_API_KEY) */
+  lore_api_key?: string;
 }
 
 const BASE_URL = '/projects';
