@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Switch } from '../ui/switch';
-import { ChevronDown, ChevronUp, Cloud, Database, RefreshCw, Trash2, Loader2, Settings } from 'lucide-react';
+import { ChevronDown, ChevronUp, Cloud, Database, RefreshCw, Trash2, Loader2, Settings, Pencil, Check, X } from 'lucide-react';
 import apiClient from '../../api/client';
 import { toast } from 'react-hot-toast';
 import { GithubRepoSelector } from '../../features/projects/components/GithubRepoSelector';
@@ -29,6 +29,24 @@ export function ProjectsTable({ projects, onProjectUpdated }: ProjectsTableProps
     const [expandedRow, setExpandedRow] = useState<string | null>(null);
     const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editName, setEditName] = useState('');
+
+    const handleRename = async (projectId: string) => {
+        const name = editName.trim();
+        if (!name) return;
+        setLoadingStates(prev => ({ ...prev, [`rename-${projectId}`]: true }));
+        try {
+            await apiClient.patch(`/projects/${projectId}`, { name });
+            toast.success('Project renamed successfully');
+            setEditingId(null);
+            onProjectUpdated?.();
+        } catch (error) {
+            handleError(error, 'Failed to rename project');
+        } finally {
+            setLoadingStates(prev => ({ ...prev, [`rename-${projectId}`]: false }));
+        }
+    };
 
     const handleToggleMonitoring = async (projectId: string, currentValue: boolean) => {
         setLoadingStates(prev => ({ ...prev, [projectId]: true }));
@@ -124,7 +142,47 @@ export function ProjectsTable({ projects, onProjectUpdated }: ProjectsTableProps
                         <React.Fragment key={project.id}>
                             <TableRow className="border-border hover:bg-muted/50 transition-colors">
                                 <TableCell className="font-semibold text-foreground">
-                                    {project.name}
+                                    {editingId === project.id ? (
+                                        <div className="flex items-center gap-1">
+                                            <input
+                                                autoFocus
+                                                value={editName}
+                                                onChange={(e) => setEditName(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') handleRename(project.id);
+                                                    if (e.key === 'Escape') setEditingId(null);
+                                                }}
+                                                disabled={loadingStates[`rename-${project.id}`]}
+                                                className="bg-background border border-border rounded px-2 py-1 text-sm text-foreground w-48"
+                                            />
+                                            <button
+                                                onClick={() => handleRename(project.id)}
+                                                disabled={loadingStates[`rename-${project.id}`]}
+                                                className="p-1 hover:bg-emerald-500/10 text-emerald-500 rounded transition-colors"
+                                                title="Save"
+                                            >
+                                                {loadingStates[`rename-${project.id}`] ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                                            </button>
+                                            <button
+                                                onClick={() => setEditingId(null)}
+                                                className="p-1 hover:bg-muted text-muted-foreground rounded transition-colors"
+                                                title="Cancel"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-1 group">
+                                            <span>{project.name}</span>
+                                            <button
+                                                onClick={() => { setEditingId(project.id); setEditName(project.name); }}
+                                                className="p-1 opacity-0 group-hover:opacity-100 hover:bg-muted text-muted-foreground hover:text-foreground rounded transition-all"
+                                                title="Rename project"
+                                            >
+                                                <Pencil className="w-3.5 h-3.5" />
+                                            </button>
+                                        </div>
+                                    )}
                                     <div className="text-xs text-muted-foreground font-mono mt-0.5 max-w-[150px] truncate">{project.github_repository_url}</div>
                                 </TableCell>
                                 <TableCell>
