@@ -198,6 +198,13 @@ export async function retryExecution(
 }
 
 /**
+ * Delete an execution and its associated records
+ */
+export async function deleteExecution(executionId: string): Promise<void> {
+  await apiClient.delete(`${BASE_URL}/${executionId}`);
+}
+
+/**
  * Control execution (unified method)
  */
 export async function controlExecution(

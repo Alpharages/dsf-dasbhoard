@@ -24,6 +24,7 @@ import {
   controlExecution,
   exportExecutionLogs,
   retryExecution,
+  deleteExecution,
   type RetryExecutionResponse,
 } from '@/api/executionsApi';
 import type { 
@@ -252,6 +253,25 @@ export function useRetryExecution() {
     },
     onError: (error) => {
       toast.error(`Failed to retry execution: ${error.message}`);
+    },
+  });
+}
+
+/**
+ * Hook to delete an execution and its associated records
+ */
+export function useDeleteExecution() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, string>({
+    mutationFn: deleteExecution,
+    onSuccess: () => {
+      toast.success('Execution deleted');
+      queryClient.invalidateQueries({ queryKey: executionKeys.recent() });
+      queryClient.invalidateQueries({ queryKey: executionKeys.active() });
+    },
+    onError: (error) => {
+      toast.error(`Failed to delete execution: ${error.message}`);
     },
   });
 }

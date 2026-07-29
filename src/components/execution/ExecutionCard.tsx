@@ -12,7 +12,8 @@ import {
   Activity,
   RotateCcw,
   Terminal as TerminalIcon,
-  Copy
+  Copy,
+  Trash2
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,7 +22,7 @@ import {
   getAvailableControls,
   checkExecutionControlPermission
 } from '@/lib/auth/permissions';
-import { useControlExecution, useRetryExecution } from '@/hooks/queries/useExecutions';
+import { useControlExecution, useRetryExecution, useDeleteExecution } from '@/hooks/queries/useExecutions';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -123,7 +124,9 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
   const { user } = useAuth();
   const controlMutation = useControlExecution();
   const retryMutation = useRetryExecution();
+  const deleteMutation = useDeleteExecution();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingAction, setPendingAction] = useState<'pause' | 'resume' | 'emergency-stop' | null>(null);
   const [liveDuration, setLiveDuration] = useState(execution.duration || 0);
 
@@ -160,6 +163,15 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
 
   const handleRetry = () => {
     retryMutation.mutate(execution.id);
+  };
+
+  // Mirrors the backend's @Roles(Role.PM, Role.ADMIN) gate on DELETE /executions/:id
+  const canDelete = user?.role === 'ADMIN' || user?.role === 'PM';
+
+  const handleDelete = () => {
+    deleteMutation.mutate(execution.id, {
+      onSuccess: () => setShowDeleteDialog(false),
+    });
   };
 
   const handleCopyId = () => {
@@ -265,6 +277,18 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
                   <Copy className="w-4 h-4 mr-2" />
                   Copy execution ID
                 </DropdownMenuItem>
+                {canDelete && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => setShowDeleteDialog(true)}
+                      className="text-rose-500 focus:text-rose-500"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete execution
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -532,6 +556,61 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
                   <>
                     <Square className="w-4 h-4 mr-2" />
                     Emergency Stop
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <DialogContent className="bg-card border-border text-card-foreground">
+            <DialogHeader>
+              <DialogTitle className="text-rose-500 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5" />
+                Delete Execution
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground">
+                This permanently deletes the execution and its logs. This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <div className="p-3 bg-secondary/50 border border-border rounded-lg">
+                <p className="text-sm text-foreground/80">
+                  <span className="text-muted-foreground">Project:</span> {execution.projectName}
+                </p>
+                <p className="text-sm text-foreground/80">
+                  <span className="text-muted-foreground">Ticket:</span> {execution.ticketId}
+                </p>
+                <p className="text-sm text-foreground/80">
+                  <span className="text-muted-foreground">Status:</span> {status.label}
+                </p>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowDeleteDialog(false)}
+                className="border-border text-foreground hover:bg-secondary"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={deleteMutation.isPending}
+                className="bg-rose-600 hover:bg-rose-700"
+              >
+                {deleteMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete
                   </>
                 )}
               </Button>
