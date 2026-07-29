@@ -14,6 +14,22 @@ export interface AiAccount {
   updated_at: string;
 }
 
+export interface CreateAiAccountRequest {
+  label: string;
+  provider: AiAccountProvider;
+  runtime: AiAccountRuntime;
+  credentials: Record<string, string>;
+  quota_config?: Record<string, unknown>;
+  enabled?: boolean;
+}
+
+export interface UpdateAiAccountRequest {
+  label?: string;
+  credentials?: Record<string, string>;
+  quota_config?: Record<string, unknown>;
+  enabled?: boolean;
+}
+
 export interface AiAccountImportRowError {
   row: number;
   reason: string;

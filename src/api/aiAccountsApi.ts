@@ -3,6 +3,8 @@ import type {
   AiAccount,
   AiAccountImportSummary,
   ClaudeSessionInfo,
+  CreateAiAccountRequest,
+  UpdateAiAccountRequest,
 } from '@/types/aiAccounts';
 
 export const aiAccountsApi = {
@@ -10,6 +12,23 @@ export const aiAccountsApi = {
   list: async (): Promise<AiAccount[]> => {
     const response = await apiClient.get<AiAccount[]>('admin/ai-accounts');
     return response.data;
+  },
+
+  /** Add a single account to the pool. */
+  create: async (payload: CreateAiAccountRequest): Promise<AiAccount> => {
+    const response = await apiClient.post<AiAccount>('admin/ai-accounts', payload);
+    return response.data;
+  },
+
+  /** Edit an account — label, quota, credentials, and/or enabled. */
+  update: async (id: string, payload: UpdateAiAccountRequest): Promise<AiAccount> => {
+    const response = await apiClient.patch<AiAccount>(`admin/ai-accounts/${id}`, payload);
+    return response.data;
+  },
+
+  /** Remove an account from the pool. */
+  remove: async (id: string): Promise<void> => {
+    await apiClient.delete(`admin/ai-accounts/${id}`);
   },
 
   /** Import accounts from a CSV file. Returns the import summary (counts + redacted per-row errors). */
@@ -21,12 +40,6 @@ export const aiAccountsApi = {
       formData,
       { headers: { 'Content-Type': 'multipart/form-data' } },
     );
-    return response.data;
-  },
-
-  /** Enable/disable an account. */
-  setEnabled: async (id: string, enabled: boolean): Promise<AiAccount> => {
-    const response = await apiClient.patch<AiAccount>(`admin/ai-accounts/${id}`, { enabled });
     return response.data;
   },
 

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import { aiAccountsApi } from '@/api/aiAccountsApi';
-import type { AiAccount } from '@/types/aiAccounts';
+import type { AiAccount, CreateAiAccountRequest, UpdateAiAccountRequest } from '@/types/aiAccounts';
 
 export const aiAccountKeys = {
   all: ['ai-accounts'] as const,
@@ -41,11 +41,54 @@ export const useImportAiAccounts = () => {
   });
 };
 
+export const useCreateAiAccount = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: CreateAiAccountRequest) => aiAccountsApi.create(payload),
+    onSuccess: () => {
+      toast.success('Account added');
+      queryClient.invalidateQueries({ queryKey: aiAccountKeys.all });
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Failed to add account');
+    },
+  });
+};
+
+export const useUpdateAiAccount = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateAiAccountRequest }) =>
+      aiAccountsApi.update(id, payload),
+    onSuccess: () => {
+      toast.success('Account updated');
+      queryClient.invalidateQueries({ queryKey: aiAccountKeys.all });
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Failed to update account');
+    },
+  });
+};
+
+export const useDeleteAiAccount = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => aiAccountsApi.remove(id),
+    onSuccess: () => {
+      toast.success('Account removed');
+      queryClient.invalidateQueries({ queryKey: aiAccountKeys.all });
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Failed to remove account');
+    },
+  });
+};
+
 export const useSetAiAccountEnabled = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, enabled }: { id: string; enabled: boolean }) =>
-      aiAccountsApi.setEnabled(id, enabled),
+      aiAccountsApi.update(id, { enabled }),
     onMutate: async ({ id, enabled }) => {
       await queryClient.cancelQueries({ queryKey: aiAccountKeys.all });
       const previous = queryClient.getQueryData<AiAccount[]>(aiAccountKeys.all);

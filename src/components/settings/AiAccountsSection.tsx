@@ -1,14 +1,47 @@
 import { useRef, useState } from 'react';
-import { Upload, Copy, Check } from 'lucide-react';
+import type { FormEvent } from 'react';
+import { Upload, Copy, Check, Plus, Pencil, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { canAccess } from '@/utils/roleHelpers';
 import {
   useAiAccounts,
   useClaudeSessions,
+  useCreateAiAccount,
+  useDeleteAiAccount,
   useImportAiAccounts,
   useSetAiAccountEnabled,
+  useUpdateAiAccount,
 } from '@/hooks/queries/useAiAccounts';
 import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import {
   Table,
   TableBody,
@@ -17,13 +50,339 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import type { AiAccount, ClaudeSessionInfo, ClaudeSessionStatus } from '@/types/aiAccounts';
+import type {
+  AiAccount,
+  AiAccountProvider,
+  AiAccountRuntime,
+  ClaudeSessionInfo,
+  ClaudeSessionStatus,
+} from '@/types/aiAccounts';
 
 const quotaSummary = (config: unknown): string => {
   if (!config || typeof config !== 'object') return '—';
   const entries = Object.entries(config as Record<string, unknown>);
   if (entries.length === 0) return '—';
   return entries.map(([k, v]) => `${k}: ${v}`).join(', ');
+};
+
+/** The one credential key each provider needs (mirrors backend CREDENTIAL_KEYS). */
+const CREDENTIAL_FIELD: Record<AiAccountProvider, { key: string; label: string; masked?: boolean }> = {
+  claude: { key: 'email', label: 'Email' },
+  openai: { key: 'token', label: 'API token', masked: true },
+};
+
+/** claude↔claude, openai↔oh — the only valid pairings (mirrors backend expectedRuntime). */
+const RUNTIME_FOR_PROVIDER: Record<AiAccountProvider, AiAccountRuntime> = {
+  claude: 'claude',
+  openai: 'oh',
+};
+
+const parseQuotaConfig = (text: string): { value?: Record<string, unknown>; error?: string } => {
+  const trimmed = text.trim();
+  if (!trimmed) return { value: undefined };
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return { error: 'Quota config must be a JSON object' };
+    }
+    return { value: parsed };
+  } catch {
+    return { error: 'Quota config must be valid JSON' };
+  }
+};
+
+const AddAccountDialog = () => {
+  const [open, setOpen] = useState(false);
+  const [label, setLabel] = useState('');
+  const [provider, setProvider] = useState<AiAccountProvider>('claude');
+  const [credentialValue, setCredentialValue] = useState('');
+  const [quotaText, setQuotaText] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const createAccount = useCreateAiAccount();
+
+  const reset = () => {
+    setLabel('');
+    setProvider('claude');
+    setCredentialValue('');
+    setQuotaText('');
+    setError(null);
+  };
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!label.trim() || !credentialValue.trim()) {
+      setError('Label and credential are required.');
+      return;
+    }
+    const { value: quota_config, error: quotaError } = parseQuotaConfig(quotaText);
+    if (quotaError) {
+      setError(quotaError);
+      return;
+    }
+    setError(null);
+    createAccount.mutate(
+      {
+        label: label.trim(),
+        provider,
+        runtime: RUNTIME_FOR_PROVIDER[provider],
+        credentials: { [CREDENTIAL_FIELD[provider].key]: credentialValue.trim() },
+        quota_config,
+      },
+      {
+        onSuccess: () => {
+          setOpen(false);
+          reset();
+        },
+      },
+    );
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (!next) reset();
+      }}
+    >
+      <DialogTrigger asChild>
+        <button className="flex items-center gap-2 px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-lg transition-all">
+          <Plus className="w-3 h-3" />
+          Add Account
+        </button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add AI Account</DialogTitle>
+          <DialogDescription>
+            Adds a single account to the pool. Credentials are encrypted at rest and never shown
+            again.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="new-label">Label</Label>
+            <Input
+              id="new-label"
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              placeholder="claude-3"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="new-provider">Provider</Label>
+            <Select
+              value={provider}
+              onValueChange={(v) => {
+                setProvider(v as AiAccountProvider);
+                setCredentialValue('');
+              }}
+            >
+              <SelectTrigger id="new-provider" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="claude">Claude</SelectItem>
+                <SelectItem value="openai">OpenAI</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="new-credential">{CREDENTIAL_FIELD[provider].label}</Label>
+            <Input
+              id="new-credential"
+              type={CREDENTIAL_FIELD[provider].masked ? 'password' : 'text'}
+              value={credentialValue}
+              onChange={(e) => setCredentialValue(e.target.value)}
+              placeholder={provider === 'claude' ? 'ops@example.com' : 'sk-...'}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="new-quota">Quota config (JSON, optional)</Label>
+            <Textarea
+              id="new-quota"
+              value={quotaText}
+              onChange={(e) => setQuotaText(e.target.value)}
+              placeholder='{"weekly_budget": 1000}'
+              rows={3}
+            />
+          </div>
+          {error && <div className="text-sm text-destructive">{error}</div>}
+          <DialogFooter>
+            <button
+              type="submit"
+              disabled={createAccount.isPending}
+              className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-lg transition-all disabled:opacity-50"
+            >
+              {createAccount.isPending ? 'Adding...' : 'Add Account'}
+            </button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const EditAccountDialog = ({ account }: { account: AiAccount }) => {
+  const [open, setOpen] = useState(false);
+  const [label, setLabel] = useState(account.label);
+  const [credentialValue, setCredentialValue] = useState('');
+  const [quotaText, setQuotaText] = useState(
+    account.quota_config && typeof account.quota_config === 'object'
+      ? JSON.stringify(account.quota_config, null, 2)
+      : '',
+  );
+  const [error, setError] = useState<string | null>(null);
+  const updateAccount = useUpdateAiAccount();
+  const credField = CREDENTIAL_FIELD[account.provider];
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!label.trim()) {
+      setError('Label is required.');
+      return;
+    }
+    const { value: quota_config, error: quotaError } = parseQuotaConfig(quotaText);
+    if (quotaError) {
+      setError(quotaError);
+      return;
+    }
+    setError(null);
+    updateAccount.mutate(
+      {
+        id: account.id,
+        payload: {
+          label: label.trim(),
+          quota_config,
+          ...(credentialValue.trim()
+            ? { credentials: { [credField.key]: credentialValue.trim() } }
+            : {}),
+        },
+      },
+      {
+        onSuccess: () => {
+          setOpen(false);
+          setCredentialValue('');
+        },
+      },
+    );
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (next) {
+          // Re-sync from the latest account props each time the dialog opens (they may have
+          // changed since the last edit — e.g. another admin's edit, or a CSV re-import).
+          setLabel(account.label);
+          setQuotaText(
+            account.quota_config && typeof account.quota_config === 'object'
+              ? JSON.stringify(account.quota_config, null, 2)
+              : '',
+          );
+          setCredentialValue('');
+          setError(null);
+        }
+      }}
+    >
+      <DialogTrigger asChild>
+        <button
+          title="Edit"
+          className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <Pencil className="w-3.5 h-3.5" />
+        </button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit {account.label}</DialogTitle>
+          <DialogDescription>
+            {account.provider} / {account.runtime}. Leave the credential blank to keep it
+            unchanged.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor={`edit-label-${account.id}`}>Label</Label>
+            <Input
+              id={`edit-label-${account.id}`}
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor={`edit-cred-${account.id}`}>{credField.label} (optional — replace)</Label>
+            <Input
+              id={`edit-cred-${account.id}`}
+              type={credField.masked ? 'password' : 'text'}
+              value={credentialValue}
+              onChange={(e) => setCredentialValue(e.target.value)}
+              placeholder="Leave blank to keep current credential"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor={`edit-quota-${account.id}`}>Quota config (JSON)</Label>
+            <Textarea
+              id={`edit-quota-${account.id}`}
+              value={quotaText}
+              onChange={(e) => setQuotaText(e.target.value)}
+              rows={3}
+            />
+          </div>
+          {error && <div className="text-sm text-destructive">{error}</div>}
+          <DialogFooter>
+            <button
+              type="submit"
+              disabled={updateAccount.isPending}
+              className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-lg transition-all disabled:opacity-50"
+            >
+              {updateAccount.isPending ? 'Saving...' : 'Save'}
+            </button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const DeleteAccountConfirm = ({ account }: { account: AiAccount }) => {
+  const [open, setOpen] = useState(false);
+  const deleteAccount = useDeleteAiAccount();
+
+  return (
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <button
+        title="Remove"
+        onClick={() => setOpen(true)}
+        className="p-1 text-muted-foreground hover:text-destructive transition-colors"
+      >
+        <Trash2 className="w-3.5 h-3.5" />
+      </button>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Remove {account.label}?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This permanently deletes the account and its usage history from the pool. Runs already
+            using it are unaffected. This cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={() => setOpen(false)}>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+            disabled={deleteAccount.isPending}
+            onClick={() =>
+              deleteAccount.mutate(account.id, { onSuccess: () => setOpen(false) })
+            }
+          >
+            {deleteAccount.isPending ? 'Removing...' : 'Remove'}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
 };
 
 const AiAccountRow = ({ account, readOnly }: { account: AiAccount; readOnly: boolean }) => {
@@ -40,6 +399,12 @@ const AiAccountRow = ({ account, readOnly }: { account: AiAccount; readOnly: boo
           disabled={readOnly || setEnabled.isPending}
           onCheckedChange={(checked) => setEnabled.mutate({ id: account.id, enabled: checked })}
         />
+      </TableCell>
+      <TableCell>
+        <div className="flex items-center gap-1">
+          <EditAccountDialog account={account} />
+          <DeleteAccountConfirm account={account} />
+        </div>
       </TableCell>
     </TableRow>
   );
@@ -195,7 +560,9 @@ export const AiAccountsSection = () => {
         load balancer.
       </p>
 
-      <div className="mb-4">
+      <div className="mb-4 flex items-center gap-2">
+        <AddAccountDialog />
+
         <input
           ref={fileRef}
           type="file"
@@ -206,7 +573,7 @@ export const AiAccountsSection = () => {
         <button
           onClick={() => fileRef.current?.click()}
           disabled={importCsv.isPending}
-          className="flex items-center gap-2 px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-lg transition-all disabled:opacity-50"
+          className="flex items-center gap-2 px-3 py-1.5 bg-muted hover:bg-muted/80 text-foreground text-xs font-bold rounded-lg transition-all disabled:opacity-50"
         >
           <Upload className="w-3 h-3" />
           {importCsv.isPending ? 'Importing...' : 'Import CSV'}
@@ -247,6 +614,7 @@ export const AiAccountsSection = () => {
               <TableHead>Runtime</TableHead>
               <TableHead>Quota</TableHead>
               <TableHead>Enabled</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
