@@ -1,7 +1,7 @@
 // Mirrors the backend A4 DTOs (src/ai-accounts). Credentials are NEVER present on the wire —
 // the API returns only this redacted shape.
 export type AiAccountProvider = 'openai' | 'claude';
-export type AiAccountRuntime = 'oh' | 'claude';
+export type AiAccountRuntime = 'oh' | 'claude' | 'codex';
 
 export interface AiAccount {
   id: string;

@@ -4,7 +4,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { canAccess } from '@/utils/roleHelpers';
 import { useSkillModelMap, useUpdateSkillModelMapEntry } from '@/hooks/queries/useSkillModelMap';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MODEL_OPTIONS, RUNTIME_OPTIONS, SKILL_LABELS, type SkillModelMapEntry, type SkillModelRuntime } from '@/types/skillModelMap';
+import { Input } from '@/components/ui/input';
+import { MODEL_SUGGESTIONS, RUNTIME_OPTIONS, SKILL_LABELS, type SkillModelMapEntry, type SkillModelRuntime } from '@/types/skillModelMap';
 
 const SkillModelRow = ({ entry, readOnly }: { entry: SkillModelMapEntry; readOnly: boolean }) => {
   const [model, setModel] = useState(entry.model);
@@ -16,21 +17,20 @@ const SkillModelRow = ({ entry, readOnly }: { entry: SkillModelMapEntry; readOnl
     setRuntime(entry.runtime);
   }, [entry.model, entry.runtime]);
 
-  const isDirty = model !== entry.model || runtime !== entry.runtime;
+  const canSave = model.trim() !== '' && (model !== entry.model || runtime !== entry.runtime);
 
-  // Keep whatever the DB holds selectable even if it's not in our known list.
-  const modelOptions = MODEL_OPTIONS[runtime].includes(model)
-    ? MODEL_OPTIONS[runtime]
-    : [...MODEL_OPTIONS[runtime], model];
-
+  // Switching runtime only pre-fills a sensible default — a claude alias like 'opus' is
+  // meaningless on `oh`. The field stays editable either way.
   const handleRuntimeChange = (value: SkillModelRuntime) => {
     setRuntime(value);
-    if (!MODEL_OPTIONS[value].includes(model)) setModel(MODEL_OPTIONS[value][0]);
+    if (!MODEL_SUGGESTIONS[value].includes(model)) setModel(MODEL_SUGGESTIONS[value][0]);
   };
 
   const handleSave = () => {
     const provider = RUNTIME_OPTIONS.find((option) => option.value === runtime)!.provider;
-    updateEntry.mutate({ skill: entry.skill, entry: { model, provider, runtime } });
+    // Trim: a stray space survives the backend's non-empty check and then reaches the CLI as
+    // part of the model id, where it fails at the provider instead of here.
+    updateEntry.mutate({ skill: entry.skill, entry: { model: model.trim(), provider, runtime } });
   };
 
   return (
@@ -39,7 +39,7 @@ const SkillModelRow = ({ entry, readOnly }: { entry: SkillModelMapEntry; readOnl
         <label className="block text-sm font-semibold text-foreground">
           {SKILL_LABELS[entry.skill]}
         </label>
-        {isDirty && !readOnly && (
+        {canSave && !readOnly && (
           <button
             onClick={handleSave}
             disabled={updateEntry.isPending}
@@ -52,22 +52,16 @@ const SkillModelRow = ({ entry, readOnly }: { entry: SkillModelMapEntry; readOnl
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <Select
+        <Input
           value={model}
-          onValueChange={setModel}
+          onChange={(event) => setModel(event.target.value)}
           disabled={readOnly || updateEntry.isPending}
-        >
-          <SelectTrigger className="bg-background border-input">
-            <SelectValue placeholder="Model" />
-          </SelectTrigger>
-          <SelectContent>
-            {modelOptions.map((option) => (
-              <SelectItem key={option} value={option}>
-                {option}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          placeholder="Model"
+          spellCheck={false}
+          aria-label="Model"
+          list={`${entry.skill}-models`}
+          className="h-9 rounded-md px-3 text-sm"
+        />
         <Select
           value={runtime}
           onValueChange={(value) => handleRuntimeChange(value as SkillModelRuntime)}
@@ -85,6 +79,14 @@ const SkillModelRow = ({ entry, readOnly }: { entry: SkillModelMapEntry; readOnl
           </SelectContent>
         </Select>
       </div>
+
+      {/* Native datalist: suggestions without closing the field to a fixed list.
+          Outside the grid so it can never occupy a cell. */}
+      <datalist id={`${entry.skill}-models`}>
+        {MODEL_SUGGESTIONS[runtime].map((option) => (
+          <option key={option} value={option} />
+        ))}
+      </datalist>
     </div>
   );
 };

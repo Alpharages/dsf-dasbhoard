@@ -1,6 +1,6 @@
 export type OpenHarnessSkill = 'clickup-dev-implement' | 'clickup-code-review' | 'clickup-qa';
 export type SkillModelProvider = 'openai' | 'claude';
-export type SkillModelRuntime = 'oh' | 'claude';
+export type SkillModelRuntime = 'oh' | 'claude' | 'codex';
 
 export interface SkillModelMapEntry {
   skill: OpenHarnessSkill;
@@ -15,14 +15,24 @@ export const SKILL_LABELS: Record<OpenHarnessSkill, string> = {
   'clickup-qa': 'QA',
 };
 
-// runtime -> provider is a fixed 1:1 mapping enforced by the backend (oh -> openai, claude -> claude).
+// Each runtime maps to exactly one provider (the backend rejects any other pairing), but a
+// provider does NOT map back to one runtime: 'openai' is served by either `codex` or `oh`.
 export const RUNTIME_OPTIONS: { value: SkillModelRuntime; label: string; provider: SkillModelProvider }[] = [
-  { value: 'oh', label: 'OpenAI (oh)', provider: 'openai' },
+  // Labelled by the runtime, not the vendor: the provider stays 'openai' in the backend's
+  // vocabulary either way, and it is the runtime that decides which CLI (and therefore which
+  // account config dir) drives the run.
+  { value: 'codex', label: 'Codex (ChatGPT subscription)', provider: 'openai' },
+  { value: 'oh', label: 'OpenHarness (self-hosted)', provider: 'openai' },
   { value: 'claude', label: 'Claude', provider: 'claude' },
 ];
 
-// ponytail: hardcoded list; move to a backend endpoint if models start changing often.
-export const MODEL_OPTIONS: Record<SkillModelRuntime, string[]> = {
-  oh: ['gpt-5.4', 'gpt-5.4-codex', 'gpt-5.4-mini'],
+// Suggestions only — the field is free text. Nothing downstream validates the model against a
+// list: the backend DTO takes any non-empty string and `oh`/`claude` pass it straight to the
+// provider, so a closed dropdown could only ever be wrong (a new model ships and the UI blocks
+// it; an `oh` account pointed at a self-hosted backend serves models no list here knows about).
+// A backend endpoint would not help — `oh` has no model catalog to read either.
+export const MODEL_SUGGESTIONS: Record<SkillModelRuntime, string[]> = {
+  codex: ['gpt-5.5', 'gpt-5.4', 'gpt-5.4-codex', 'gpt-5.4-mini'],
+  oh: ['gpt-5.5', 'gpt-5.4', 'gpt-5.4-codex', 'gpt-5.4-mini'],
   claude: ['opus', 'sonnet', 'haiku'],
 };

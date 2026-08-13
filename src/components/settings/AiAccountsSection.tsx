@@ -65,17 +65,32 @@ const quotaSummary = (config: unknown): string => {
   return entries.map(([k, v]) => `${k}: ${v}`).join(', ');
 };
 
-/** The one credential key each provider needs (mirrors backend CREDENTIAL_KEYS). */
-const CREDENTIAL_FIELD: Record<AiAccountProvider, { key: string; label: string; masked?: boolean }> = {
-  claude: { key: 'email', label: 'Email' },
-  openai: { key: 'token', label: 'API token', masked: true },
+/**
+ * The one credential key each provider needs (mirrors backend CREDENTIAL_KEYS). Neither is a
+ * secret: an account's auth lives in its own logged-in CLI config dir, provisioned out of band
+ * (scripts/claude-account-login.sh, scripts/openai-account-login.sh). These values only identify
+ * which login that dir holds, so the sessions view can name the account.
+ */
+const CREDENTIAL_FIELD: Record<
+  AiAccountProvider,
+  { key: string; label: string; placeholder: string }
+> = {
+  claude: { key: 'email', label: 'Email', placeholder: 'ops@example.com' },
+  openai: { key: 'profile', label: 'Profile', placeholder: 'codex' },
 };
 
-/** claude↔claude, openai↔oh — the only valid pairings (mirrors backend expectedRuntime). */
-const RUNTIME_FOR_PROVIDER: Record<AiAccountProvider, AiAccountRuntime> = {
-  claude: 'claude',
-  openai: 'oh',
-};
+/**
+ * A runtime maps to exactly one provider, but not the reverse — 'openai' is served by `codex`
+ * (a ChatGPT subscription) or by `oh` (a self-hosted OpenAI-compatible backend), and the two use
+ * different config dirs. So the runtime is what the form asks for, and the provider follows.
+ */
+const RUNTIME_OPTIONS: { value: AiAccountRuntime; label: string; provider: AiAccountProvider }[] = [
+  { value: 'claude', label: 'Claude (subscription)', provider: 'claude' },
+  { value: 'codex', label: 'Codex (ChatGPT subscription)', provider: 'openai' },
+  { value: 'oh', label: 'OpenHarness (self-hosted)', provider: 'openai' },
+];
+const PROVIDER_FOR_RUNTIME = (runtime: AiAccountRuntime): AiAccountProvider =>
+  RUNTIME_OPTIONS.find((option) => option.value === runtime)?.provider ?? 'openai';
 
 const parseQuotaConfig = (text: string): { value?: Record<string, unknown>; error?: string } => {
   const trimmed = text.trim();
@@ -94,7 +109,8 @@ const parseQuotaConfig = (text: string): { value?: Record<string, unknown>; erro
 const AddAccountDialog = () => {
   const [open, setOpen] = useState(false);
   const [label, setLabel] = useState('');
-  const [provider, setProvider] = useState<AiAccountProvider>('claude');
+  const [runtime, setRuntime] = useState<AiAccountRuntime>('claude');
+  const provider = PROVIDER_FOR_RUNTIME(runtime);
   const [credentialValue, setCredentialValue] = useState('');
   const [quotaText, setQuotaText] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -102,7 +118,7 @@ const AddAccountDialog = () => {
 
   const reset = () => {
     setLabel('');
-    setProvider('claude');
+    setRuntime('claude');
     setCredentialValue('');
     setQuotaText('');
     setError(null);
@@ -124,7 +140,7 @@ const AddAccountDialog = () => {
       {
         label: label.trim(),
         provider,
-        runtime: RUNTIME_FOR_PROVIDER[provider],
+        runtime,
         credentials: { [CREDENTIAL_FIELD[provider].key]: credentialValue.trim() },
         quota_config,
       },
@@ -170,20 +186,23 @@ const AddAccountDialog = () => {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="new-provider">Provider</Label>
+            <Label htmlFor="new-runtime">Runtime</Label>
             <Select
-              value={provider}
+              value={runtime}
               onValueChange={(v) => {
-                setProvider(v as AiAccountProvider);
+                setRuntime(v as AiAccountRuntime);
                 setCredentialValue('');
               }}
             >
-              <SelectTrigger id="new-provider" className="w-full">
+              <SelectTrigger id="new-runtime" className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="claude">Claude</SelectItem>
-                <SelectItem value="openai">OpenAI</SelectItem>
+                {RUNTIME_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -191,10 +210,9 @@ const AddAccountDialog = () => {
             <Label htmlFor="new-credential">{CREDENTIAL_FIELD[provider].label}</Label>
             <Input
               id="new-credential"
-              type={CREDENTIAL_FIELD[provider].masked ? 'password' : 'text'}
               value={credentialValue}
               onChange={(e) => setCredentialValue(e.target.value)}
-              placeholder={provider === 'claude' ? 'ops@example.com' : 'sk-...'}
+              placeholder={CREDENTIAL_FIELD[provider].placeholder}
             />
           </div>
           <div className="space-y-1.5">
@@ -316,7 +334,6 @@ const EditAccountDialog = ({ account }: { account: AiAccount }) => {
             <Label htmlFor={`edit-cred-${account.id}`}>{credField.label} (optional — replace)</Label>
             <Input
               id={`edit-cred-${account.id}`}
-              type={credField.masked ? 'password' : 'text'}
               value={credentialValue}
               onChange={(e) => setCredentialValue(e.target.value)}
               placeholder="Leave blank to keep current credential"
