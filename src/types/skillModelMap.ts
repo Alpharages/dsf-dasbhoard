@@ -2,11 +2,21 @@ export type OpenHarnessSkill = 'clickup-dev-implement' | 'clickup-code-review' |
 export type SkillModelProvider = 'openai' | 'claude';
 export type SkillModelRuntime = 'oh' | 'claude' | 'codex';
 
-export interface SkillModelMapEntry {
-  skill: OpenHarnessSkill;
+/** One {model, provider, runtime} candidate — the primary and every fallback share this shape. */
+export interface SkillModelCandidate {
   model: string;
   provider: SkillModelProvider;
   runtime: SkillModelRuntime;
+}
+
+export interface SkillModelMapEntry extends SkillModelCandidate {
+  skill: OpenHarnessSkill;
+  /**
+   * Ordered fallback chain. Tried in order when the primary has no selectable account — either
+   * at dispatch (every account cooling down) or mid-run (rate limit with none left). Empty =
+   * the run fails instead of switching model.
+   */
+  fallbacks: SkillModelCandidate[];
 }
 
 export const SKILL_LABELS: Record<OpenHarnessSkill, string> = {

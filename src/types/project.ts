@@ -13,6 +13,8 @@ export interface Project {
   status: string;
   is_active: boolean;
   client_name?: string;
+  /** True = synced tickets are NOT auto-executed; a human dispatches them from the Tickets page */
+  manual_dispatch?: boolean;
   /** null = inherit the global `execution.concurrency_limit` system setting */
   execution_concurrency_limit?: number | null;
   /** Per-project Lore MCP server URL; null = inherit global LORE_SERVER_URL */

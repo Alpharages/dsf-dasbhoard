@@ -20,7 +20,13 @@ export const useUpdateSkillModelMapEntry = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ skill, entry }: { skill: string; entry: Pick<SkillModelMapEntry, 'model' | 'provider' | 'runtime'> }) =>
+    mutationFn: ({
+      skill,
+      entry,
+    }: {
+      skill: string;
+      entry: Pick<SkillModelMapEntry, 'model' | 'provider' | 'runtime' | 'fallbacks'>;
+    }) =>
       skillModelMapApi.updateSkillModelMapEntry(skill, entry),
     onSuccess: () => {
       toast.success('Skill → model mapping saved');

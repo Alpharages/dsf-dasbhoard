@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Switch } from '../ui/switch';
-import { ChevronDown, ChevronUp, Cloud, Database, RefreshCw, Trash2, Loader2, Settings, Pencil, Check, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Cloud, Database, RefreshCw, Trash2, Loader2, Settings, Pencil, Check, X, ListChecks } from 'lucide-react';
 import apiClient from '../../api/client';
 import { toast } from 'react-hot-toast';
 import { GithubRepoSelector } from '../../features/projects/components/GithubRepoSelector';
@@ -246,22 +246,33 @@ export function ProjectsTable({ projects, onProjectUpdated }: ProjectsTableProps
                                             <div className="col-span-2 mt-4">
                                                 <GithubRepoSelector project={project} />
                                             </div>
-                                            <div className="col-span-2 pt-2 border-t border-border mt-2 flex justify-end">
+                                            {/* Destructive action sits apart from the navigation ones so
+                                                Delete can't be hit by aiming for Tickets. */}
+                                            <div className="col-span-2 pt-3 border-t border-border mt-2 flex flex-wrap items-center justify-between gap-2">
                                                 <button
                                                     onClick={() => handleDelete(project.id)}
                                                     disabled={isDeleting === project.id}
-                                                    className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg text-xs font-bold transition-colors"
+                                                    className="inline-flex h-8 items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-3 text-xs font-bold text-red-500 transition-colors hover:bg-red-500/20 disabled:opacity-50"
                                                 >
-                                                    {isDeleting === project.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
+                                                    {isDeleting === project.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
                                                     Delete Project
                                                 </button>
-                                                <Link
-                                                    to={`/projects/${project.id}/settings`}
-                                                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 rounded-lg text-xs font-bold transition-colors"
-                                                >
-                                                    <Settings className="w-3 h-3" />
-                                                    Project Settings
-                                                </Link>
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <Link
+                                                        to={`/projects/${project.id}/tickets`}
+                                                        className="inline-flex h-8 items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 text-xs font-bold text-emerald-600 transition-colors hover:bg-emerald-500/20"
+                                                    >
+                                                        <ListChecks className="w-3.5 h-3.5" />
+                                                        Tickets
+                                                    </Link>
+                                                    <Link
+                                                        to={`/projects/${project.id}/settings`}
+                                                        className="inline-flex h-8 items-center gap-2 rounded-lg border border-blue-500/20 bg-blue-500/10 px-3 text-xs font-bold text-blue-600 transition-colors hover:bg-blue-500/20"
+                                                    >
+                                                        <Settings className="w-3.5 h-3.5" />
+                                                        Project Settings
+                                                    </Link>
+                                                </div>
                                             </div>
                                         </div>
                                     </TableCell>

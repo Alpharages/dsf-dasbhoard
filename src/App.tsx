@@ -21,6 +21,7 @@ import { DecisionDashboard } from './pages/DecisionDashboard';
 import { FinancialMetricsPage } from './pages/FinancialMetricsPage';
 import { WorkloadCapacityPage } from './pages/WorkloadCapacityPage';
 import { ProjectsSyncPage } from './pages/ProjectsSyncPage';
+import { ProjectTicketsPage } from './pages/ProjectTicketsPage';
 import { ArchitectureReviewQueuePage } from './pages/ArchitectureReviewQueuePage';
 import { ConstraintsPage } from './pages/architecture-review/constraints/ConstraintsPage';
 import ArchitectureMetricsPage from './pages/architecture-review/ArchitectureMetricsPage';
@@ -267,6 +268,17 @@ function AppContent({ navigate }: { navigate: NavigateFunction }) {
               element={
                 <ProtectedRoute>
                   <ProjectsSyncPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Per-project ticket list + manual dispatch to execution */}
+            <Route
+              path="/projects/:id/tickets"
+              handle={{ title: 'Project Tickets — DSF' }}
+              element={
+                <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'PM', 'TL']}>
+                  <ProjectTicketsPage />
                 </ProtectedRoute>
               }
             />

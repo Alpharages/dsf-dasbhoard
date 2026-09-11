@@ -37,6 +37,14 @@ export interface Execution {
   qaRetryCount?: number;           // FE-1.1: populated from execution.qa_failed event
   qaFailedBranch?: string | null;  // FE-1.1: branch name for PM resolution (FE-1.2)
   qaAttempts?: QAAttempt[] | null; // FE-1.3: per-attempt QA history (WR-6.3)
+  /** Model alias that actually served the run (e.g. 'opus', 'kimi-k2.5'). */
+  selectedModel?: string | null;
+  /** True when the skill's primary model had no account and a chain fallback ran instead. */
+  fallbackUsed?: boolean;
+  /** The primary model that was skipped. Null unless `fallbackUsed`. */
+  fallbackFrom?: string | null;
+  /** Why the primary was skipped (rate limit, no eligible account, …). */
+  routingReason?: string | null;
   metadata?: Record<string, unknown>;
 }
 

@@ -13,7 +13,8 @@ import {
   RotateCcw,
   Terminal as TerminalIcon,
   Copy,
-  Trash2
+  Trash2,
+  ArrowRight
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -350,9 +351,27 @@ export const ExecutionCard = memo(function ExecutionCard({ execution, onViewLogs
 
         {/* Metadata Grid */}
         <div className="grid grid-cols-2 gap-4 mb-4">
+          {/* Model, not provider: post-pivot `aiProvider` is OPENHARNESS on every run, so it
+              could never answer "what ran this?". When the skill's primary was unavailable this
+              also shows what it fell back FROM — a fallback nobody can see is one nobody trusts. */}
           <div className="bg-secondary/30 rounded-xl p-3 border border-border/50">
-             <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Provider</p>
-             <p className="text-sm font-bold text-foreground">{execution.aiProvider}</p>
+             <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Model</p>
+             {execution.fallbackUsed ? (
+               <div className="flex items-center gap-1.5" title={execution.routingReason ?? undefined}>
+                 <span className="text-sm font-bold text-muted-foreground line-through">
+                   {execution.fallbackFrom}
+                 </span>
+                 <ArrowRight className="w-3 h-3 shrink-0 text-amber-500" />
+                 <span className="text-sm font-bold text-foreground">
+                   {execution.selectedModel}
+                 </span>
+                 <AlertTriangle className="w-3 h-3 shrink-0 text-amber-500" />
+               </div>
+             ) : (
+               <p className="text-sm font-bold text-foreground">
+                 {execution.selectedModel || execution.aiProvider}
+               </p>
+             )}
           </div>
           <div className="bg-secondary/30 rounded-xl p-3 border border-border/50">
              <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Duration</p>

@@ -192,9 +192,17 @@ function formatRelativeTime(timestamp: string): string {
 interface ActivityItemProps {
   activity: ContainerActivityPayload;
   isLatest: boolean;
+  /** When set, the row is clickable and reports itself as selected-for-detail. */
+  onSelect?: () => void;
+  isSelected?: boolean;
 }
 
-const ActivityItem = memo(function ActivityItem({ activity, isLatest }: ActivityItemProps) {
+const ActivityItem = memo(function ActivityItem({
+  activity,
+  isLatest,
+  onSelect,
+  isSelected = false,
+}: ActivityItemProps) {
   const config = CATEGORY_CONFIG[activity.category] || CATEGORY_CONFIG.SYSTEM;
   const Icon = ICON_MAP[activity.icon] || Activity;
   const [relTime, setRelTime] = useState(formatRelativeTime(activity.timestamp));
@@ -209,9 +217,14 @@ const ActivityItem = memo(function ActivityItem({ activity, isLatest }: Activity
   }, [activity.timestamp]);
 
   return (
-    <div className={`rounded-lg transition-all duration-300 ${
-      isLatest ? `${config.bgColor} border ${config.borderColor}` : 'hover:bg-muted/30'
-    }`}>
+    <div
+      className={`rounded-lg transition-all duration-300 ${
+        isLatest ? `${config.bgColor} border ${config.borderColor}` : 'hover:bg-muted/30'
+      } ${onSelect ? 'cursor-pointer' : ''} ${
+        isSelected ? 'ring-2 ring-primary ring-inset bg-muted/40' : ''
+      }`}
+      onClick={onSelect}
+    >
       <div className="flex gap-3 py-2.5 px-3">
         {/* Timeline dot + line */}
         <div className="flex flex-col items-center pt-0.5">
@@ -244,7 +257,10 @@ const ActivityItem = memo(function ActivityItem({ activity, isLatest }: Activity
             </Badge>
             {activity.rawContent && (
               <button
-                onClick={() => setShowRaw(!showRaw)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowRaw(!showRaw);
+                }}
                 className="text-muted-foreground hover:text-foreground transition-colors"
                 title={showRaw ? 'Hide raw output' : 'Show raw output'}
               >
@@ -292,6 +308,10 @@ interface ContainerActivityTimelineProps {
   defaultCollapsed?: boolean;
   /** Whether the execution is currently live (enables WebSocket subscription) */
   isLive?: boolean;
+  /** When provided, rows become clickable and report the clicked activity. */
+  onSelectActivity?: (activity: ContainerActivityPayload) => void;
+  /** Timestamp of the activity currently shown in the detail pane. */
+  selectedTimestamp?: string | null;
 }
 
 export default function ContainerActivityTimeline({
@@ -301,6 +321,8 @@ export default function ContainerActivityTimeline({
   collapsible = true,
   defaultCollapsed = true,
   isLive = true,
+  onSelectActivity,
+  selectedTimestamp = null,
 }: ContainerActivityTimelineProps) {
   const [realtimeActivities, setRealtimeActivities] = useState<ContainerActivityPayload[]>([]);
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
@@ -438,6 +460,8 @@ export default function ContainerActivityTimeline({
               key={`${act.timestamp}-${idx}`}
               activity={act}
               isLatest={idx === activities.length - 1}
+              onSelect={onSelectActivity ? () => onSelectActivity(act) : undefined}
+              isSelected={selectedTimestamp === act.timestamp}
             />
           ))}
         </div>

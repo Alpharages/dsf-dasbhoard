@@ -15,7 +15,7 @@ export const skillModelMapApi = {
    */
   updateSkillModelMapEntry: async (
     skill: string,
-    entry: Pick<SkillModelMapEntry, 'model' | 'provider' | 'runtime'>,
+    entry: Pick<SkillModelMapEntry, 'model' | 'provider' | 'runtime' | 'fallbacks'>,
   ): Promise<SkillModelMapEntry> => {
     const response = await apiClient.put<SkillModelMapEntry>(`admin/skill-model-map/${skill}`, entry);
     return response.data;

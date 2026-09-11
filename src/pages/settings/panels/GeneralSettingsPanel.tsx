@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
 import { toast } from 'react-hot-toast';
 import { getProject, updateProject, type UpdateProjectPayload } from '@/api/projectsApi';
 import { projectKeys } from '@/hooks/queries/useProjects';
@@ -29,6 +30,7 @@ export function GeneralSettingsPanel() {
   const [defaultBranch, setDefaultBranch] = useState('');
   // Kept as a string so a blank input is distinguishable from 0 — blank means "inherit".
   const [concurrencyLimit, setConcurrencyLimit] = useState('');
+  const [manualDispatch, setManualDispatch] = useState(false);
   const [loreServerUrl, setLoreServerUrl] = useState('');
   // Write-only: always starts blank. Non-empty = set a new key; empty = leave the
   // stored key untouched, unless `clearLoreKey` is checked to reset to the global.
@@ -43,6 +45,7 @@ export function GeneralSettingsPanel() {
       setConcurrencyLimit(
         project.execution_concurrency_limit == null ? '' : String(project.execution_concurrency_limit),
       );
+      setManualDispatch(project.manual_dispatch ?? false);
       setLoreServerUrl(project.lore_server_url ?? '');
       setLoreKey('');
       setClearLoreKey(false);
@@ -65,6 +68,7 @@ export function GeneralSettingsPanel() {
       clientName !== (project.client_name ?? '') ||
       defaultBranch !== (project.default_branch ?? 'main') ||
       concurrencyLimit.trim() !== savedConcurrency ||
+      manualDispatch !== (project.manual_dispatch ?? false) ||
       loreChanged);
 
   const updateMutation = useMutation({
@@ -74,6 +78,7 @@ export function GeneralSettingsPanel() {
         client_name: clientName,
         default_branch: defaultBranch,
         execution_concurrency_limit: parsedConcurrency,
+        manual_dispatch: manualDispatch,
       };
       if (loreServerUrl !== savedLoreUrl) payload.lore_server_url = loreServerUrl;
       // Empty string clears (inherit global); a typed key sets it; otherwise leave as-is.
@@ -179,6 +184,24 @@ export function GeneralSettingsPanel() {
                 {!concurrencyValid && (
                   <p className="text-xs text-destructive">Must be a whole number of 1 or greater, or blank to inherit.</p>
                 )}
+              </div>
+
+              <div className="flex items-start justify-between gap-4 border-t border-border/50 pt-4">
+                <div className="space-y-1">
+                  <Label htmlFor="manual-dispatch" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Manual Ticket Dispatch
+                  </Label>
+                  <p className="text-xs text-muted-foreground max-w-md">
+                    On: syncing still pulls in every ticket, but none of them start an execution
+                    automatically — pick the ones you want on the project's Tickets page and send
+                    them yourself. A run that has started still finishes its own code-review/QA cycle.
+                  </p>
+                </div>
+                <Switch
+                  id="manual-dispatch"
+                  checked={manualDispatch}
+                  onCheckedChange={setManualDispatch}
+                />
               </div>
 
               <div className="space-y-1.5 border-t border-border/50 pt-4">

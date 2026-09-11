@@ -13,7 +13,7 @@ import { useProductionErrorDetail, useAcknowledgeError } from '@/hooks/useProduc
 import { useTrackErrorView } from '@/hooks/useProductionErrors';
 import { useEffect, useCallback, memo } from 'react';
 import { format } from 'date-fns';
-import { X, ExternalLink, Ticket, CheckCircle, GitCommit, Server, Users } from 'lucide-react';
+import { ExternalLink, Ticket, CheckCircle, GitCommit, Server, Users } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -92,9 +92,6 @@ function ErrorDetailModalComponent({
               </DialogTitle>
               <p className="text-sm text-muted-foreground mt-1">{error?.application}</p>
             </div>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="w-4 h-4" />
-            </Button>
           </div>
         </DialogHeader>
 

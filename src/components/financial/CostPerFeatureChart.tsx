@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { financialApi } from '../../api/financialApi';
+import apiClient from '../../api/client';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { Download, DollarSign, ChevronDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,24 +17,53 @@ export const CostPerFeatureChart: React.FC<CostPerFeatureChartProps> = ({
     defaultEpicId
 }) => {
     const [selectedEpic, setSelectedEpic] = useState(defaultEpicId ?? '');
+    // Project picker lives on the card next to the epic picker. Epic numbers
+    // repeat across projects ("Epic 1" exists in every one), so choosing an epic
+    // without first stating the project is guesswork. Defaults to the page-level
+    // selection; picking here overrides it for this card only.
+    const [selectedProject, setSelectedProject] = useState('');
 
+    // Shared query key — one cached request serves every consumer of this chart.
+    const { data: projects } = useQuery({
+        queryKey: ['pmDashboardProjects'],
+        queryFn: async () => {
+            const { data } = await apiClient.get('/pm-dashboard/projects');
+            return (data?.data ?? []) as { id: string; name: string }[];
+        },
+        staleTime: 5 * 60 * 1000,
+    });
+
+    const effectiveProject = selectedProject || projectId || '';
+    const projectName = projects?.find((p) => p.id === effectiveProject)?.name;
+
+    // Epics MUST be project-scoped. Without a projectId getEpics merges every
+    // project's epics into one list where the same "Epic 1" means several
+    // different things. Never query until a project is chosen.
     const { data: epics } = useQuery({
-        queryKey: ['costPerFeatureEpics', projectId],
-        queryFn: () => financialApi.getEpics({ projectId }),
+        queryKey: ['costPerFeatureEpics', effectiveProject],
+        queryFn: () => financialApi.getEpics({ projectId: effectiveProject }),
+        enabled: !!effectiveProject,
     });
 
     // Data-driven default: fall back to the first real epic for this project once epics load (BUG-04).
-    const effectiveEpic = selectedEpic || epics?.[0]?.epicId || '';
+    // Guarded by the epic belonging to the current project — a stale selection
+    // carried across a project switch would query an epic the new project lacks.
+    const epicIsInProject = epics?.some((e) => e.epicId === selectedEpic) ?? false;
+    const effectiveEpic = (epicIsInProject ? selectedEpic : '') || epics?.[0]?.epicId || '';
 
     const { data, isLoading, error } = useQuery({
-        queryKey: ['costPerFeature', effectiveEpic, projectId],
-        queryFn: () => financialApi.getCostPerFeature({ epicId: effectiveEpic, projectId }),
+        queryKey: ['costPerFeature', effectiveEpic, effectiveProject],
+        queryFn: () =>
+            financialApi.getCostPerFeature({ epicId: effectiveEpic, projectId: effectiveProject }),
         enabled: !!effectiveEpic,
     });
 
     const handleDownloadCsv = async () => {
         try {
-            const blob = await financialApi.downloadCostPerFeatureCsv({ epicId: effectiveEpic, projectId });
+            const blob = await financialApi.downloadCostPerFeatureCsv({
+                epicId: effectiveEpic,
+                projectId: effectiveProject,
+            });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -47,6 +77,70 @@ export const CostPerFeatureChart: React.FC<CostPerFeatureChartProps> = ({
         }
     };
 
+    // Rendered in every populated state, empty included — the epic selector lives
+    // here, so hiding it on an empty epic left no way to switch to one with data.
+    const header = (
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
+                    <div className="h-9 w-9 rounded-md bg-violet-500/10 text-violet-400 flex items-center justify-center">
+                        <DollarSign className="w-4 h-4" />
+                    </div>
+                    <CardTitle className="text-sm font-medium">Cost per Feature</CardTitle>
+                </div>
+
+                {/* Project selector — sits beside the epic picker so the epic list
+                    is never ambiguous about which project it belongs to. */}
+                <div className="relative">
+                    <select
+                        aria-label="Project"
+                        value={effectiveProject}
+                        onChange={(e) => {
+                            setSelectedProject(e.target.value);
+                            // Drop the epic choice: epic numbers repeat across
+                            // projects, so keeping it would silently show a
+                            // different project's epic under the new name.
+                            setSelectedEpic('');
+                        }}
+                        className="appearance-none bg-[var(--surface-1)] border border-[var(--card-border)] text-sm text-foreground rounded-lg px-3 py-1.5 pr-8 cursor-pointer hover:bg-[var(--surface-2)] focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                        {(projects ?? []).map((project) => (
+                            <option key={project.id} value={project.id}>
+                                {project.name}
+                            </option>
+                        ))}
+                    </select>
+                    <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+
+                {/* Epic selector dropdown */}
+                <div className="relative">
+                    <select
+                        aria-label={projectName ? `Epic in ${projectName}` : 'Epic'}
+                        value={effectiveEpic}
+                        onChange={(e) => setSelectedEpic(e.target.value)}
+                        className="appearance-none bg-[var(--surface-1)] border border-[var(--card-border)] text-sm text-foreground rounded-lg px-3 py-1.5 pr-8 cursor-pointer hover:bg-[var(--surface-2)] focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                        {(epics ?? []).map((epic) => (
+                            <option key={epic.epicId} value={epic.epicId}>
+                                {epic.epicTitle}
+                            </option>
+                        ))}
+                    </select>
+                    <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+            </div>
+
+            <button
+                onClick={handleDownloadCsv}
+                className="flex items-center gap-2 px-3 py-1.5 bg-[var(--surface-1)] hover:bg-[var(--surface-2)] text-foreground text-sm rounded-lg border border-[var(--card-border)] transition-colors"
+            >
+                <Download className="w-4 h-4" />
+                CSV
+            </button>
+        </CardHeader>
+    );
+
     if (isLoading) {
         return (
             <Card className="h-[400px]">
@@ -57,7 +151,11 @@ export const CostPerFeatureChart: React.FC<CostPerFeatureChartProps> = ({
         );
     }
 
-    if (error || !data || data.length === 0) {
+    // "No epic to show" is not a failure. The cost query is disabled until an epic
+    // exists (enabled: !!effectiveEpic), so with no epics `data` is undefined and
+    // this branch used to report "Failed to load cost data" for an empty dataset —
+    // sending you hunting for a broken API when nothing was broken.
+    if (error) {
         return (
             <Card className="h-[400px]">
                 <CardContent className="h-full flex items-center justify-center">
@@ -67,9 +165,57 @@ export const CostPerFeatureChart: React.FC<CostPerFeatureChartProps> = ({
         );
     }
 
+    if (!effectiveEpic) {
+        return (
+            <Card className="h-[400px] flex flex-col">
+                {/* Header included: without it the project picker disappears on a
+                    project that has no epics, stranding the user there. */}
+                {header}
+                <CardContent className="flex-1 flex flex-col items-center justify-center gap-2">
+                    <DollarSign className="h-8 w-8 text-muted-foreground/30" />
+                    <p className="text-muted-foreground text-center">
+                        {projectId ? 'No epics found for this project' : 'Select a project to see its epics'}
+                    </p>
+                    {projectId && (
+                        <p className="text-xs text-muted-foreground/70 text-center max-w-[280px]">
+                            Epics are read from the <code>e&lt;n&gt;-s&lt;n&gt;</code> prefix on ticket titles.
+                        </p>
+                    )}
+                </CardContent>
+            </Card>
+        );
+    }
+
+    // An epic with no runs still comes back as one row with an empty storyCosts
+    // array — rendering that draws an axis-only chart reading "$0", which looks
+    // broken rather than empty.
+    if (!data || data.length === 0 || !data[0].storyCosts?.length) {
+        return (
+            <Card className="h-[400px] flex flex-col">
+                {header}
+                <CardContent className="flex-1 flex flex-col items-center justify-center gap-2">
+                    <DollarSign className="h-8 w-8 text-muted-foreground/30" />
+                    {/* The selector above already names the epic. Repeating the
+                        title from this response would contradict it — that count
+                        is stories WITH spend, so it reads "(0 stories)" for an
+                        epic the dropdown lists as having 11. */}
+                    <p className="text-muted-foreground text-center">
+                        No AI spend recorded for this epic yet
+                    </p>
+                    <p className="text-xs text-muted-foreground/70 text-center">
+                        Pick another epic from the selector above.
+                    </p>
+                </CardContent>
+            </Card>
+        );
+    }
+
     const epicData = data[0];
     const chartData = epicData.storyCosts.map((story) => ({
-        name: story.storyId,
+        // Axis label, not an identifier: a ticket UUID tells a reader nothing about
+        // which story a bar is. Story titles start `e23-s04-...`, so the story key
+        // labels the bar compactly; the tooltip still carries the full title.
+        name: /^\s*e\d+-(s\d+)/i.exec(story.storyTitle)?.[1] ?? story.storyTitle.slice(0, 18),
         cost: parseFloat(story.costUsd),
         title: story.storyTitle,
         tokens: story.tokensTotal,

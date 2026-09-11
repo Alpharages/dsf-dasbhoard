@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, useCallback, lazy, Suspense } from 'react';
 import {
-  X,
   Download,
   Search,
   Filter,
@@ -16,6 +15,7 @@ import { useExecutionLogs, useExportExecutionLogs, useExecution } from '@/hooks/
 import { QAResultsPanel } from '@/components/execution/QAResultsPanel';
 import { useLogEvents } from '@/lib/socket/useSocketIO';
 import type { ExecutionLog, LogLevel } from '@/types/execution';
+import type { ContainerActivityPayload } from '@/lib/socket/socketEvents';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -74,6 +74,9 @@ export default function ExecutionLogsViewer({
   const [showActivityPanel, setShowActivityPanel] = useState(true);
   const [showQAPanel, setShowQAPanel] = useState(false);
   const [realTimeLogs, setRealTimeLogs] = useState<ExecutionLog[]>([]);
+  // Activity picked in the left timeline; its full detail replaces the log
+  // stream on the right, where there is room to actually read it.
+  const [selectedActivity, setSelectedActivity] = useState<ContainerActivityPayload | null>(null);
   const logsEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -156,13 +159,17 @@ export default function ExecutionLogsViewer({
   const handleToggleActivity = () => {
     setShowActivityPanel((prev) => {
       if (!prev) setShowQAPanel(false); // opening activity → close QA
+      else setSelectedActivity(null); // closing activity → drop its detail pane
       return !prev;
     });
   };
 
   const handleToggleQAPanel = () => {
     setShowQAPanel((prev) => {
-      if (!prev) setShowActivityPanel(false); // opening QA → close activity
+      if (!prev) {
+        setShowActivityPanel(false); // opening QA → close activity
+        setSelectedActivity(null);
+      }
       return !prev;
     });
   };
@@ -179,6 +186,7 @@ export default function ExecutionLogsViewer({
       setSearchQuery('');
       setShowQAPanel(false);    // FE-1.3: reset QA panel on close
       setShowActivityPanel(true); // reset to default-open
+      setSelectedActivity(null);
     }
   }, [isOpen]);
 
@@ -186,7 +194,7 @@ export default function ExecutionLogsViewer({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[95vw] w-[95vw] h-[90vh] bg-card border-border p-0 flex flex-col">
         <DialogHeader className="px-6 py-4 border-b border-border">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pr-10">
             <DialogTitle className="text-foreground flex items-center gap-2">
               Execution Logs
               <Badge variant="outline" className="ml-2 text-muted-foreground border-border">
@@ -207,14 +215,6 @@ export default function ExecutionLogsViewer({
                   <Download className="w-4 h-4 mr-2" />
                 )}
                 Export
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onClose}
-                className="text-muted-foreground"
-              >
-                <X className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -338,6 +338,8 @@ export default function ExecutionLogsViewer({
                         collapsible={false}
                         defaultCollapsed={false}
                         isLive={isLive}
+                        onSelectActivity={setSelectedActivity}
+                        selectedTimestamp={selectedActivity?.timestamp ?? null}
                       />
                     </Suspense>
                   </div>
@@ -357,7 +359,45 @@ export default function ExecutionLogsViewer({
             </div>
           )}
 
-          {/* Logs Container */}
+          {/* Right pane — selected activity detail, else the log stream */}
+          {selectedActivity ? (
+            <div className="flex-1 min-w-0 flex flex-col bg-background">
+              <div className="flex items-start gap-3 px-4 py-3 border-b border-border">
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-sm font-bold text-foreground break-words">
+                    {selectedActivity.activity}
+                  </h3>
+                  {selectedActivity.detail && (
+                    <p className="text-xs text-muted-foreground mt-0.5 break-words">
+                      {selectedActivity.detail}
+                    </p>
+                  )}
+                </div>
+                <span className="text-[10px] text-muted-foreground shrink-0 pt-1">
+                  {format(new Date(selectedActivity.timestamp), 'HH:mm:ss')}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedActivity(null)}
+                  className="text-muted-foreground shrink-0"
+                >
+                  Back to logs
+                </Button>
+              </div>
+              <div className="flex-1 overflow-auto p-4">
+                {selectedActivity.rawContent ? (
+                  <pre className="text-xs font-mono text-foreground whitespace-pre-wrap break-words">
+                    {selectedActivity.rawContent}
+                  </pre>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                    No further detail for this activity
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
           <div 
             ref={containerRef}
             onScroll={handleScroll}
@@ -404,6 +444,7 @@ export default function ExecutionLogsViewer({
             </div>
           )}
         </div>
+          )}
         </div>
 
         {/* Footer Stats */}

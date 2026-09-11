@@ -18,6 +18,8 @@ export interface UpdateProjectPayload {
   name?: string;
   client_name?: string;
   default_branch?: string;
+  /** True = synced tickets wait for a manual dispatch instead of auto-executing */
+  manual_dispatch?: boolean;
   /** null clears the per-project override so the global default applies */
   execution_concurrency_limit?: number | null;
   /** Empty string clears it (inherit global LORE_SERVER_URL) */

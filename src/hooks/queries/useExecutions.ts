@@ -120,7 +120,9 @@ export function useExecutionLogs(
   const { user } = useAuth();
   return useQuery({
     queryKey: executionKeys.logsFiltered(executionId, filters),
-    queryFn: () => getExecutionLogs(executionId, filters).then(r => r.logs),
+    // API returns newest-first (latest page); the viewer renders top-to-bottom
+    // and auto-scrolls to the bottom, so flip to chronological.
+    queryFn: () => getExecutionLogs(executionId, filters).then(r => [...r.logs].reverse()),
     staleTime: 60 * 1000, // 1 minute
     ...options,
     enabled: !!executionId && !!user,
